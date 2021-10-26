@@ -14,14 +14,15 @@
 
 
 
-@if (loaded == false)
-{
-    <div class="spinner"></div>
-}
 <div>
     @if (Images.Any())
     {
+
         <img src="@Images[idx]" class="image" />
+    }
+    @if (spinning == true){ 
+        <div>Loading...</div>
+        <div class="spinner"></div>
     }
 
 </div>
@@ -34,7 +35,7 @@
 <div class="sidebar">
     <ul class="nav flex-column">
         @*<li class="nav-item px-3">*@
-        <EditForm Model="@controller" OnValidSubmit="findInitialPoint">
+        <EditForm Model="@controller" OnValidSubmit="AsyncLongOperation">
             <li class="nav-item px-2">
                 <InputSelect Value="routeId" ValueChanged="@( (string s) => routeChanged(s))" ValueExpression="@( () => routeId)" class="form-control">
                     <option value="none">Route</option>
@@ -102,6 +103,7 @@
     public bool loaded = false;
     public bool isPlay = false;
     public bool isReverse = false;
+    public bool spinning;
 
     mmhisContext db = new mmhisContext();
 
@@ -174,8 +176,16 @@
 
     public void findInitialPoint()
     {
+
         Images = controller.ImageListLoader(routeId, directionId, sectionId, yearId, logmile);
         loaded = true;
+    }
+    async Task AsyncLongOperation()    // this is an async task
+    {
+        spinning = true;
+        await Task.Run(() => findInitialPoint());  //<--here!
+        currentCount++;
+        spinning = false;
     }
 
     void OnChange(dynamic value, string name)

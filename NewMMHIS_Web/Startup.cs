@@ -189,133 +189,139 @@ namespace NewMMHIS_Web
             app.UseFileServer(new FileServerOptions
             {
                 FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS PAVE1"),
-                RequestPath = new PathString("/MyPath"),
+                RequestPath = new PathString("/MyPath19"),
                 EnableDirectoryBrowsing = true
             });
             app.UseFileServer(new FileServerOptions
             {
                 FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS PAVE2"),
-                RequestPath = new PathString("/MyPath"),
+                RequestPath = new PathString("/MyPath20"),
                 EnableDirectoryBrowsing = true
             });
             app.UseFileServer(new FileServerOptions
             {
                 FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS PAVE3"),
-                RequestPath = new PathString("/MyPath"),
+                RequestPath = new PathString("/MyPath21"),
                 EnableDirectoryBrowsing = true
             });
             app.UseFileServer(new FileServerOptions
             {
                 FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS PAVE4"),
-                RequestPath = new PathString("/MyPath"),
+                RequestPath = new PathString("/MyPath22"),
                 EnableDirectoryBrowsing = true
             });
             app.UseFileServer(new FileServerOptions
             {
                 FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS PAVE5"),
-                RequestPath = new PathString("/MyPath"),
+                RequestPath = new PathString("/MyPath23"),
                 EnableDirectoryBrowsing = true
             });
             app.UseFileServer(new FileServerOptions
             {
                 FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS PAVE6"),
-                RequestPath = new PathString("/MyPath"),
+                RequestPath = new PathString("/MyPath24"),
                 EnableDirectoryBrowsing = true
             });
             app.UseFileServer(new FileServerOptions
             {
                 FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS PAVE7"),
-                RequestPath = new PathString("/MyPath"),
-                EnableDirectoryBrowsing = true
-            });
-            app.UseFileServer(new FileServerOptions
-            {
-                FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS PAVE7"),
-                RequestPath = new PathString("/MyPath"),
+                RequestPath = new PathString("/MyPath25"),
                 EnableDirectoryBrowsing = true
             });
             app.UseFileServer(new FileServerOptions
             {
                 FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS PAVE8"),
-                RequestPath = new PathString("/MyPath"),
+                RequestPath = new PathString("/MyPath26"),
                 EnableDirectoryBrowsing = true
             });
             app.UseFileServer(new FileServerOptions
             {
                 FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS PAVE9"),
-                RequestPath = new PathString("/MyPath"),
+                RequestPath = new PathString("/MyPath27"),
                 EnableDirectoryBrowsing = true
             });
             app.UseFileServer(new FileServerOptions
             {
                 FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS PAVE10"),
-                RequestPath = new PathString("/MyPath"),
+                RequestPath = new PathString("/MyPath28"),
                 EnableDirectoryBrowsing = true
             });
             app.UseFileServer(new FileServerOptions
             {
                 FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS PAVE11"),
-                RequestPath = new PathString("/MyPath"),
+                RequestPath = new PathString("/MyPath29"),
                 EnableDirectoryBrowsing = true
             });
             app.UseFileServer(new FileServerOptions
             {
                 FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS PAVE12"),
-                RequestPath = new PathString("/MyPath"),
+                RequestPath = new PathString("/MyPath30"),
                 EnableDirectoryBrowsing = true
             });
             app.UseFileServer(new FileServerOptions
             {
                 FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS PAVE13"),
-                RequestPath = new PathString("/MyPath"),
+                RequestPath = new PathString("/MyPath31"),
                 EnableDirectoryBrowsing = true
             });
             app.UseFileServer(new FileServerOptions
             {
                 FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS PAVE14"),
-                RequestPath = new PathString("/MyPath"),
+                RequestPath = new PathString("/MyPath32"),
                 EnableDirectoryBrowsing = true
             });
             app.UseFileServer(new FileServerOptions
             {
                 FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS PAVE15"),
-                RequestPath = new PathString("/MyPath"),
+                RequestPath = new PathString("/MyPath33"),
                 EnableDirectoryBrowsing = true
             });
             app.UseFileServer(new FileServerOptions
             {
                 FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS PAVE16"),
-                RequestPath = new PathString("/MyPath"),
+                RequestPath = new PathString("/MyPath34"),
                 EnableDirectoryBrowsing = true
             });
             app.UseFileServer(new FileServerOptions
             {
                 FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS PAVE17"),
-                RequestPath = new PathString("/MyPath"),
+                RequestPath = new PathString("/MyPath35"),
                 EnableDirectoryBrowsing = true
             });
             app.UseFileServer(new FileServerOptions
             {
                 FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS PAVE18"),
-                RequestPath = new PathString("/MyPath"),
+                RequestPath = new PathString("/MyPath36"),
                 EnableDirectoryBrowsing = true
             });
             app.UseFileServer(new FileServerOptions
             {
                 FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS PAVE19"),
-                RequestPath = new PathString("/MyPath"),
+                RequestPath = new PathString("/MyPath37"),
                 EnableDirectoryBrowsing = true
             });
             app.UseFileServer(new FileServerOptions
             {
                 FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS PAVE20"),
-                RequestPath = new PathString("/MyPath"),
+                RequestPath = new PathString("/MyPath38"),
                 EnableDirectoryBrowsing = true
             });
             app.UseFileServer(new FileServerOptions
             {
-                FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS PAVE21"),
-                RequestPath = new PathString("/MyPath"),
+                FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS Pave21"),
+                RequestPath = new PathString("/MyPath39"),
+                EnableDirectoryBrowsing = true
+            });
+            app.UseFileServer(new FileServerOptions
+            {
+                FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS Pave22"),
+                RequestPath = new PathString("/MyPath40"),
+                EnableDirectoryBrowsing = true
+            });
+            app.UseFileServer(new FileServerOptions
+            {
+                FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS Pave23"),
+                RequestPath = new PathString("/MyPath41"),
                 EnableDirectoryBrowsing = true
             });
             app.UseEndpoints(endpoints =>

@@ -93,7 +93,8 @@ a, .btn-link {
         animation: spin 700ms linear infinite;
         top: 40%;
         left: 55%;
-        position: absolute;
+        position: relative;
+        margin-top: 0%;
     }
 
     @keyframes spin {
