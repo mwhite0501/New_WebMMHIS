@@ -1,0 +1,257 @@
+﻿@page "/"
+@using Radzen
+@using Radzen.Blazor;
+@using System.Collections;
+@using System.Timers;
+@inject IJSRuntime JSRuntime
+@inject MmhisController controller
+@inject PageModel pageModel
+
+<RadzenSlider @bind-Value=@value TValue="int" Min="0" Max="100" Change=@(args => OnChange(args, "Slider from 0 to 100")) />
+<button @onclick=@OnSubmitPlay>Play</button>
+<button @onclick=@OnSubmitStop>Stop</button>
+<button @onclick=@OnSubmitReverse>Reverse</button>  
+
+
+
+@if (loaded == false)
+{
+    <div class="spinner"></div>
+}
+<div>
+    @if (Images.Any())
+    {
+        <img src="@Images[idx]" class="image" />
+    }
+
+</div>
+<button @onclick="() => idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1">Backwards</button>
+<button @onclick="() => idx = idx + 1 >= Images.Count() ? 0 : idx + 1">Forwards</button>
+<br>
+<div id="map" style="width: 1080px; height: 540px">
+</div>
+
+<div class="sidebar">
+    <ul class="nav flex-column">
+        @*<li class="nav-item px-3">*@
+        <EditForm Model="@controller" OnValidSubmit="findInitialPoint">
+            <li class="nav-item px-2">
+                <InputSelect Value="routeId" ValueChanged="@( (string s) => routeChanged(s))" ValueExpression="@( () => routeId)" class="form-control">
+                    <option value="none">Route</option>
+                    @foreach (var item in routes)
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </InputSelect>
+            </li>
+            <li class="nav-item px-2">
+                <InputSelect Disabled="@IsDisabledDirection" Value="directionId" ValueChanged="@( (string s) => directionChanged(s))" ValueExpression="@( () => directionId)" class="form-control">
+                    <option value="none">Direction</option>
+                    <option value="">N/A</option>
+                    @foreach (var item in directions)
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </InputSelect>
+            </li>
+            <li class="nav-item px-2">
+                <InputSelect Disabled="@IsDisabledSection" Value="sectionId" ValueChanged="@( (string s) => sectionChanged(s))" ValueExpression="@( () => sectionId)" class="form-control">
+                    <option value="none">Section</option>
+                    @foreach (var item in sections)
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </InputSelect>
+            </li>
+            <li class="nav-item px-2">
+                <InputSelect Disabled="@IsDisabledYear" Value="yearId" ValueChanged="@( (string s) => yearChanged(s))" ValueExpression="@( () => yearId)" class="form-control">
+                    <option value="none">Year</option>
+                    @foreach (var item in years)
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </InputSelect>
+            </li>
+            <li class="nav-item px-2">
+                <RadzenTextBox Placeholder="Search Logmile..." Change=@(args => OnChangeLogmeter(args, "TextBox with placeholder")) />
+            </li>
+            <li class="nav-item px-2">
+                <input type="submit" class="btn btn-primary" value="Submit" />
+            </li>
+
+        </EditForm>
+
+    </ul>
+</div>
+
+
+@code{
+    public int idx;
+    IEnumerable<int> negativeValues = new int[] { -100, 100 };
+    int value = 0;
+    int negativeValue = 0;
+    int valueWithStep = 30;
+    double logmile { get; set; }
+    private List<string> counties;
+    private List<string> routes;
+    private List<string> sections;
+    private List<string> directions;
+    private List<string> years;
+    private int currentCount = 0;
+    private Timer time;
+    public bool loaded = false;
+    public bool isPlay = false;
+    public bool isReverse = false;
+
+    mmhisContext db = new mmhisContext();
+
+    public string routeId;
+    public string directionId;
+    public string sectionId;
+    public string yearId;
+    public string imgId;
+    protected bool IsDisabledDirection = true;
+    protected bool IsDisabledSection = true;
+    protected bool IsDisabledYear = true;
+    public List<string> Images = new List<string>();
+
+    protected override void OnInitialized()
+    {
+        routes = controller.GetUniqueRoutes();
+        sections = controller.GetUniqueSections();
+        years = controller.GetUniqueYears();
+        directions = controller.GetUniqueDirections();
+        IsDisabledSection = true;
+        IsDisabledYear = true;
+        IsDisabledDirection = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("initMap", null);
+        }
+    }
+
+    public void routeChanged(string routeEvent)
+    {
+        //need to check values of all fields for valid combinations
+        IsDisabledDirection = false;
+        routeId = routeEvent;
+        directions.Clear();
+        var direct = db.MmhisDamus.Select(r => r).Where(r => r.Route == routeEvent);
+        directions = direct.Select(r => r.MmhisDirection).Distinct().ToList();
+    }
+
+    public void directionChanged(string directionEvent)
+    {
+        IsDisabledSection = false;
+        directionId = directionEvent;
+        sections.Clear();
+        var sect = db.MmhisDamus.Select(r => r).Where(r => r.Route == routeId);
+        sect = sect.Where(r => r.MmhisDirection == directionId);
+        sections = sect.Select(r => r.Section).Distinct().ToList();
+    }
+
+    public void sectionChanged(string sectionEvent)
+    {
+        IsDisabledYear = false;
+        sectionId = sectionEvent;
+        years.Clear();
+        var year = db.MmhisDamus.Select(r => r).Where(r => r.Section == sectionEvent);
+        year = year.Where(r => r.Route == routeId);
+        year = year.Where(r => r.MmhisDirection == directionId);
+        year = year.Where(r => r.Section == sectionId);
+        years = year.Select(r => r.TheYear).Distinct().OrderByDescending(x => x).ToList();
+
+    }
+
+    public void yearChanged(string yearEvent)
+    {
+        yearId = yearEvent;
+    }
+
+    public void findInitialPoint()
+    {
+        Images = controller.ImageListLoader(routeId, directionId, sectionId, yearId, logmile);
+        loaded = true;
+    }
+
+    void OnChange(dynamic value, string name)
+    {
+        var str = value is IEnumerable ? string.Join(", ", value) : value;
+        str = Convert.ToString(str);
+
+    }
+
+    void OnChangeLogmeter(dynamic value, string name)
+    {
+        var str = value is IEnumerable ? string.Join(", ", value) : value;
+        str = Convert.ToString(str);
+        logmile = Convert.ToDouble(str) * 1609.34;
+
+    }
+
+    void OnSubmitPlay()
+    {
+        if (Images.Any())
+        {
+            isReverse = false;
+            isPlay = true;
+            time.Enabled = true;
+            idx = idx + 1 >= Images.Count() ? 0 : idx + 1;
+        }
+    }
+
+    void OnSubmitReverse()
+    {
+        if (Images.Any())
+        {
+            isPlay = false;
+            isReverse = true;
+            time.Enabled = true;
+            idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1;
+        }
+    }
+
+    void OnSubmitStop()
+    {
+        time.Enabled = false;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            time = new Timer();
+            //Set the time interval.
+            time.Interval = 125;
+            time.Elapsed += OnTimeInterval;
+            time.AutoReset = true;
+            // Start the timer.
+            //time.Enabled = false;
+        }
+        base.OnAfterRender(firstRender);
+    }
+
+    private async void OnTimeInterval(object sender, ElapsedEventArgs e)
+    {
+        if(isPlay == true)
+        {
+            OnSubmitPlay();
+        }
+        if(isReverse == true)
+        {
+            OnSubmitReverse();
+        }
+
+        await InvokeAsync(() => StateHasChanged());
+    }
+
+    public void Dispose()
+    {
+        // While navigating to other components, Dispose method will be called and clean up the Timer function.
+        time?.Dispose();
+    }
+}

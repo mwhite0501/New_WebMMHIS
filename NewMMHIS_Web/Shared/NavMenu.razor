@@ -1,0 +1,171 @@
+﻿@using System.Net.Http.Json;
+@inject MmhisController controller
+@inject PageModel pageModel 
+
+<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="">NewMMHIS_Web</a>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <ul class="nav flex-column">
+        @*<li class="nav-item px-3">*@
+        <EditForm Model="@controller" OnValidSubmit="findInitialPoint">
+            <li class="nav-item px-2">
+                <InputSelect Value="routeId" ValueChanged="@( (string s) => routeChanged(s))" ValueExpression="@( () => routeId)" class="form-control">
+                    <option value="none">Route</option>
+                    @foreach (var item in routes)
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </InputSelect>
+            </li>
+            <li class="nav-item px-2">
+                <InputSelect Disabled="@IsDisabledDirection" Value="directionId" ValueChanged="@( (string s) => directionChanged(s))" ValueExpression="@( () => directionId)" class="form-control">
+                    <option value="none">Direction</option>
+                    <option value="">N/A</option>
+                    @foreach (var item in directions)
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </InputSelect>
+            </li>
+            <li class="nav-item px-2">
+                <InputSelect Disabled="@IsDisabledSection" Value="sectionId" ValueChanged="@( (string s) => sectionChanged(s))" ValueExpression="@( () => sectionId)" class="form-control">
+                    <option value="none">Section</option>
+                    @foreach (var item in sections)
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </InputSelect>
+            </li>
+            <li class="nav-item px-2">
+                <InputSelect Disabled="@IsDisabledYear" Value="yearId" ValueChanged="@( (string s) => yearChanged(s))" ValueExpression="@( () => yearId)" class="form-control">
+                    <option value="none">Year</option>
+                    @foreach (var item in years)
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </InputSelect>
+            </li>
+            <li class="nav-item px-2">
+                <input type="submit" class="btn btn-primary" value="Submit" />
+            </li>
+
+        </EditForm>
+
+        @*</li>
+        <li class="nav-item px-3">
+            <select name="dropdown" id="dropdown">
+                <option value="volvo">Section</option>
+            </select>
+        </li>
+        <li class="nav-item px-3">
+            <select name="dropdown" id="dropdown">
+                <option value="volvo">Year</option>
+            </select>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="fetchroute">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch Data
+            </NavLink>
+        </li>*@
+    </ul>
+</div>
+
+@code {
+
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    private List<string> counties;
+    private List<string> routes;
+    private List<string> sections;
+    private List<string> directions;
+    private List<string> years;
+
+    mmhisContext db = new mmhisContext();
+    [Parameter]
+    public string routeId { get; set; }
+
+    [Parameter]
+    public EventCallback<string> RouteChanged { get; set; }
+
+    public string directionId;
+    public string sectionId;
+    public string yearId;
+    public string imgId;
+    protected bool IsDisabledDirection = true;
+    protected bool IsDisabledSection = true;
+    protected bool IsDisabledYear = true;
+
+
+    private Task OnRouteChanged(ChangeEventArgs e)
+    {
+        routeId = e.Value.ToString();
+        return RouteChanged.InvokeAsync(routeId);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        routes = controller.GetUniqueRoutes();
+        sections = controller.GetUniqueSections();
+        years = controller.GetUniqueYears();
+        directions = controller.GetUniqueDirections();
+        IsDisabledSection = true;
+        IsDisabledYear = true;
+        IsDisabledDirection = true;
+    }
+    public void routeChanged(string routeEvent)
+    {
+        //need to check values of all fields for valid combinations
+        IsDisabledDirection = false;
+        routeId = routeEvent;
+        directions.Clear();
+        var direct = db.MmhisDamus.Select(r => r).Where(r => r.Route == routeEvent);
+        directions = direct.Select(r => r.MmhisDirection).Distinct().ToList();
+
+    }
+
+    public void directionChanged(string directionEvent)
+    {
+        IsDisabledSection = false;
+        directionId = directionEvent;
+        sections.Clear();
+        var sect = db.MmhisDamus.Select(r => r).Where(r => r.Route == routeId);
+        sections = sect.Select(r => r.Section).Distinct().ToList();
+    }
+    public void sectionChanged(string sectionEvent)
+    {
+        IsDisabledYear = false;
+        sectionId = sectionEvent;
+        years.Clear();
+        var year = db.MmhisDamus.Select(r => r).Where(r => r.Section == sectionEvent);
+        year = year.Where(r => r.Route == routeId);
+        years = year.Select(r => r.TheYear).Distinct().OrderByDescending(x=>x).ToList();
+
+    }
+    public void yearChanged(string yearEvent)
+    {
+        yearId = yearEvent;
+
+    }
+    public void findInitialPoint()
+    {
+        //state.SetCurrentRoute(RouteId,sectionId,directionId,yearId);
+        pageModel.Route = routeId;
+        pageModel.Section = sectionId;
+        pageModel.Direction = directionId;
+        pageModel.Year = yearId;
+
+    }
+    //public void 
+}
