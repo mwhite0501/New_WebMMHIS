@@ -15,14 +15,15 @@
 
 
 <div>
+    @if (spinning == true)
+    {
+        <div>Loading...</div>
+        <div class="spinner"></div>
+    }
     @if (Images.Any())
     {
 
         <img src="@Images[idx]" class="image" />
-    }
-    @if (spinning == true){ 
-        <div>Loading...</div>
-        <div class="spinner"></div>
     }
 
 </div>
@@ -105,6 +106,7 @@
     public bool isReverse = false;
     public bool spinning;
 
+
     mmhisContext db = new mmhisContext();
 
     public string routeId;
@@ -112,6 +114,8 @@
     public string sectionId;
     public string yearId;
     public string imgId;
+    public decimal longitudeId;
+    public decimal latitudeId;
     protected bool IsDisabledDirection = true;
     protected bool IsDisabledSection = true;
     protected bool IsDisabledYear = true;
@@ -176,10 +180,12 @@
 
     public void findInitialPoint()
     {
-
-        Images = controller.ImageListLoader(routeId, directionId, sectionId, yearId, logmile);
-        loaded = true;
+        latitudeId = 33.8940m;
+        longitudeId = -91.2549m;
+        //Images = controller.ImageListLoader(routeId, directionId, sectionId, yearId, logmile, latitudeId, longitudeId);
+        Images = controller.MapImageLoader(latitudeId, longitudeId);
     }
+
     async Task AsyncLongOperation()    // this is an async task
     {
         spinning = true;
