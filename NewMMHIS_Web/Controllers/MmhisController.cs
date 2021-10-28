@@ -76,8 +76,7 @@ namespace NewMMHIS_Web.Controllers
         {
             return deg * (Math.PI / 180);
         }
-       
-        public List<string>MapImageLoader(decimal latitude, decimal longitude)
+        public List<string>MapImageLoader(double latitude, double longitude)
         {
             string imgPath = "";
 
@@ -112,7 +111,39 @@ namespace NewMMHIS_Web.Controllers
                         && t.Longitude >= (double)longitude - variance && t.Longitude <= (double)longitude + variance
                         select t).FirstOrDefault();
 
+            //need to check and make sure this is the latest year
+
             var Ld = Lda.Lu;
+
+            var getInfo = from i in _context.MmhisDamus
+                          where i.Ld == Ld
+                          select i;
+            var routeInfo = from i in getInfo
+                            select i.Route;
+            var sectInfo = from i in getInfo
+                            select i.Section;
+            var dirInfo = from i in getInfo
+                            select i.ArnoldDirection;
+            var yearInfo = from i in getInfo
+                           select i.TheYear;
+            var getLatest = from i in _context.MmhisDamus
+                            where i.Route == routeInfo.FirstOrDefault()
+                            && i.Section == sectInfo.FirstOrDefault()
+                            && i.ArnoldDirection == dirInfo.FirstOrDefault()
+                            orderby i.TheYear descending
+                            select i;
+            var latest = getLatest.FirstOrDefault(); 
+
+            Ld = latest.Ld;
+
+            Lda = (from t in _context.MmhisDians
+             where t.Latitude >= (double)latitude - variance 
+             && t.Latitude <= (double)latitude + variance
+             && t.Longitude >= (double)longitude - variance 
+             && t.Longitude <= (double)longitude + variance
+             && t.Lu == Ld
+             select t).FirstOrDefault();
+
             var strLat = Lda.Latitude;
             var strLong = Lda.Longitude;
             
@@ -166,19 +197,17 @@ namespace NewMMHIS_Web.Controllers
                     }
                 }
             }
-
-
             return Images;
         }
-        public List<string>ImageListLoader(string route, string direction, string section, string year, double logmeter, decimal latitude, decimal longitude)
+        public List<string>ImageListLoader(string route, string direction, string section, string year, double logmeter, double latitude, double longitude)
         {
             pageModel.Route = route;
             pageModel.Direction = direction;
             pageModel.Section = section;
             pageModel.Year = year;
             pageModel.Logmeter = logmeter;
-            pageModel.Longitude = longitude;
-            pageModel.Latitude = latitude;
+            //pageModel.Longitude = longitude;
+            //pageModel.Latitude = latitude;
             string imgPath = "";
 
             List<string> Images = new List<string>();

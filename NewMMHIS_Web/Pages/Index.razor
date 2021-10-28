@@ -12,12 +12,9 @@
 <button @onclick=@OnSubmitStop>Stop</button>
 <button @onclick=@OnSubmitReverse>Reverse</button>  
 
-
-
 <div>
     @if (spinning == true)
     {
-        <div>Loading...</div>
         <div class="spinner"></div>
     }
     @if (Images.Any())
@@ -30,8 +27,7 @@
 <button @onclick="() => idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1">Backwards</button>
 <button @onclick="() => idx = idx + 1 >= Images.Count() ? 0 : idx + 1">Forwards</button>
 <br>
-<div id="map" style="width: 1080px; height: 540px">
-</div>
+@*<div id="map" style="width: 1080px; height: 540px" ></div>*@
 
 <div class="sidebar">
     <ul class="nav flex-column">
@@ -85,9 +81,62 @@
 
     </ul>
 </div>
+<div class ="row">
+    <div class ="col-xl-6">
+        <RadzenGoogleMap Style="width:1920px;height:540px;" Zoom="@zoom" Center="@(new GoogleMapPosition() { Lat = 34.799999, Lng = -92.199997 })" MapClick="@AsyncMapOperation">
+            <Markers>
+                @if (showArkansasMarker)
+                {
+                    <RadzenGoogleMapMarker Title="Arkansas" Position="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId })" />
+                }
+            </Markers>
+        </RadzenGoogleMap>
+    </div>
+</div>
+<div class="col-xl-6">
+    <label>Position: </label> @clickedPosition
+    </div>
+
+
 
 
 @code{
+    //map settings ==========================================================================
+    int zoom = 7;
+    bool showArkansasMarker;
+    string clickedPosition = "";
+
+    void OnMapClick(GoogleMapClickEventArgs args)
+    {
+        spinning = true;
+        clickedPosition = $"Map clicked LAT : {args.Position.Lat}, LNG: {args.Position.Lng}";
+        latitudeId = args.Position.Lat;
+        longitudeId = args.Position.Lng;
+        showArkansasMarker = true;
+        Images = controller.MapImageLoader(latitudeId, longitudeId);
+        spinning = false;
+    }
+    async Task AsyncMapOperation(GoogleMapClickEventArgs args)    // this is an async task
+    {
+        spinning = true;
+        await Task.Run(() => OnMapClick(args));  //<--here!
+        currentCount++;
+        spinning = false;
+    }
+
+    void OnMarkerClick(GoogleMapClickEventArgs args)
+    {
+        clickedPosition = $"Map clicked LAT : {args.Position.Lat}, LNG: {args.Position.Lng}";
+    }
+    async Task AsyncMarkerOperation(GoogleMapClickEventArgs args)    // this is an async task
+    {
+        spinning = true;
+        await Task.Run(() => OnMarkerClick(args));  //<--here!
+        currentCount++;
+        spinning = false;
+    }
+    //=======================================================================================
+
     public int idx;
     IEnumerable<int> negativeValues = new int[] { -100, 100 };
     int value = 0;
@@ -106,7 +155,6 @@
     public bool isReverse = false;
     public bool spinning;
 
-
     mmhisContext db = new mmhisContext();
 
     public string routeId;
@@ -114,8 +162,8 @@
     public string sectionId;
     public string yearId;
     public string imgId;
-    public decimal longitudeId;
-    public decimal latitudeId;
+    public double longitudeId;
+    public double latitudeId;
     protected bool IsDisabledDirection = true;
     protected bool IsDisabledSection = true;
     protected bool IsDisabledYear = true;
@@ -134,10 +182,10 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
-        {
-            await JSRuntime.InvokeVoidAsync("initMap", null);
-        }
+        //if (firstRender)
+        //{
+        //    await JSRuntime.InvokeVoidAsync("initMap", null);   //using javascript
+        //}
     }
 
     public void routeChanged(string routeEvent)
@@ -180,10 +228,9 @@
 
     public void findInitialPoint()
     {
-        latitudeId = 33.8940m;
-        longitudeId = -91.2549m;
-        //Images = controller.ImageListLoader(routeId, directionId, sectionId, yearId, logmile, latitudeId, longitudeId);
-        Images = controller.MapImageLoader(latitudeId, longitudeId);
+
+        Images = controller.ImageListLoader(routeId, directionId, sectionId, yearId, logmile, latitudeId, longitudeId);
+
     }
 
     async Task AsyncLongOperation()    // this is an async task
@@ -193,6 +240,8 @@
         currentCount++;
         spinning = false;
     }
+
+
 
     void OnChange(dynamic value, string name)
     {
@@ -242,7 +291,7 @@
         {
             time = new Timer();
             //Set the time interval.
-            time.Interval = 125;
+            time.Interval = 140;
             time.Elapsed += OnTimeInterval;
             time.AutoReset = true;
             // Start the timer.
