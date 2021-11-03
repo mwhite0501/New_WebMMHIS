@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <StartupObject></StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +20,10 @@
 
   <ItemGroup>
     <None Include="wwwroot\script.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Componects.UI\Componects.UI.csproj" />
   </ItemGroup>
 
 </Project>

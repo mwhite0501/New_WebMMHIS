@@ -6,13 +6,37 @@
 @inject IJSRuntime JSRuntime
 @inject MmhisController controller
 @inject PageModel pageModel
+@*<RadzenSlider @bind-Value=@value TValue="int" Min="0" Max="100" Change=@(args => OnChange(args, "Slider from 0 to 100")) />*@
 
-<RadzenSlider @bind-Value=@value TValue="int" Min="0" Max="100" Change=@(args => OnChange(args, "Slider from 0 to 100")) />
-<button @onclick=@OnSubmitPlay>Play</button>
-<button @onclick=@OnSubmitStop>Stop</button>
-<button @onclick=@OnSubmitReverse>Reverse</button>  
+@*<button @onclick="() => MyCollapse = GetState(MyCollapse)" class="btn btn-success" style="padding-left:250px">
+    Toggle Search
+</button>*@
+
+@*@code{
+    Componects.UI.Collapse.CollapseState MyCollapse = Componects.UI.Collapse.CollapseState.Show; //for hiding various elements 
+
+    Collapse.CollapseState GetState(Collapse.CollapseState state)
+    {
+        return state switch
+        {
+            Collapse.CollapseState.Show => Collapse.CollapseState.Hiddden,
+            _ => Collapse.CollapseState.Show
+        };
+    }
+}*@
+
+@if (Images.Any())
+{
+<div>
+    @*<RadzenButton Click=@OnSubmitPlay Text="Button" Icon="account_circle" Style="margin-left: 50%; width: 150px" />*@
+    <button @onclick=@OnSubmitPlay style="position: relative; margin-left:50%">Play</button>
+    <button @onclick=@OnSubmitStop style="position: relative;">Stop</button>
+    <button @onclick=@OnSubmitReverse style="position: relative; ">Reverse</button>
+</div>
+}
 
 <div>
+
     @if (spinning == true)
     {
         <div class="spinner"></div>
@@ -20,303 +44,400 @@
     @if (Images.Any())
     {
 
-        <img src="@Images[idx]" class="image" />
+        <img src="@Images[idx]" style="width: 100%; height: auto; position: relative; padding-left: 250px;" />
+        @*<div class="DivOverlay"><img src="@Images[idx]" class="image" style="z-index: 901;" /></div>
+            OnSubmitPlay();*@
+
+
+
     }
 
 </div>
-<button @onclick="() => idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1">Backwards</button>
-<button @onclick="() => idx = idx + 1 >= Images.Count() ? 0 : idx + 1">Forwards</button>
+@if (Images.Any())
+{
+    <button @onclick="() => idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1" style="margin-left:50%">Backwards</button>
+    <button @onclick="() => idx = idx + 1 >= Images.Count() ? 0 : idx + 1">Forwards</button>
+}
+
 <br>
 @*<div id="map" style="width: 1080px; height: 540px" ></div>*@
 
-<div class="sidebar">
-    <ul class="nav flex-column">
-        @*<li class="nav-item px-3">*@
-        <EditForm Model="@controller" OnValidSubmit="AsyncLongOperation">
-            <li class="nav-item px-2">
-                <InputSelect Value="routeId" ValueChanged="@( (string s) => routeChanged(s))" ValueExpression="@( () => routeId)" class="form-control">
-                    <option value="none">Route</option>
-                    @foreach (var item in routes)
+@*<Componects.UI.Collapse Collapsed="@MyCollapse">*@
+    <div class="sidebar">
+        <ul class="nav flex-column">
+            @*<li class="nav-item px-3">*@
+            <EditForm Model="@controller" OnValidSubmit="AsyncLongOperation">
+                <li class="nav-item px-2">
+                    <InputSelect Value="routeId" ValueChanged="@( (string s) => routeChanged(s))" ValueExpression="@( () => routeId)" class="form-control">
+                        <option value="none">Route</option>
+                        @foreach (var item in routes)
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    </InputSelect>
+                </li>
+                <li class="nav-item px-2">
+                    <InputSelect Disabled="@IsDisabledDirection" Value="directionId" ValueChanged="@( (string s) => directionChanged(s))" ValueExpression="@( () => directionId)" class="form-control">
+                        <option value="none">Direction</option>
+                        @*<option value="">N/A</option>*@
+                        @foreach (var item in directions)
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    </InputSelect>
+                </li>
+                <li class="nav-item px-2">
+                    <InputSelect Disabled="@IsDisabledSection" Value="sectionId" ValueChanged="@( (string s) => sectionChanged(s))" ValueExpression="@( () => sectionId)" class="form-control">
+                        <option value="none">Section</option>
+                        @foreach (var item in sections)
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    </InputSelect>
+                </li>
+                <li class="nav-item px-2">
+                    <InputSelect Disabled="@IsDisabledYear" Value="yearId" ValueChanged="@( (string s) => yearChanged(s))" ValueExpression="@( () => yearId)" class="form-control">
+                        <option value="none">Year</option>
+                        @foreach (var item in years)
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    </InputSelect>
+                </li>
+                @*<li class="nav-item px-2">
+                <InputSelect Value="cameraSelection" ValueExpression="@( () => cameraSelection)" class="form-control">
+                    <option value="none">Camera Selection (Default Front)</option>
+                    @foreach(var item in cameraSelections)
                     {
                         <option value="@item">@item</option>
                     }
-                </InputSelect>
-            </li>
-            <li class="nav-item px-2">
-                <InputSelect Disabled="@IsDisabledDirection" Value="directionId" ValueChanged="@( (string s) => directionChanged(s))" ValueExpression="@( () => directionId)" class="form-control">
-                    <option value="none">Direction</option>
-                    <option value="">N/A</option>
-                    @foreach (var item in directions)
-                    {
-                        <option value="@item">@item</option>
-                    }
-                </InputSelect>
-            </li>
-            <li class="nav-item px-2">
-                <InputSelect Disabled="@IsDisabledSection" Value="sectionId" ValueChanged="@( (string s) => sectionChanged(s))" ValueExpression="@( () => sectionId)" class="form-control">
-                    <option value="none">Section</option>
-                    @foreach (var item in sections)
-                    {
-                        <option value="@item">@item</option>
-                    }
-                </InputSelect>
-            </li>
-            <li class="nav-item px-2">
-                <InputSelect Disabled="@IsDisabledYear" Value="yearId" ValueChanged="@( (string s) => yearChanged(s))" ValueExpression="@( () => yearId)" class="form-control">
-                    <option value="none">Year</option>
-                    @foreach (var item in years)
-                    {
-                        <option value="@item">@item</option>
-                    }
-                </InputSelect>
-            </li>
-            <li class="nav-item px-2">
-                <RadzenTextBox Placeholder="Search Logmile..." Change=@(args => OnChangeLogmeter(args, "TextBox with placeholder")) />
-            </li>
-            <li class="nav-item px-2">
-                <input type="submit" class="btn btn-primary" value="Submit" />
-            </li>
 
-        </EditForm>
+                </InputSelect>
+            </li>*@
+                <li class="nav-item px-2">
+                    <RadzenTextBox Placeholder="Search Logmile..." Change=@(args => OnChangeLogmeter(args, "TextBox with placeholder")) />
+                </li>
+                <li class="nav-item px-2">
+                    <input type="submit" class="btn btn-primary" value="Submit" />
+                    <input type="reset" @onclick="@AsyncClearAll" class="btn btn-primary" style="position: relative; " value="Clear"/>
+                </li>
 
-    </ul>
-</div>
-<div class ="row">
-    <div class ="col-xl-6">
-        <RadzenGoogleMap Style="width:1920px;height:540px;" Zoom="@zoom" Center="@(new GoogleMapPosition() { Lat = 34.799999, Lng = -92.199997 })" MapClick="@AsyncMapOperation">
-            <Markers>
-                @if (showArkansasMarker)
-                {
-                    <RadzenGoogleMapMarker Title="Arkansas" Position="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId })" />
-                }
-            </Markers>
-        </RadzenGoogleMap>
+            </EditForm>
+
+        </ul>
     </div>
-</div>
-<div class="col-xl-6">
-    <label>Position: </label> @clickedPosition
+@*</Componects.UI.Collapse>*@
+    <div class="row">
+        <div class="col-xl-6">
+            <RadzenGoogleMap Style="width: 1500px; height: 740px; z-index: 1; margin-left: 250px;" id="Map" Zoom="@zoom" Center="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId })" MapClick="@AsyncMapOperation">
+                <Markers>
+                    @if (showArkansasMarker)
+                    {
+                        <RadzenGoogleMapMarker Title="Arkansas" Position="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId })" />
+                    }
+                </Markers>
+            </RadzenGoogleMap>
+        </div>
     </div>
 
-
-
-
-@code{
-    //map settings ==========================================================================
-    int zoom = 7;
-    bool showArkansasMarker;
-    string clickedPosition = "";
-
-    void OnMapClick(GoogleMapClickEventArgs args)
+    @if (Images.Any())
     {
-        spinning = true;
-        clickedPosition = $"Map clicked LAT : {args.Position.Lat}, LNG: {args.Position.Lng}";
-        latitudeId = args.Position.Lat;
-        longitudeId = args.Position.Lng;
-        showArkansasMarker = true;
-        Images = controller.MapImageLoader(latitudeId, longitudeId);
-        spinning = false;
-    }
-    async Task AsyncMapOperation(GoogleMapClickEventArgs args)    // this is an async task
-    {
-        spinning = true;
-        await Task.Run(() => OnMapClick(args));  //<--here!
-        currentCount++;
-        spinning = false;
+        <div>
+            <div class="col-xl-6" style="padding-left: 250px">
+                <label>Logmile: </label> @logmile
+            </div>
+            <div class="col-xl-6" style="padding-left:250px">
+                <label>Position: </label> @clickedPosition
+            </div>
+        </div>
     }
 
-    void OnMarkerClick(GoogleMapClickEventArgs args)
-    {
-        clickedPosition = $"Map clicked LAT : {args.Position.Lat}, LNG: {args.Position.Lng}";
-    }
-    async Task AsyncMarkerOperation(GoogleMapClickEventArgs args)    // this is an async task
-    {
-        spinning = true;
-        await Task.Run(() => OnMarkerClick(args));  //<--here!
-        currentCount++;
-        spinning = false;
-    }
-    //=======================================================================================
-
-    public int idx;
-    IEnumerable<int> negativeValues = new int[] { -100, 100 };
-    int value = 0;
-    int negativeValue = 0;
-    int valueWithStep = 30;
-    double logmile { get; set; }
-    private List<string> counties;
-    private List<string> routes;
-    private List<string> sections;
-    private List<string> directions;
-    private List<string> years;
-    private int currentCount = 0;
-    private Timer time;
-    public bool loaded = false;
-    public bool isPlay = false;
-    public bool isReverse = false;
-    public bool spinning;
-
-    mmhisContext db = new mmhisContext();
-
-    public string routeId;
-    public string directionId;
-    public string sectionId;
-    public string yearId;
-    public string imgId;
-    public double longitudeId;
-    public double latitudeId;
-    protected bool IsDisabledDirection = true;
-    protected bool IsDisabledSection = true;
-    protected bool IsDisabledYear = true;
-    public List<string> Images = new List<string>();
-
-    protected override void OnInitialized()
-    {
-        routes = controller.GetUniqueRoutes();
-        sections = controller.GetUniqueSections();
-        years = controller.GetUniqueYears();
-        directions = controller.GetUniqueDirections();
-        IsDisabledSection = true;
-        IsDisabledYear = true;
-        IsDisabledDirection = true;
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        //if (firstRender)
-        //{
-        //    await JSRuntime.InvokeVoidAsync("initMap", null);   //using javascript
-        //}
-    }
-
-    public void routeChanged(string routeEvent)
-    {
-        //need to check values of all fields for valid combinations
-        IsDisabledDirection = false;
-        routeId = routeEvent;
-        directions.Clear();
-        var direct = db.MmhisDamus.Select(r => r).Where(r => r.Route == routeEvent);
-        directions = direct.Select(r => r.MmhisDirection).Distinct().ToList();
-    }
-
-    public void directionChanged(string directionEvent)
-    {
-        IsDisabledSection = false;
-        directionId = directionEvent;
-        sections.Clear();
-        var sect = db.MmhisDamus.Select(r => r).Where(r => r.Route == routeId);
-        sect = sect.Where(r => r.MmhisDirection == directionId);
-        sections = sect.Select(r => r.Section).Distinct().ToList();
-    }
-
-    public void sectionChanged(string sectionEvent)
-    {
-        IsDisabledYear = false;
-        sectionId = sectionEvent;
-        years.Clear();
-        var year = db.MmhisDamus.Select(r => r).Where(r => r.Section == sectionEvent);
-        year = year.Where(r => r.Route == routeId);
-        year = year.Where(r => r.MmhisDirection == directionId);
-        year = year.Where(r => r.Section == sectionId);
-        years = year.Select(r => r.TheYear).Distinct().OrderByDescending(x => x).ToList();
-
-    }
-
-    public void yearChanged(string yearEvent)
-    {
-        yearId = yearEvent;
-    }
-
-    public void findInitialPoint()
-    {
-
-        Images = controller.ImageListLoader(routeId, directionId, sectionId, yearId, logmile, latitudeId, longitudeId);
-
-    }
-
-    async Task AsyncLongOperation()    // this is an async task
-    {
-        spinning = true;
-        await Task.Run(() => findInitialPoint());  //<--here!
-        currentCount++;
-        spinning = false;
-    }
+    <p>Window Height: @Height</p>
+    <p>Window Width: @Width</p>
 
 
 
-    void OnChange(dynamic value, string name)
-    {
-        var str = value is IEnumerable ? string.Join(", ", value) : value;
-        str = Convert.ToString(str);
 
-    }
+    @code{
+        //map settings ==========================================================================
+        int zoom = 8;
+        bool showArkansasMarker;
+        string clickedPosition = "";
+        List<string> RouteInfo = new List<string>();
 
-    void OnChangeLogmeter(dynamic value, string name)
-    {
-        var str = value is IEnumerable ? string.Join(", ", value) : value;
-        str = Convert.ToString(str);
-        logmile = Convert.ToDouble(str) * 1609.34;
-
-    }
-
-    void OnSubmitPlay()
-    {
-        if (Images.Any())
+        void OnMapClick(GoogleMapClickEventArgs args)
         {
-            isReverse = false;
-            isPlay = true;
-            time.Enabled = true;
-            idx = idx + 1 >= Images.Count() ? 0 : idx + 1;
-        }
-    }
+            spinning = true;
 
-    void OnSubmitReverse()
-    {
-        if (Images.Any())
+            RouteInfo = controller.GetRouteInformation(latitudeId, longitudeId);
+            routeId = RouteInfo[0];
+            sectionId = RouteInfo[1];
+            directionId = RouteInfo[2];
+            yearId = RouteInfo[3];
+            logmile = Convert.ToDouble(RouteInfo[4]);
+            Images = controller.MapImageLoader(latitudeId, longitudeId);
+
+            spinning = false;
+        }
+        async Task AsyncMapOperation(GoogleMapClickEventArgs args)    // this is an async task
+        {
+            spinning = true;
+            Images.Clear();
+
+            clickedPosition = $"Map clicked LAT : {args.Position.Lat}, LNG: {args.Position.Lng}";
+            latitudeId = args.Position.Lat;
+            longitudeId = args.Position.Lng;
+            showArkansasMarker = true;
+            IsDisabledDirection = false;
+            IsDisabledSection = false;
+            IsDisabledYear = false;
+            zoom = 15;
+            await Task.Run(() => OnMapClick(args));  //<--here!
+            currentCount++;
+            spinning = false;
+        }
+
+        void OnMarkerClick(GoogleMapClickEventArgs args)
+        {
+            clickedPosition = $"Map clicked LAT : {args.Position.Lat}, LNG: {args.Position.Lng}";
+        }
+        async Task AsyncMarkerOperation(GoogleMapClickEventArgs args)    // this is an async task
+        {
+            spinning = true;
+            await Task.Run(() => OnMarkerClick(args));  //<--here!
+            currentCount++;
+            spinning = false;
+        }
+        //=======================================================================================
+
+        public int idx;
+        IEnumerable<int> negativeValues = new int[] { -100, 100 };
+        int value = 0;
+        int negativeValue = 0;
+        int valueWithStep = 30;
+        double logmile { get; set; }
+        private List<string> counties;
+        private List<string> routes;
+        private List<string> sections;
+        private List<string> directions;
+        private List<string> years;
+        //private List<string> cameraSelections = new List<string>() { "f", "fl", "fr", "p" };
+        private int currentCount = 0;
+        private Timer time;
+        public bool loaded = false;
+        public bool isPlay = false;
+        public bool isReverse = false;
+        public bool spinning;
+
+        mmhisContext db = new mmhisContext();
+
+        public string routeId;
+        public string directionId;
+        public string sectionId;
+        public string yearId;
+        public string imgId;
+        public double longitudeId = -92.199997;
+        public double latitudeId = 34.799999;
+        //public string cameraSelection;
+        protected bool IsDisabledDirection = true;
+        protected bool IsDisabledSection = true;
+        protected bool IsDisabledYear = true;
+        public List<string> Images = new List<string>();
+
+        protected override void OnInitialized()
+        {
+            routes = controller.GetUniqueRoutes();
+            sections = controller.GetUniqueSections();
+            years = controller.GetUniqueYears();
+            directions = controller.GetUniqueDirections();
+            IsDisabledSection = true;
+            IsDisabledYear = true;
+            IsDisabledDirection = true;
+        }
+        void ClearSelection()
+        {
+            routeId = null; //could try null
+            sectionId = null;
+            directionId = null;
+            yearId = null;
+            IsDisabledDirection = true;
+            IsDisabledSection = true;
+            IsDisabledYear = true;
+            isPlay = false;
+            isReverse = false;
+            time.Enabled = false;
+            Images.Clear();
+        }
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                //await JSRuntime.InvokeVoidAsync("initMap", null);   //using javascript
+                await GetWindowSize();
+            }
+        }
+
+        public void routeChanged(string routeEvent)
+        {
+            //need to check values of all fields for valid combinations
+            IsDisabledDirection = false;
+            routeId = routeEvent;
+            sections.Clear();
+
+            var direct = db.MmhisDamus.Select(r => r).Where(r => r.Route == routeEvent);
+            directions = direct.Select(r => r.MmhisDirection).Distinct().ToList();
+        }
+
+        public void directionChanged(string directionEvent)
+        {
+            IsDisabledSection = false;
+            directionId = directionEvent;
+            sections.Clear();
+            var sect = db.MmhisDamus.Select(r => r).Where(r => r.Route == routeId);
+            sect = sect.Where(r => r.MmhisDirection == directionId);
+            sections = sect.Select(r => r.Section).Distinct().ToList();
+        }
+
+        public void sectionChanged(string sectionEvent)
+        {
+            IsDisabledYear = false;
+            sectionId = sectionEvent;
+            years.Clear();
+            var year = db.MmhisDamus.Select(r => r).Where(r => r.Section == sectionEvent);
+            year = year.Where(r => r.Route == routeId);
+            year = year.Where(r => r.MmhisDirection == directionId);
+            year = year.Where(r => r.Section == sectionId);
+            years = year.Select(r => r.TheYear).Distinct().OrderByDescending(x => x).ToList();
+
+        }
+
+        public void yearChanged(string yearEvent)
+        {
+            yearId = yearEvent;
+        }
+
+        public void findInitialPoint()
+        {
+            //cameraSelection = "p";
+            Images = controller.ImageListLoader(routeId, directionId, sectionId, yearId, logmile, latitudeId, longitudeId);
+
+        }
+
+        async Task AsyncLongOperation()    // this is an async task
+        {
+            spinning = true;
+            Images.Clear();
+            await Task.Run(() => findInitialPoint());  //<--here!
+            currentCount++;
+            spinning = false;
+        }
+
+        async Task AsyncClearAll()    // this is an async task
+        {
+            spinning = true;
+            await Task.Run(() => ClearSelection());  //<--here!
+            currentCount++;
+            spinning = false;
+        }
+
+
+
+        void OnChange(dynamic value, string name)
+        {
+            var str = value is IEnumerable ? string.Join(", ", value) : value;
+            str = Convert.ToString(str);
+
+        }
+
+        void OnChangeLogmeter(dynamic value, string name)
+        {
+            var str = value is IEnumerable ? string.Join(", ", value) : value;
+            str = Convert.ToString(str);
+            logmile = Convert.ToDouble(str) * 1609.34;
+
+        }
+
+        bool isPause;
+        void OnSubmitPlay()
+        {
+            //isPause = !isPause;
+            if (Images.Any())
+            {
+                isReverse = false;
+                isPlay = true;
+                time.Enabled = true;
+                idx = idx + 1 >= Images.Count() ? 0 : idx + 1;
+            }
+        }
+
+        void OnSubmitReverse()
+        {
+            if (Images.Any())
+            {
+                isPlay = false;
+                isReverse = true;
+                isPause = !isPause;
+                time.Enabled = true;
+                idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1;
+            }
+        }
+
+        void OnSubmitStop()
         {
             isPlay = false;
-            isReverse = true;
-            time.Enabled = true;
-            idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1;
+            isReverse = false;
+            time.Enabled = false;
         }
-    }
 
-    void OnSubmitStop()
-    {
-        time.Enabled = false;
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
+        protected override void OnAfterRender(bool firstRender)
         {
-            time = new Timer();
-            //Set the time interval.
-            time.Interval = 140;
-            time.Elapsed += OnTimeInterval;
-            time.AutoReset = true;
-            // Start the timer.
-            //time.Enabled = false;
+            if (firstRender)
+            {
+                time = new Timer();
+                //Set the time interval.
+                time.Interval = 180;
+                time.Elapsed += OnTimeInterval;
+                time.AutoReset = true;
+                // Start the timer.
+                //time.Enabled = false;
+            }
+            base.OnAfterRender(firstRender);
         }
-        base.OnAfterRender(firstRender);
-    }
 
-    private async void OnTimeInterval(object sender, ElapsedEventArgs e)
-    {
-        if(isPlay == true)
+        private async void OnTimeInterval(object sender, ElapsedEventArgs e)
         {
-            OnSubmitPlay();
+            if (isPlay == true)
+            {
+                OnSubmitPlay();
+            }
+            if (isReverse == true)
+            {
+                OnSubmitReverse();
+            }
+
+            await InvokeAsync(() => StateHasChanged());
         }
-        if(isReverse == true)
+
+        public void Dispose()
         {
-            OnSubmitReverse();
+            // While navigating to other components, Dispose method will be called and clean up the Timer function.
+            time?.Dispose();
+        }
+        //=============================Windows Resizing============================================================
+        public int Height { get; set; }
+        public int Width { get; set; }
+
+        private async Task GetWindowSize()
+        {
+            var dimension = await JSRuntime.InvokeAsync<WindowDimension>("getWindowDimensions");
+            Height = dimension.Height;
+            Width = dimension.Width;
         }
 
-        await InvokeAsync(() => StateHasChanged());
-    }
+        public class WindowDimension
+        {
+            public int Width { get; set; }
+            public int Height { get; set; }
+        }
 
-    public void Dispose()
-    {
-        // While navigating to other components, Dispose method will be called and clean up the Timer function.
-        time?.Dispose();
     }
-}

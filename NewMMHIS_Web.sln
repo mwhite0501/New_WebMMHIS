@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31424.327
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewMMHIS_Web", "NewMMHIS_Web\NewMMHIS_Web.csproj", "{726CDDAC-8B1C-4A21-9C8D-529541698A2D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewMMHIS_Web", "NewMMHIS_Web\NewMMHIS_Web.csproj", "{726CDDAC-8B1C-4A21-9C8D-529541698A2D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Componects.UI", "Componects.UI\Componects.UI.csproj", "{9AFDBFEB-B516-4D2D-AA66-6A9FA3BAD590}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{726CDDAC-8B1C-4A21-9C8D-529541698A2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{726CDDAC-8B1C-4A21-9C8D-529541698A2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{726CDDAC-8B1C-4A21-9C8D-529541698A2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AFDBFEB-B516-4D2D-AA66-6A9FA3BAD590}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AFDBFEB-B516-4D2D-AA66-6A9FA3BAD590}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AFDBFEB-B516-4D2D-AA66-6A9FA3BAD590}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AFDBFEB-B516-4D2D-AA66-6A9FA3BAD590}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

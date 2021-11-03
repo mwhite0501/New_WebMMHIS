@@ -1,5 +1,12 @@
 ﻿
+window.getWindowDimensions = function () {
+    return {
+        width: window.innerWidth,
+        height: window.innerHeight
+    };
+};
 
+var imgInput = document.getElementById("Image")
         //var map;
 
         //    function initMap() {

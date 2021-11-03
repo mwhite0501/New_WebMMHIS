@@ -76,6 +76,57 @@ namespace NewMMHIS_Web.Controllers
         {
             return deg * (Math.PI / 180);
         }
+        public List<string> GetRouteInformation(double latitude, double longitude)
+        {
+            List<string> RouteInformation = new List<string>();
+            double variance = 0.001;
+            var Lda = (from t in _context.MmhisDians
+                       where t.Latitude >= (double)latitude - variance && t.Latitude <= (double)latitude + variance
+                       && t.Longitude >= (double)longitude - variance && t.Longitude <= (double)longitude + variance
+                       select t).FirstOrDefault();
+            
+            var Ld = Lda.Lu;
+
+            var getInfo = from i in _context.MmhisDamus
+                          where i.Ld == Ld
+                          select i;
+            var routeInfo = from i in getInfo
+                            select i.Route;
+            var sectInfo = from i in getInfo
+                           select i.Section;
+            var dirInfo = from i in getInfo
+                          select i.ArnoldDirection;
+
+            var getLatest = from i in _context.MmhisDamus
+                            where i.Route == routeInfo.FirstOrDefault()
+                            && i.Section == sectInfo.FirstOrDefault()
+                            && i.ArnoldDirection == dirInfo.FirstOrDefault()
+                            orderby i.TheYear descending
+                            select i;
+            var latest = getLatest.FirstOrDefault();
+            var year = from y in getLatest
+                       select y.TheYear;
+            Ld = latest.Ld;
+            long LD = Ld;
+
+            Lda = (from t in _context.MmhisDians
+                   where t.Latitude >= (double)latitude - variance
+                   && t.Latitude <= (double)latitude + variance
+                   && t.Longitude >= (double)longitude - variance
+                   && t.Longitude <= (double)longitude + variance
+                   && t.Lu == Ld
+                   select t).FirstOrDefault();
+
+            var strLat = Lda.Latitude;
+            var strLong = Lda.Longitude;
+            var logmile = Lda.Logmeter0 * 0.000621371;
+            RouteInformation.Add(routeInfo.FirstOrDefault());
+            RouteInformation.Add(sectInfo.FirstOrDefault());
+            RouteInformation.Add(dirInfo.FirstOrDefault());
+            RouteInformation.Add(year.FirstOrDefault());
+            RouteInformation.Add(logmile.ToString());
+            return RouteInformation;
+        }
         public List<string>MapImageLoader(double latitude, double longitude)
         {
             string imgPath = "";
@@ -124,8 +175,7 @@ namespace NewMMHIS_Web.Controllers
                             select i.Section;
             var dirInfo = from i in getInfo
                             select i.ArnoldDirection;
-            var yearInfo = from i in getInfo
-                           select i.TheYear;
+
             var getLatest = from i in _context.MmhisDamus
                             where i.Route == routeInfo.FirstOrDefault()
                             && i.Section == sectInfo.FirstOrDefault()
@@ -135,6 +185,7 @@ namespace NewMMHIS_Web.Controllers
             var latest = getLatest.FirstOrDefault(); 
 
             Ld = latest.Ld;
+            long LD = Ld;
 
             Lda = (from t in _context.MmhisDians
              where t.Latitude >= (double)latitude - variance 
@@ -147,41 +198,37 @@ namespace NewMMHIS_Web.Controllers
             var strLat = Lda.Latitude;
             var strLong = Lda.Longitude;
             
-            var closestPointLu = from r in _context.MmhisDians //only 1 number
-                             where r.Lu == Ld
+            var closestPoint = from r in _context.MmhisDians //only 1 number
+                             where r.Lu == LD //lastest route
                              && r.Latitude == strLat
                              && r.Longitude == strLong
-                             select r.Lu;
+                             select r;
+            var drillDownLd = closestPoint.FirstOrDefault();
+            long ld = drillDownLd.Ld;
+            
 
-            var closestPointLd = from r in _context.MmhisDians //only 1 number
-                                 where r.Lu == Ld
-                                 && r.Latitude == strLat
-                                 && r.Longitude == strLong
-                                 select r.Ld;
-
-            var allPointsLd = from r in _context.MmhisDians
-                             where r.Lu == closestPointLu.FirstOrDefault()
-                             select r.Ld;
-
-            var allPoints = from r in _context.MmhisDians
-                               where r.Lu == closestPointLu.FirstOrDefault()
-                               select r.Ld;
+            var allPoints = from r in _context.MmhisDians  //something going wrong with one of these. TheYear is changing
+                               where r.Lu == LD
+                               select r;
 
             var allPointsAfter = from r in allPoints
-                                   where r >= closestPointLd.FirstOrDefault()
-                                   select r;
+                                 where r.Lu == LD
+                                 && r.Ld >= ld                                   
+                                   select r.Ld;
 
             var allPointsBefore = from r in allPoints
-                                 where r < closestPointLd.FirstOrDefault()
-                                 select r;
+                                  where r.Lu == LD
+                                  && r.Ld < ld
+                                  select r.Ld;
 
             Lus = allPointsAfter.ToList();
             Lus.AddRange(allPointsBefore.ToList());
-
+            //Lus = allPoints.Select(p => p.Ld).ToList();
             foreach(var l in Lus)
             {
                 var p = from r in _context.MmhisFens                                //query fens data for specific point
                         where r.Lu == l && r.FieldName == "f"                       //find the URL for the forward facing camera('f)
+                        && r.Lt == LD
                         select r;
                 if (Lus.Any())                                                      //if there is any data
                 {
@@ -329,6 +376,7 @@ namespace NewMMHIS_Web.Controllers
             var pointData = from r in _context.MmhisFens                                //store all points for a given section
                             where r.Lt == pageModel.Ld                                  
                             select r;
+            
             foreach(var l in Lus)                                                       //for each point in all the points
             {               
                var p = from r in pointData                                              //query fens data for specific point
