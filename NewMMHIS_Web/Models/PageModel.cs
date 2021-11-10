@@ -14,7 +14,6 @@ namespace NewMMHIS_Web.Models
         public IEnumerable<SelectListItem> Sections { get; set; }
         public IEnumerable<SelectListItem> Districts { get; set; }
         public IEnumerable<SelectListItem> Directions { get; set; }
-        public List<string> RouteImgPaths { get; set; }
         public string Year { get; set; }
         public string County { get; set; }
         public string Route { get; set; }
@@ -23,9 +22,11 @@ namespace NewMMHIS_Web.Models
         public long Lu { get; set; }
         public long Ld { get; set; }
         public string ImgURL { get; set; }
-        public decimal Latitude { get; set; }
-        public decimal Longitude { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
         public double Logmeter { get; set; }
         public int NumRows { get; set; }
+        public List<string> Images { get; set; }
+
     }
 }
