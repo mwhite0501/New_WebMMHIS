@@ -6,35 +6,22 @@
 @inject IJSRuntime JSRuntime
 @inject MmhisController controller
 @inject PageModel pageModel
-@*<RadzenSlider @bind-Value=@value TValue="int" Min="0" Max="100" Change=@(args => OnChange(args, "Slider from 0 to 100")) />*@
 
-@*<button @onclick="() => MyCollapse = GetState(MyCollapse)" class="btn btn-success" style="padding-left:250px">
-    Toggle Search
-</button>*@
-
-@*@code{
-    Componects.UI.Collapse.CollapseState MyCollapse = Componects.UI.Collapse.CollapseState.Show; //for hiding various elements 
-
-    Collapse.CollapseState GetState(Collapse.CollapseState state)
-    {
-        return state switch
-        {
-            Collapse.CollapseState.Show => Collapse.CollapseState.Hiddden,
-            _ => Collapse.CollapseState.Show
-        };
-    }
-}*@
-
+<button class="openbtn" onclick="openNav()">&#9776; Search</button>
+<div id="main" style="margin-left: 250px">
 @if (Images.Any())
 {
-<div>
-    @*<RadzenButton Click=@OnSubmitPlay Text="Button" Icon="account_circle" Style="margin-left: 50%; width: 150px" />*@
-    <button @onclick=@OnSubmitPlay style="position: relative; margin-left:50%">Play</button>
-    <button @onclick=@OnSubmitStop style="position: relative;">Stop</button>
-    <button @onclick=@OnSubmitReverse style="position: relative; ">Reverse</button>
-</div>
+    <div>
+        @*<div class="playpause">
+            <input type="checkbox" value="None" id="playpause" name="check" />
+            <label for="playpause" tabindex=1></label>
+        </div>*@
+        <button @ontouchstart="() => { idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1; isPause = true; isTouchScreen = true; }" @onclick="() => { idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1; isPause = true; }" style="position: relative; margin-left: 35%;">Step Backwards</button>
+        <button @ontouchstart="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }" @onclick="() => { isPause = !isPause; OnSubmitPlay(); }" style="position: relative;">Play/Pause</button>
+        <button @ontouchstart="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }" @onclick="() => { isPause = !isPause; OnSubmitReverse(); }" style="position: relative; ">Reverse</button>
+        <button @ontouchstart="() => { idx = idx + 1 >= Images.Count() ? 0 : idx + 1; isPause = true; isTouchScreen = true; }" @onclick="() => { idx = idx + 1 >= Images.Count() ? 0 : idx + 1; isPause = true; }" style="position: relative">Step Forwards</button>
+    </div>
 }
-
 <div>
 
     @if (spinning == true)
@@ -43,135 +30,132 @@
     }
     @if (Images.Any())
     {
-
-        <img src="@Images[idx]" style="width: 100%; height: auto; position: relative; padding-left: 250px;" />
-        @*<div class="DivOverlay"><img src="@Images[idx]" class="image" style="z-index: 901;" /></div>
-            OnSubmitPlay();*@
-
-
-
+        @*<img src="@ImagesRight[idx]" style="width: 33%; height: auto; position: relative;" />*@
+        <img src="@Images[idx]" style="width: 100%; height: auto; position: relative;" />
+        @*<img src="@ImagesLeft[idx]" style="width: 33%; height: auto; position: relative;" />*@
+        log = double.Parse(Logmeters[idx]) * 0.000621371192;
+        latitudeId = double.Parse(Latitudes[idx]);
+        longitudeId = double.Parse(Longitudes[idx]);
     }
 
 </div>
-@if (Images.Any())
-{
-    <button @onclick="() => idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1" style="margin-left:50%">Backwards</button>
-    <button @onclick="() => idx = idx + 1 >= Images.Count() ? 0 : idx + 1">Forwards</button>
-}
 
 <br>
-@*<div id="map" style="width: 1080px; height: 540px" ></div>*@
-
-@*<Componects.UI.Collapse Collapsed="@MyCollapse">*@
-    <div class="sidebar">
-        <img src="/Images/ArDOT_Logo_1.png" style="width: 200px; padding-left: 50px; padding-bottom: 25px; "/>
-        <ul class="nav flex-column">
-            @*<li class="nav-item px-3">*@
-            <EditForm Model="@controller" OnValidSubmit="AsyncLongOperation">
-                <li class="nav-item px-2">
-                    <InputSelect Disabled="@IsDisabledRoute" Value="routeId" ValueChanged="@( (string s) => routeChanged(s))" ValueExpression="@( () => routeId)" class="form-control">
-                        <option value="none">Route</option>
-                        @foreach (var item in routes)
-                        {
-                            <option value="@item">@item</option>
-                        }
-                    </InputSelect>
-                </li>
-                <li class="nav-item px-2">
-                    <InputSelect Disabled="@IsDisabledDirection" Value="directionId" ValueChanged="@( (string s) => directionChanged(s))" ValueExpression="@( () => directionId)" class="form-control">
-                        <option value="none">Direction</option>
-                        @*<option value="">N/A</option>*@
-                        @foreach (var item in directions)
-                        {
-                            <option value="@item">@item</option>
-                        }
-                    </InputSelect>
-                </li>
-                <li class="nav-item px-2">
-                    <InputSelect Disabled="@IsDisabledSection" Value="sectionId" ValueChanged="@( (string s) => sectionChanged(s))" ValueExpression="@( () => sectionId)" class="form-control">
-                        <option value="none">Section</option>
-                        @foreach (var item in sections)
-                        {
-                            <option value="@item">@item</option>
-                        }
-                    </InputSelect>
-                </li>
-                <li class="nav-item px-2">
-                    <InputSelect Disabled="@IsDisabledYear" Value="yearId" ValueChanged="@( (string s) => yearChanged(s))" ValueExpression="@( () => yearId)" class="form-control">
-                        <option value="none">Year</option>
-                        @foreach (var item in years)
-                        {
-                            <option value="@item">@item</option>
-                        }
-                    </InputSelect>
-                </li>
-                @*<li class="nav-item px-2">
-                <InputSelect Value="cameraSelection" ValueExpression="@( () => cameraSelection)" class="form-control">
-                    <option value="none">Camera Selection (Default Front)</option>
-                    @foreach(var item in cameraSelections)
+<div id="mySidebar" class="sidebar">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <img src="/Images/ArDOT_Logo_1.png" style="width: 200px; padding-left: 50px; padding-bottom: 25px; " />
+    <ul class="nav flex-column">
+        <EditForm Model="@controller" OnValidSubmit="AsyncLongOperation">
+            <li class="nav-item px-2">
+                <InputSelect id="routeControl" Disabled="@IsDisabledRoute" Value="routeId" ValueChanged="@( (string s) => routeChanged(s))" ValueExpression="@( () => routeId)" class="form-control">
+                    <option value="none">Route</option>
+                    @foreach (var item in routes)
                     {
                         <option value="@item">@item</option>
                     }
-
                 </InputSelect>
-            </li>*@
-                <li class="nav-item px-2">
-                    <RadzenTextBox Placeholder="Search Logmile..." Change=@(args => OnChangeLogmeter(args, "TextBox with placeholder")) />
-                </li>
-                <li class="nav-item px-2">
-                    <input type="submit" class="btn btn-primary" value="Submit" />
-                    <input type="reset" @onclick="@AsyncClearAll" class="btn btn-primary" style="position: relative; " value="Clear"/>
-                </li>
+            </li>
+            <li class="nav-item px-2">
+                <InputSelect Disabled="@IsDisabledDirection" Value="directionId" ValueChanged="@( (string s) => directionChanged(s))" ValueExpression="@( () => directionId)" class="form-control">
+                    <option value="none">Direction</option>
+                    @foreach (var item in directions)
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </InputSelect>
+            </li>
+            <li class="nav-item px-2">
+                <InputSelect Disabled="@IsDisabledSection" Value="sectionId" ValueChanged="@( (string s) => sectionChanged(s))" ValueExpression="@( () => sectionId)" class="form-control">
+                    <option value="none">Section</option>
+                    @foreach (var item in sections)
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </InputSelect>
+            </li>
+            <li class="nav-item px-2">
+                <InputSelect Disabled="@IsDisabledYear" Value="yearId" ValueChanged="@( (string s) => yearChanged(s))" ValueExpression="@( () => yearId)" class="form-control">
+                    <option value="none">Year</option>
+                    @foreach (var item in years)
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </InputSelect>
+            </li>
+        <li class="nav-item px-2">
+            <RadzenTextBox Placeholder="Search Logmile" Name="Logmile" Change=@(args => OnChangeLogmeter(args, "TextBox with placeholder")) />
+            @*<RadzenRequiredValidator Component="Logmile" Text="ZIP code is required" Popup=@popup Style="position: absolute" />
+            <RadzenRegexValidator Component="Logmile" Text="ZIP code must be 5 digits" Pattern="\d{5}" Popup=@popup Style="position: absolute" />*@
+        </li>
+            <li class="nav-item px-2">
+                <input type="submit" class="btn btn-primary" value="Submit" />
+                <input type="reset" onclick="window.location.reload()" class="btn btn-primary" style="position: relative; " value="Clear" />
+            </li>
+            <li class="nav-item px-2">
+                Logmile: @log
+            </li>
+            <li class="nav-item px-2">
+                Latitude: @latitudeId
+            </li>
+            <li class="nav-item px-2">
+                Longitudes: @longitudeId
+            </li>
+        </EditForm>
 
-            </EditForm>
-
-        </ul>
-    </div>
-@*</Componects.UI.Collapse>*@
+    </ul>
+</div>
     <div class="row">
         <div class="col-xl-6">
-            <RadzenGoogleMap ApiKey="" Style="width: 1500px; height: 740px; z-index: 1; margin-left: 250px;" id="Map" Zoom="@zoom" Center="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId })" MapClick="@AsyncMapOperation">
+            <RadzenGoogleMap ApiKey="" Style="width: 1500px; height: 740px; z-index: 1;" id="Map" Zoom="@zoom" Center="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId })" MapClick="@AsyncMapOperation">
                 <Markers>
-                    @if (showArkansasMarker)
+                    @if (showArkansasMarker && Images.Any())
                     {
-                        <RadzenGoogleMapMarker Title="Arkansas" Position="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId })" />
+                        <RadzenGoogleMapMarker Title="Arkansas" Position="@(new GoogleMapPosition() { Lat = Convert.ToDouble(Latitudes[idx]), Lng = Convert.ToDouble(Longitudes[idx]) })" />
                     }
                 </Markers>
             </RadzenGoogleMap>
         </div>
     </div>
-
-    @if (Images.Any())
-    {
-        <div>
-            <div class="col-xl-6" style="padding-left: 250px">
-                <label>Logmile: </label> @log
-            </div>
-            <div class="col-xl-6" style="padding-left:250px">
-                <label>Position: </label> @clickedPosition
-            </div>
-        </div>
-    }
-
-    <p>Window Height: @Height</p>
-    <p>Window Width: @Width</p>
-
+</div>
 
 
 
     @code{
         PageModel model;
+        bool popup;
         //map settings ==========================================================================
         int zoom = 8;
         bool showArkansasMarker;
+        bool playpause = false;
         string clickedPosition = "";
+        bool isTouchScreen;
         List<string> RouteInfo = new List<string>();
+        List<string> Logmeters = new List<string>();
+        List<string> Latitudes = new List<string>();
+        List<string> Longitudes = new List<string>();
 
+        //==========================================================================================================================
+        //==========================================================================================================================
+        //==========================================================================================================================
         void OnMapClick(GoogleMapClickEventArgs args)
         {
             spinning = true;
-            pageModel = new PageModel();
+            IsDisabledRoute = true;
+            IsDisabledSection = true;
+            IsDisabledDirection = true;
+            IsDisabledYear = true;
+            isPause = true;
+
             Images.Clear();
+            //ImagesRight.Clear();
+            //ImagesLeft.Clear();
+            pageModel.Clear();
+            //pageModel = new PageModel();
+            if (latitudeId > 36 || latitudeId < 33 || longitudeId < -94.66 || longitudeId > -89.629890)
+            {
+                latitudeId = 34.7465;
+                longitudeId = -92.2896;
+            }
             RouteInfo = controller.GetRouteInformation(latitudeId, longitudeId);
             routeId = RouteInfo[0];
             sectionId = RouteInfo[1];
@@ -226,19 +210,78 @@
                               orderby r.Lu ascending
                               select r.FieldValue;
 
+            //var leftImages = from r in dataModel.PointData //grabs all the front facing images for the route
+            //                 join p in dataModel.Points on r.Lu equals p.Ld
+            //                 where r.FieldName == "fr"
+            //                 orderby r.Lu ascending
+            //                 select r.FieldValue;
+
+            //var rightImages = from r in dataModel.PointData //grabs all the front facing images for the route
+            //                  join p in dataModel.Points on r.Lu equals p.Ld
+            //                  where r.FieldName == "fl"
+            //                  orderby r.Lu ascending
+            //                  select r.FieldValue;
+
+
+            var logmeters = from r in dataModel.PointData //grabs all the front facing images for the route
+                            join p in dataModel.Points on r.Lu equals p.Ld
+                            where r.FieldName == "f"
+                            orderby r.Lu ascending
+                            select p.Logmeter0;
+
+            var latitudes = from r in dataModel.PointData //grabs all the front facing images for the route
+                            join p in dataModel.Points on r.Lu equals p.Ld
+                            where r.FieldName == "f"
+                            orderby r.Lu ascending
+                            select p.Latitude;
+
+            var longitudes = from r in dataModel.PointData //grabs all the front facing images for the route
+                             join p in dataModel.Points on r.Lu equals p.Ld
+                             where r.FieldName == "f"
+                             orderby r.Lu ascending
+                             select p.Longitude;
+
+
             var frontImagesStr = frontImages.ToList();
+            //var rightImagesStr = rightImages.ToList();
+            //var leftImagesStr = leftImages.ToList();
+
+            var logmetersLst = logmeters.ToList();
+            var latitudesLst = latitudes.ToList();
+            var longitudesLst = longitudes.ToList();
+            var logmetersStr = logmetersLst.Select(x => x.ToString());
+            var latitudesStr = latitudesLst.Select(x => x.ToString());
+            var longitudesStr = longitudesLst.Select(x => x.ToString());
 
             for (var i = 0; i < frontImagesStr.Count(); i++)
             {
                 frontImagesStr[i] = controller.ModifyURLs(frontImagesStr[i]);
+                //rightImagesStr[i] = controller.ModifyURLs(rightImagesStr[i]);
+                //leftImagesStr[i] = controller.ModifyURLs(leftImagesStr[i]);
             }
 
             List<string> swappedPoints = controller.SplitReverse(frontImagesStr, IdxB);
 
+            //List<string> swappedPointsR = controller.SplitReverse(rightImagesStr, IdxB);
+
+            //List<string> swappedPointsL = controller.SplitReverse(leftImagesStr, IdxB);
+
+            List<string> swappedLogmeters = controller.SplitReverse(logmetersStr.ToList(), IdxB);
+            List<string> swappedLatitudes = controller.SplitReverse(latitudesStr.ToList(), IdxB);
+            List<string> swappedLongitudes = controller.SplitReverse(longitudesStr.ToList(), IdxB);
+
             Images = swappedPoints;
+            //ImagesRight = swappedPointsR;
+            //ImagesLeft = swappedPointsL;
+            Logmeters = swappedLogmeters;
+            Latitudes = swappedLatitudes;
+            Longitudes = swappedLongitudes;
 
             spinning = false;
         }
+        //==========================================================================================================================
+        //==========================================================================================================================
+        //==========================================================================================================================
 
         async Task AsyncMapOperation(GoogleMapClickEventArgs args)    // this is an async task
         {
@@ -289,6 +332,7 @@
         public bool loaded = false;
         public bool isPlay = false;
         public bool isReverse = false;
+        public bool isPause = true;
         public bool spinning;
 
         mmhisContext db = new mmhisContext();
@@ -306,6 +350,8 @@
         protected bool IsDisabledSection = true;
         protected bool IsDisabledYear = true;
         public List<string> Images = new List<string>();
+        //public List<string> ImagesLeft = new List<string>();
+        //public List<string> ImagesRight = new List<string>();
 
         protected override void OnInitialized()
         {
@@ -317,6 +363,7 @@
             IsDisabledYear = true;
             IsDisabledDirection = true;
         }
+
         void ClearSelection()
         {
             routeId = null; //could try null
@@ -334,12 +381,12 @@
             Images.Clear();
             pageModel = new PageModel();
         }
+
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
             {
-                //await JSRuntime.InvokeVoidAsync("initMap", null);   //using javascript
-                await GetWindowSize();
+                //return Task.Delay(0);
             }
         }
 
@@ -349,9 +396,9 @@
             IsDisabledDirection = false;
             routeId = routeEvent;
             sections.Clear();
-
             var direct = db.MmhisDamus.Select(r => r).Where(r => r.Route == routeEvent);
             directions = direct.Select(r => r.MmhisDirection).Distinct().ToList();
+            IsDisabledRoute = true;
         }
 
         public void directionChanged(string directionEvent)
@@ -362,6 +409,7 @@
             var sect = db.MmhisDamus.Select(r => r).Where(r => r.Route == routeId);
             sect = sect.Where(r => r.MmhisDirection == directionId);
             sections = sect.Select(r => r.Section).Distinct().ToList();
+            IsDisabledDirection = true;
         }
 
         public void sectionChanged(string sectionEvent)
@@ -374,6 +422,7 @@
             year = year.Where(r => r.MmhisDirection == directionId);
             year = year.Where(r => r.Section == sectionId);
             years = year.Select(r => r.TheYear).Distinct().OrderByDescending(x => x).ToList();
+            IsDisabledSection = true;
 
         }
 
@@ -381,20 +430,23 @@
         {
             yearId = yearEvent;
         }
-
+        //==========================================================================================================================
+        //==========================================================================================================================
+        //==========================================================================================================================
         public void findInitialPoint()
         {
-            //cameraSelection = "p";
+
             IsDisabledDirection = true;
             IsDisabledSection = true;
             IsDisabledYear = true;
+            IsDisabledRoute = true;
             pageModel.Route = routeId;
             pageModel.Direction = directionId;
             pageModel.Section = sectionId;
             pageModel.Year = yearId;
             pageModel.Logmeter = logmile;
-            //pageModel.Latitude = latitudeId;
-            //pageModel.Longitude = longitudeId;
+            pageModel.Latitude = latitudeId;
+            pageModel.Longitude = longitudeId;
             var dataModel = controller.getData(pageModel); //dataModel.Roadway, dataModel.Points, dataModel.PointData
 
             var lat = from r in dataModel.Points
@@ -405,6 +457,7 @@
                       select r.Logmeter0;
 
             logmile = log.FirstOrDefault() * 0.000621371;
+
             latitudeId = Convert.ToDouble(lat.FirstOrDefault());
             longitudeId = Convert.ToDouble(lng.FirstOrDefault());
 
@@ -415,7 +468,25 @@
                               where r.FieldName == "f"                          //want to make sure each point corresponds to the correct Ld in dians
                               select r.FieldValue;
 
+            var latitudes = from r in dataModel.PointData //grabs all the front facing images for the route
+                            join p in dataModel.Points on r.Lu equals p.Ld
+                            where r.FieldName == "f"
+                            orderby r.Lu ascending
+                            select p.Latitude;
+
+            var longitudes = from r in dataModel.PointData //grabs all the front facing images for the route
+                             join p in dataModel.Points on r.Lu equals p.Ld
+                             where r.FieldName == "f"
+                             orderby r.Lu ascending
+                             select p.Longitude;
+
             var frontImagesStr = frontImages.ToList();
+            var logmetersLst = log.ToList();
+            var latitudesLst = latitudes.ToList();
+            var longitudesLst = longitudes.ToList();
+            var logmetersStr = logmetersLst.Select(x => x.ToString());
+            var latitudesStr = latitudesLst.Select(x => x.ToString());
+            var longitudesStr = longitudesLst.Select(x => x.ToString());
 
             for (var i = 0; i < frontImagesStr.Count(); i++)
             {
@@ -423,6 +494,9 @@
             }
 
             Images = frontImagesStr;
+            Logmeters = logmetersStr.ToList();
+            Latitudes = latitudesStr.ToList();
+            Longitudes = longitudesStr.ToList();
 
             if (pageModel.Logmeter > 0)
             {
@@ -441,6 +515,11 @@
                                     where r.FieldName == "f"
                                     orderby r.Lu ascending
                                     select r.Lu;
+                var logmeters = from r in dataModel.PointData //grabs all the front facing images for the route
+                                join p in dataModel.Points on r.Lu equals p.Ld
+                                where r.FieldName == "f"
+                                orderby r.Lu ascending
+                                select p.Logmeter0;
 
                 var PointData = frontImagesLu.ToList();
                 var Points = allPoints.ToList();
@@ -452,17 +531,26 @@
                 allPointsBeforeLst = controller.removePoints(allPointsBeforeLst, setDiffLst);
 
                 var IdxB = allPointsBeforeLst.Count(); //4759 points before
-                
+
                 for (var i = 0; i < frontImagesStr.Count(); i++)
                 {
                     frontImagesStr[i] = controller.ModifyURLs(frontImagesStr[i]);
                 }
                 List<string> swappedPoints = controller.SplitReverse(frontImagesStr, IdxB);
-                Images = swappedPoints;
+                List<string> swappedLogmeters = controller.SplitReverse(logmetersStr.ToList(), IdxB);
+                List<string> swappedLatitudes = controller.SplitReverse(latitudesStr.ToList(), IdxB);
+                List<string> swappedLongitudes = controller.SplitReverse(longitudesStr.ToList(), IdxB);
 
+                Images = swappedPoints;
+                Logmeters = swappedLogmeters;
+                Latitudes = swappedLatitudes;
+                Longitudes = swappedLongitudes;
             }
 
         }
+        //==========================================================================================================================
+        //==========================================================================================================================
+        //==========================================================================================================================
 
         async Task AsyncLongOperation()    // this is an async task
         {
@@ -480,14 +568,27 @@
             await Task.Run(() => ClearSelection());  //<--here!
             currentCount++;
             spinning = false;
+
+            //await JSRuntime.InvokeVoidAsync("Clear");
         }
-
-
 
         void OnChange(dynamic value, string name)
         {
             var str = value is IEnumerable ? string.Join(", ", value) : value;
             str = Convert.ToString(str);
+            if(str == "1")
+            {
+                pageModel.ImageSelection = "f";
+            }
+            else if(str == "2")
+            {
+                pageModel.ImageSelection = "fl";
+            }
+            else if(str == "3")
+            {
+                pageModel.ImageSelection = "fr";
+            }
+            //pageModel.ImageSelection = str;
 
         }
 
@@ -499,16 +600,21 @@
 
         }
 
-        bool isPause;
         void OnSubmitPlay()
         {
-            //isPause = !isPause;
             if (Images.Any())
             {
-                isReverse = false;
-                isPlay = true;
-                time.Enabled = true;
-                idx = idx + 1 >= Images.Count() ? 0 : idx + 1;
+                if(isPause == false)
+                {
+                    isReverse = false;
+                    isPlay = true;
+                    time.Enabled = true;
+                    idx = idx + 1 >= Images.Count() ? 0 : idx + 1;
+                }
+                else
+                {
+                    OnSubmitStop();
+                }
             }
         }
 
@@ -516,11 +622,19 @@
         {
             if (Images.Any())
             {
-                isPlay = false;
-                isReverse = true;
-                isPause = !isPause;
-                time.Enabled = true;
-                idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1;
+                if(isPause == false)
+                {
+                    isPlay = false;
+                    isReverse = true;
+                    //isPause = !isPause;
+                    time.Enabled = true;
+                    idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1;
+                }
+                else
+                {
+                    OnSubmitStop();
+                }
+
             }
         }
 
@@ -557,6 +671,10 @@
             {
                 OnSubmitReverse();
             }
+            if(isPause == true)
+            {
+                OnSubmitStop();
+            }
 
             await InvokeAsync(() => StateHasChanged());
         }
@@ -566,21 +684,6 @@
             // While navigating to other components, Dispose method will be called and clean up the Timer function.
             time?.Dispose();
         }
-        //=============================Windows Resizing============================================================
-        public int Height { get; set; }
-        public int Width { get; set; }
 
-        private async Task GetWindowSize()
-        {
-            var dimension = await JSRuntime.InvokeAsync<WindowDimension>("getWindowDimensions");
-            Height = dimension.Height;
-            Width = dimension.Width;
-        }
-
-        public class WindowDimension
-        {
-            public int Width { get; set; }
-            public int Height { get; set; }
-        }
 
     }

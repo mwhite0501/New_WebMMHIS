@@ -31,23 +31,76 @@ a, .btn-link {
 .validation-message {
     color: red;
 }
+
+/* The sidebar menu */
 .sidebar {
-    height: 100%;
-    width: 250px;
-    position: fixed;
+    height: 100%; /* 100% Full-height */
+    width: 250px; /* 0 width - change this with JavaScript */
+    position: fixed; /* Stay in place */
+    z-index: 2; /* Stay on top */
     top: 0;
     left: 0;
     padding-top: 40px;
-    background-color: darkblue;
-    z-index: 2;
+    background-color: #34568B; /* Black*/
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 60px; /* Place content 60px from the top */
+    transition: 0.5s; /* 0.5 second transition effect to slide in the sidebar */
 }
+    /* The sidebar links */
+    .sidebar a {
+        padding: 8px 8px 8px 32px;
+        text-decoration: none;
+        font-size: 25px;
+        color: #818181;
+        display: block;
+        transition: 0.3s;
+    }
 
     .sidebar div {
         padding: 8px;
         font-size: 24px;
         display: block;
     }
+    .sidebar a:hover {
+        color: #f1f1f1;
+    }
+    /* Position and style the close button (top right corner) */
+    .sidebar .closebtn {
+        position: absolute;
+        top: 0;
+        right: 25px;
+        font-size: 36px;
+        margin-left: 50px;
+    }
+/* The button used to open the sidebar */
+.openbtn {
+    font-size: 20px;
+    cursor: pointer;
+    background-color: #34568B;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    position: fixed;
+    z-index: 1;
+}
+    .openbtn:hover {
+        background-color: #444;
+    }
+/* Style page content - use this if you want to push the page content to the right when you open the side navigation */
+#main {
+    transition: margin-left .5s; /* If you want a transition effect */
+    padding: 20px;
+}
+/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+    .sidebar {
+        padding-top: 15px;
+    }
 
+        .sidebar a {
+            font-size: 18px;
+        }
+}
 .body-text {
     margin-left: 150px;
     font-size: 18px;
@@ -137,17 +190,17 @@ iframe {
 }
 
 
-
+/*Pause/Play button hack ========================================== */
 .playpause label {
     display: block;
     box-sizing: border-box;
     width: 0;
-    height: 74px;
+    height: 18px;
     border-color: transparent transparent transparent #202020;
     transition: 100ms all ease;
     cursor: pointer;
-    border-style: double;
-    border-width: 0px 0 0px 60px;
+    border-style: solid;
+    border-width: 9px 0 9px 15px;
 }
 
 .playpause input[type=checkbox] {
@@ -156,10 +209,147 @@ iframe {
 }
 
     .playpause input[type=checkbox]:checked + label {
-        border-style: solid;
-        border-width: 37px 0 37px 60px;
+        border-style: double;
+        border-width: 0px 0 0px 15px;
     }
 
     .playpause input[type=checkbox]:focus + label {
         box-shadow: 0 0 5px lightblue;
     }
+/*Rest of the controls =============================*/
+/*ul {
+    width: 260px;
+    height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-flow: row wrap;
+}
+li {
+    width: 72px;
+    height: 72px;
+    margin: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #F2F0F1;
+    border-radius: 50%;
+    transition: all .3s ease-out;
+}
+
+.button {
+    width: 32px;
+    height: 32px;
+    background: none !important;
+    color: inherit;
+    border: none;
+    cursor: pointer;
+    outline: inherit !important;
+    transition: all .5s ease-out;
+}
+
+li:hover {
+    background: #33F4D5
+}*/
+
+/* 4 */
+/*li:nth-child(1) .button {
+    margin-right: 32px;
+    border-style: solid;
+    border-width: 17px 32px 17px 10px;
+    border-color: transparent #33F4D5 transparent transparent;
+}
+
+    li:nth-child(1) .button:before {
+        display: block;
+        content: " ";
+        background: none;
+        margin-right: 21px;
+        margin-left: 10px;
+        margin-top: -17px;
+        border-style: solid;
+        border-width: 17px 32px 17px 0px;
+        border-color: transparent #E5DFDF transparent transparent;
+    }
+
+    li:nth-child(1) .button:after {
+        display: block;
+        content: " ";
+        background: none;
+        margin-left: 17px;
+        margin-top: -34px;
+        border-style: solid;
+        border-width: 17px 32px 17px 0px;
+        border-color: transparent #33F4D5 transparent transparent;
+        transition: all .5s ease-out;
+    }
+
+li:hover:nth-child(1):hover .button,
+li:nth-child(1):hover .button:after {
+    border-color: transparent #F2F0F1 transparent transparent
+}
+
+li:nth-child(1):hover .button:before {
+    border-color: transparent #33F4D5 transparent transparent
+}*/
+
+
+/* 7 */
+/*li:nth-child(2) .button {
+    margin-right: 5px;
+    border-style: solid;
+    border-width: 17px 32px 17px 10px;
+    border-color: transparent #33F4D5 transparent transparent;
+}
+
+    li:nth-child(2) .button:before {
+        width: 32px;
+        height: 32px;
+        display: block;
+        content: " ";
+        background: none;
+        margin-left: -5px;
+        margin-top: -16px;
+        border-style: solid;
+        border-width: 0px 0px 0px 5px;
+        border-color: transparent transparent transparent #33F4D5;
+        transition: all .5s ease-out;
+    }
+
+li:nth-child(2):hover .button {
+    border-color: transparent #F2F0F1 transparent transparent
+}
+
+    li:nth-child(2):hover .button:before {
+        border-color: transparent transparent transparent #F2F0F1
+    }*/
+
+/* 9 */
+/*li:nth-child(3) .button {
+    margin-left: 5px;
+    border-style: solid;
+    border-width: 17px 10px 17px 32px;
+    border-color: transparent transparent transparent #33F4D5;
+}
+
+    li:nth-child(3) .button:before {
+        width: 32px;
+        height: 32px;
+        display: block;
+        content: " ";
+        background: none;
+        margin-left: -32px;
+        margin-top: -16px;
+        border-style: solid;
+        border-width: 0px 5px 0px 0px;
+        border-color: transparent #33F4D5 transparent transparent;
+        transition: all .5s ease-out;
+    }
+
+li:nth-child(3):hover .button {
+    border-color: transparent transparent transparent #F2F0F1
+}
+
+    li:nth-child(3):hover .button:before {
+        border-color: transparent #F2F0F1 transparent transparent
+    }*/

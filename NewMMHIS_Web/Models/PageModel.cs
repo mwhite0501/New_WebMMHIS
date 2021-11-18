@@ -27,6 +27,17 @@ namespace NewMMHIS_Web.Models
         public double Logmeter { get; set; }
         public int NumRows { get; set; }
         public List<string> Images { get; set; }
+        public string ImageSelection { get; set; }
+
+        public void Clear()
+        {
+            Year = "";
+            County = "";
+            Route = "";
+            Section = "";
+            Direction = "";
+            ImgURL = "";
+        }
 
     }
 }
