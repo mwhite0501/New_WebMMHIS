@@ -21,3 +21,5 @@ function Clear() {
     document.getElementById("mySidebar").reset();
 }
 
+setTitle = (title) => {document.title = title; };
+

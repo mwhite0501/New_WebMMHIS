@@ -192,15 +192,16 @@ iframe {
 
 /*Pause/Play button hack ========================================== */
 .playpause label {
-    display: block;
+    display: inline-block;
     box-sizing: border-box;
     width: 0;
-    height: 18px;
+    height: 50px;
     border-color: transparent transparent transparent #202020;
     transition: 100ms all ease;
     cursor: pointer;
     border-style: solid;
-    border-width: 9px 0 9px 15px;
+    border-width: 28px 0 28px 40px;
+    position: relative;
 }
 
 .playpause input[type=checkbox] {
@@ -210,146 +211,67 @@ iframe {
 
     .playpause input[type=checkbox]:checked + label {
         border-style: double;
-        border-width: 0px 0 0px 15px;
+        border-width: 0px 0 0px 30px;
     }
 
     .playpause input[type=checkbox]:focus + label {
-        box-shadow: 0 0 5px lightblue;
+        box-shadow: 0 0 10px lightblue;
     }
-/*Rest of the controls =============================*/
-/*ul {
-    width: 260px;
-    height: 250px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-flow: row wrap;
-}
-li {
-    width: 72px;
-    height: 72px;
-    margin: 5px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 2px solid #F2F0F1;
-    border-radius: 50%;
-    transition: all .3s ease-out;
-}
 
-.button {
-    width: 32px;
-    height: 32px;
-    background: none !important;
-    color: inherit;
-    border: none;
+.reverse label {
+    display: inline-block;
+    box-sizing: border-box;
+    width: 0;
+    height: 50px;
+    border-color: transparent transparent transparent #202020;
+    transition: 100ms all ease;
     cursor: pointer;
-    outline: inherit !important;
-    transition: all .5s ease-out;
-}
-
-li:hover {
-    background: #33F4D5
-}*/
-
-/* 4 */
-/*li:nth-child(1) .button {
-    margin-right: 32px;
     border-style: solid;
-    border-width: 17px 32px 17px 10px;
-    border-color: transparent #33F4D5 transparent transparent;
+    border-width: 28px 0 28px 40px;
+    position: relative;
 }
 
-    li:nth-child(1) .button:before {
-        display: block;
-        content: " ";
-        background: none;
-        margin-right: 21px;
-        margin-left: 10px;
-        margin-top: -17px;
-        border-style: solid;
-        border-width: 17px 32px 17px 0px;
-        border-color: transparent #E5DFDF transparent transparent;
+.reverse input[type=checkbox] {
+    position: absolute;
+    left: -9999px;
+}
+
+    .reverse input[type=checkbox]:checked + label {
+        border-style: double;
+        border-width: 0px 0 0px 30px;
     }
 
-    li:nth-child(1) .button:after {
-        display: block;
-        content: " ";
-        background: none;
-        margin-left: 17px;
-        margin-top: -34px;
-        border-style: solid;
-        border-width: 17px 32px 17px 0px;
-        border-color: transparent #33F4D5 transparent transparent;
-        transition: all .5s ease-out;
+    .reverse input[type=checkbox]:focus + label {
+        box-shadow: 0 0 10px lightblue;
     }
 
-li:hover:nth-child(1):hover .button,
-li:nth-child(1):hover .button:after {
-    border-color: transparent #F2F0F1 transparent transparent
+.divider {
+    width: 100px;
+    height: auto;
+    display: inline-block;
 }
 
-li:nth-child(1):hover .button:before {
-    border-color: transparent #33F4D5 transparent transparent
-}*/
-
-
-/* 7 */
-/*li:nth-child(2) .button {
-    margin-right: 5px;
-    border-style: solid;
-    border-width: 17px 32px 17px 10px;
-    border-color: transparent #33F4D5 transparent transparent;
+.backbutton{
+    height: 36px;
+    width: 36px;
+    font-size: 100px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    border: none; 
+    outline: none;
+    margin-left: 35%;
 }
 
-    li:nth-child(2) .button:before {
-        width: 32px;
-        height: 32px;
-        display: block;
-        content: " ";
-        background: none;
-        margin-left: -5px;
-        margin-top: -16px;
-        border-style: solid;
-        border-width: 0px 0px 0px 5px;
-        border-color: transparent transparent transparent #33F4D5;
-        transition: all .5s ease-out;
-    }
-
-li:nth-child(2):hover .button {
-    border-color: transparent #F2F0F1 transparent transparent
+.forwardbutton{
+    height: 36px;
+    width: 36px;
+    font-size: 100px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    border: none;
+    outline: none;
 }
 
-    li:nth-child(2):hover .button:before {
-        border-color: transparent transparent transparent #F2F0F1
-    }*/
-
-/* 9 */
-/*li:nth-child(3) .button {
-    margin-left: 5px;
-    border-style: solid;
-    border-width: 17px 10px 17px 32px;
-    border-color: transparent transparent transparent #33F4D5;
+.reversebutton{
+    transform: rotate(180deg);
 }
-
-    li:nth-child(3) .button:before {
-        width: 32px;
-        height: 32px;
-        display: block;
-        content: " ";
-        background: none;
-        margin-left: -32px;
-        margin-top: -16px;
-        border-style: solid;
-        border-width: 0px 5px 0px 0px;
-        border-color: transparent #33F4D5 transparent transparent;
-        transition: all .5s ease-out;
-    }
-
-li:nth-child(3):hover .button {
-    border-color: transparent transparent transparent #F2F0F1
-}
-
-    li:nth-child(3):hover .button:before {
-        border-color: transparent #F2F0F1 transparent transparent
-    }*/

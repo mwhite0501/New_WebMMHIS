@@ -7,103 +7,106 @@
 @inject MmhisController controller
 @inject PageModel pageModel
 
+
 <button class="openbtn" onclick="openNav()">&#9776; Search</button>
 <div id="main" style="margin-left: 250px">
-@if (Images.Any())
-{
-    <div>
-        @*<div class="playpause">
-            <input type="checkbox" value="None" id="playpause" name="check" />
-            <label for="playpause" tabindex=1></label>
-        </div>*@
-        <button @ontouchstart="() => { idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1; isPause = true; isTouchScreen = true; }" @onclick="() => { idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1; isPause = true; }" style="position: relative; margin-left: 35%;">Step Backwards</button>
-        <button @ontouchstart="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }" @onclick="() => { isPause = !isPause; OnSubmitPlay(); }" style="position: relative;">Play/Pause</button>
-        <button @ontouchstart="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }" @onclick="() => { isPause = !isPause; OnSubmitReverse(); }" style="position: relative; ">Reverse</button>
-        <button @ontouchstart="() => { idx = idx + 1 >= Images.Count() ? 0 : idx + 1; isPause = true; isTouchScreen = true; }" @onclick="() => { idx = idx + 1 >= Images.Count() ? 0 : idx + 1; isPause = true; }" style="position: relative">Step Forwards</button>
-    </div>
-}
-<div>
 
-    @if (spinning == true)
-    {
-        <div class="spinner"></div>
-    }
+    <div>
+
+        @if (spinning == true)
+        {
+            <div class="spinner"></div>
+        }
+        @if (Images.Any())
+        {
+            @*<img src="@ImagesRight[idx]" style="width: 33%; height: auto; position: relative;" />*@
+            <img src="@Images[idx]" style="width: 100%; height: auto; position: relative;" />
+            @*<img src="@ImagesLeft[idx]" style="width: 33%; height: auto; position: relative;" />*@
+            log = double.Parse(Logmeters[idx]) * 0.000621371192;
+            latitudeId = double.Parse(Latitudes[idx]);
+            longitudeId = double.Parse(Longitudes[idx]);
+        }
+
+    </div>
     @if (Images.Any())
     {
-        @*<img src="@ImagesRight[idx]" style="width: 33%; height: auto; position: relative;" />*@
-        <img src="@Images[idx]" style="width: 100%; height: auto; position: relative;" />
-        @*<img src="@ImagesLeft[idx]" style="width: 33%; height: auto; position: relative;" />*@
-        log = double.Parse(Logmeters[idx]) * 0.000621371192;
-        latitudeId = double.Parse(Latitudes[idx]);
-        longitudeId = double.Parse(Longitudes[idx]);
+
+        <div class="playpause">
+            <button class="backbutton" @onclick="() => { idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1; isPause = true; }">&#8249;</button>
+            <div class="divider" />
+            <input type="checkbox" value="None" id="reverse" name="check" />
+            <label for="reverse" tabindex=1 @onclick="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></label>
+            <div class="divider" />
+            <input type="checkbox" value="None" id="playpause" name="check" />
+            <label for="playpause" tabindex=1 @onclick="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></label>
+            <div class="divider" />
+            <button  class="forwardbutton" @onclick="() => { idx = idx + 1 >= Images.Count() ? 0 : idx + 1; isPause = true; }">&#8250;</button>
+        </div>
     }
+    <br>
+    <div id="mySidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <img src="/Images/ArDOT_Logo_1.png" style="width: 200px; padding-left: 50px; padding-bottom: 25px; " />
+        <ul class="nav flex-column">
+            <EditForm Model="@controller" OnValidSubmit="AsyncLongOperation">
+                <li class="nav-item px-2">
+                    <InputSelect id="routeControl" Disabled="@IsDisabledRoute" Value="routeId" ValueChanged="@( (string s) => routeChanged(s))" ValueExpression="@( () => routeId)" class="form-control">
+                        <option value="none">Route</option>
+                        @foreach (var item in routes)
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    </InputSelect>
+                </li>
+                <li class="nav-item px-2">
+                    <InputSelect Disabled="@IsDisabledDirection" Value="directionId" ValueChanged="@( (string s) => directionChanged(s))" ValueExpression="@( () => directionId)" class="form-control">
+                        <option value="none">Direction</option>
+                        @foreach (var item in directions)
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    </InputSelect>
+                </li>
+                <li class="nav-item px-2">
+                    <InputSelect Disabled="@IsDisabledSection" Value="sectionId" ValueChanged="@( (string s) => sectionChanged(s))" ValueExpression="@( () => sectionId)" class="form-control">
+                        <option value="none">Section</option>
+                        @foreach (var item in sections)
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    </InputSelect>
+                </li>
+                <li class="nav-item px-2">
+                    <InputSelect Disabled="@IsDisabledYear" Value="yearId" ValueChanged="@( (string s) => yearChanged(s))" ValueExpression="@( () => yearId)" class="form-control">
+                        <option value="none">Year</option>
+                        @foreach (var item in years)
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    </InputSelect>
+                </li>
+                <li class="nav-item px-2">
+                    <RadzenTextBox Placeholder="Search Logmile" Name="Logmile" Change=@(args => OnChangeLogmeter(args, "TextBox with placeholder")) />
+                    @*<RadzenRequiredValidator Component="Logmile" Text="ZIP code is required" Popup=@popup Style="position: absolute" />
+                        <RadzenRegexValidator Component="Logmile" Text="ZIP code must be 5 digits" Pattern="\d{5}" Popup=@popup Style="position: absolute" />*@
+                </li>
+                <li class="nav-item px-2">
+                    <input type="submit" class="btn btn-primary" value="Submit" disabled="@IsDisabledSubmit" />
+                    <input type="reset" onclick="window.location.reload()" class="btn btn-primary" style="position: relative; " value="Clear" />
+                </li>
+                <li class="nav-item px-2">
+                    Logmile: @log
+                </li>
+                <li class="nav-item px-2">
+                    Latitude: @latitudeId
+                </li>
+                <li class="nav-item px-2">
+                    Longitudes: @longitudeId
+                </li>
+            </EditForm>
 
-</div>
-
-<br>
-<div id="mySidebar" class="sidebar">
-    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-    <img src="/Images/ArDOT_Logo_1.png" style="width: 200px; padding-left: 50px; padding-bottom: 25px; " />
-    <ul class="nav flex-column">
-        <EditForm Model="@controller" OnValidSubmit="AsyncLongOperation">
-            <li class="nav-item px-2">
-                <InputSelect id="routeControl" Disabled="@IsDisabledRoute" Value="routeId" ValueChanged="@( (string s) => routeChanged(s))" ValueExpression="@( () => routeId)" class="form-control">
-                    <option value="none">Route</option>
-                    @foreach (var item in routes)
-                    {
-                        <option value="@item">@item</option>
-                    }
-                </InputSelect>
-            </li>
-            <li class="nav-item px-2">
-                <InputSelect Disabled="@IsDisabledDirection" Value="directionId" ValueChanged="@( (string s) => directionChanged(s))" ValueExpression="@( () => directionId)" class="form-control">
-                    <option value="none">Direction</option>
-                    @foreach (var item in directions)
-                    {
-                        <option value="@item">@item</option>
-                    }
-                </InputSelect>
-            </li>
-            <li class="nav-item px-2">
-                <InputSelect Disabled="@IsDisabledSection" Value="sectionId" ValueChanged="@( (string s) => sectionChanged(s))" ValueExpression="@( () => sectionId)" class="form-control">
-                    <option value="none">Section</option>
-                    @foreach (var item in sections)
-                    {
-                        <option value="@item">@item</option>
-                    }
-                </InputSelect>
-            </li>
-            <li class="nav-item px-2">
-                <InputSelect Disabled="@IsDisabledYear" Value="yearId" ValueChanged="@( (string s) => yearChanged(s))" ValueExpression="@( () => yearId)" class="form-control">
-                    <option value="none">Year</option>
-                    @foreach (var item in years)
-                    {
-                        <option value="@item">@item</option>
-                    }
-                </InputSelect>
-            </li>
-        <li class="nav-item px-2">
-            <RadzenTextBox Placeholder="Search Logmile" Name="Logmile" Change=@(args => OnChangeLogmeter(args, "TextBox with placeholder")) />
-            @*<RadzenRequiredValidator Component="Logmile" Text="ZIP code is required" Popup=@popup Style="position: absolute" />
-            <RadzenRegexValidator Component="Logmile" Text="ZIP code must be 5 digits" Pattern="\d{5}" Popup=@popup Style="position: absolute" />*@
-        </li>
-            <li class="nav-item px-2">
-                <input type="submit" class="btn btn-primary" value="Submit" />
-                <input type="reset" onclick="window.location.reload()" class="btn btn-primary" style="position: relative; " value="Clear" />
-            </li>
-            <li class="nav-item px-2">
-                Logmile: @log
-            </li>
-            <li class="nav-item px-2">
-                Latitude: @latitudeId
-            </li>
-            <li class="nav-item px-2">
-                Longitudes: @longitudeId
-            </li>
-        </EditForm>
-
-    </ul>
-</div>
+        </ul>
+    </div>
     <div class="row">
         <div class="col-xl-6">
             <RadzenGoogleMap ApiKey="" Style="width: 1500px; height: 740px; z-index: 1;" id="Map" Zoom="@zoom" Center="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId })" MapClick="@AsyncMapOperation">
@@ -145,16 +148,18 @@
             IsDisabledDirection = true;
             IsDisabledYear = true;
             isPause = true;
+            log = 0;
+            RouteInfo.Clear();
 
             Images.Clear();
             //ImagesRight.Clear();
             //ImagesLeft.Clear();
             pageModel.Clear();
             //pageModel = new PageModel();
-            if (latitudeId > 36 || latitudeId < 33 || longitudeId < -94.66 || longitudeId > -89.629890)
+            if (latitudeId > 36.5 || latitudeId < 33 || longitudeId < -94.66 || longitudeId > -89.629890) //make sure it's in state or default to a position
             {
-                latitudeId = 34.7465;
-                longitudeId = -92.2896;
+                latitudeId = 34.751354;
+                longitudeId = -92.274592;
             }
             RouteInfo = controller.GetRouteInformation(latitudeId, longitudeId);
             routeId = RouteInfo[0];
@@ -334,6 +339,7 @@
         public bool isReverse = false;
         public bool isPause = true;
         public bool spinning;
+        public bool IsDisabledSubmit = true;
 
         mmhisContext db = new mmhisContext();
 
@@ -387,6 +393,7 @@
             if (firstRender)
             {
                 //return Task.Delay(0);
+                await JSRuntime.InvokeVoidAsync("setTitle", "Arkansas Highway Viewer");
             }
         }
 
@@ -429,6 +436,7 @@
         public void yearChanged(string yearEvent)
         {
             yearId = yearEvent;
+            IsDisabledSubmit = false;
         }
         //==========================================================================================================================
         //==========================================================================================================================
@@ -504,7 +512,7 @@
                                 select r.Ld;
 
                 var allPointsBefore = from r in dataModel.Points
-                                      where r.Logmeter0 < pageModel.Logmeter
+                                      where r.Logmeter0 <= pageModel.Logmeter
                                       orderby r.Logmeter0 ascending
                                       select r.Ld;
 
