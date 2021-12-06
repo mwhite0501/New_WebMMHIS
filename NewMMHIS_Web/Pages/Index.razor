@@ -3,46 +3,72 @@
 @using Radzen.Blazor;
 @using System.Collections;
 @using System.Timers;
+@using System.IO;
 @inject IJSRuntime JSRuntime
 @inject MmhisController controller
 @inject PageModel pageModel
+@inject HttpClient _httpClient
 
+    <meta charset="utf-8">
 
 <button class="openbtn" onclick="openNav()">&#9776; Search</button>
 <div id="main" style="margin-left: 250px">
 
-    <div>
+    <div class="outer-div">
 
         @if (spinning == true)
         {
-            <div class="spinner"></div>
+        <div class="spinner"></div>
         }
         @if (Images.Any())
         {
-            @*<img src="@ImagesRight[idx]" style="width: 33%; height: auto; position: relative;" />*@
-            <img src="@Images[idx]" style="width: 100%; height: auto; position: relative;" />
-            @*<img src="@ImagesLeft[idx]" style="width: 33%; height: auto; position: relative;" />*@
+
+
+        @*<img src="@ImagesRight[idx]" style="width: 33%; height: auto; position: relative;" />*@
+        @*<img src="@Images[idx]"  style="width: 100%; height: auto; position: relative;" />*@
+        <RadzenImage Path="@Images[idx]" @onload="@(() => LoadImageAsync(Images[idx]))" loading="lazy" Style="width: 100%; height: auto; position: relative;" id="img"></RadzenImage>
+        @*<img src="@ImagesLeft[idx]" style="width: 33%; height: auto; position: relative;" />*@
+
             log = double.Parse(Logmeters[idx]) * 0.000621371192;
             latitudeId = double.Parse(Latitudes[idx]);
             longitudeId = double.Parse(Longitudes[idx]);
+
         }
-
-    </div>
-    @if (Images.Any())
+        @if (Images.Any()) //if there are any images loaded in the list, display these images
     {
-
         <div class="playpause">
-            <button class="backbutton" @onclick="() => { idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1; isPause = true; }">&#8249;</button>
+
+            <button class="backbutton" @onmousedown="() => { idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1; isPause = true; }"><img src="/Images/skip_button.png" /></button>
+
             <div class="divider" />
+
             <input type="checkbox" value="None" id="reverse" name="check" />
-            <label for="reverse" tabindex=1 @onclick="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></label>
+            <label for="reverse" class="reversebutton" tabindex=1 @onmousedown="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></label>
+
             <div class="divider" />
+
             <input type="checkbox" value="None" id="playpause" name="check" />
-            <label for="playpause" tabindex=1 @onclick="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></label>
+            <label for="playpause" tabindex=1 @onmousedown="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></label>
+
             <div class="divider" />
-            <button  class="forwardbutton" @onclick="() => { idx = idx + 1 >= Images.Count() ? 0 : idx + 1; isPause = true; }">&#8250;</button>
+
+            <button class="forwardbutton" @onmousedown="() => { idx = idx + 1 >= Images.Count() ? 0 : idx + 1; isPause = true; }"><img src="/Images/skip_button.png" /></button>
         </div>
     }
+        <div class="inner-div">
+            <div class="col-xl-6">
+                <RadzenGoogleMap ApiKey="" Style="width: 1500px; height: 740px; z-index: 1;" id="Map" Zoom="@zoom" Center="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId })" MapClick="@AsyncMapOperation">
+                    <Markers>
+                        @if (showArkansasMarker && Images.Any())
+                    {
+                        <RadzenGoogleMapMarker Title="Arkansas" Position="@(new GoogleMapPosition() { Lat = Convert.ToDouble(Latitudes[idx]), Lng = Convert.ToDouble(Longitudes[idx]) })" />
+                    }
+                    </Markers>
+                </RadzenGoogleMap>
+            </div>
+        </div>
+    </div>
+
     <br>
     <div id="mySidebar" class="sidebar">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
@@ -107,18 +133,7 @@
 
         </ul>
     </div>
-    <div class="row">
-        <div class="col-xl-6">
-            <RadzenGoogleMap ApiKey="" Style="width: 1500px; height: 740px; z-index: 1;" id="Map" Zoom="@zoom" Center="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId })" MapClick="@AsyncMapOperation">
-                <Markers>
-                    @if (showArkansasMarker && Images.Any())
-                    {
-                        <RadzenGoogleMapMarker Title="Arkansas" Position="@(new GoogleMapPosition() { Lat = Convert.ToDouble(Latitudes[idx]), Lng = Convert.ToDouble(Longitudes[idx]) })" />
-                    }
-                </Markers>
-            </RadzenGoogleMap>
-        </div>
-    </div>
+    
 </div>
 
 
@@ -136,11 +151,60 @@
         List<string> Logmeters = new List<string>();
         List<string> Latitudes = new List<string>();
         List<string> Longitudes = new List<string>();
+        List<string> UnmodifiedURLs = new List<string>();
+
+        public int idx;
+        IEnumerable<int> negativeValues = new int[] { -100, 100 };
+        int value = 0;
+        int negativeValue = 0;
+        int valueWithStep = 30;
+        double logmile { get; set; }
+        double log { get; set; }
+        private List<string> counties;
+        private List<string> routes;
+        private List<string> sections;
+        private List<string> directions;
+        private List<string> years;
+        //private List<string> cameraSelections = new List<string>() { "f", "fl", "fr", "p" };
+        private int currentCount = 0;
+        private Timer time;
+        public bool loaded = false;
+        public bool isPlay = false;
+        public bool isReverse = false;
+        public bool isPause = true;
+        public bool spinning;
+        public bool IsDisabledSubmit = true;
+
+        mmhisContext db = new mmhisContext();
+
+        public string routeId;
+        public string directionId;
+        public string sectionId;
+        public string yearId;
+        public string imgId;
+        public double longitudeId = -92.199997;
+        public double latitudeId = 34.799999;
+        //public string cameraSelection;
+        protected bool IsDisabledRoute = false;
+        protected bool IsDisabledDirection = true;
+        protected bool IsDisabledSection = true;
+        protected bool IsDisabledYear = true;
+        public List<string> Images = new List<string>();
+        //public List<string> ImagesLeft = new List<string>();
+        //public List<string> ImagesRight = new List<string>();
+
+        async void LoadFileAsync(string path)
+        {
+            string imageUrl = path;
+            using var response = await _httpClient.GetAsync(imageUrl).ConfigureAwait(false);
+            var imageBytes = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+        }
+
 
         //==========================================================================================================================
+        //==================================================Map Selection Method====================================================
         //==========================================================================================================================
-        //==========================================================================================================================
-        void OnMapClick(GoogleMapClickEventArgs args)
+        async void OnMapClick(GoogleMapClickEventArgs args)
         {
             spinning = true;
             IsDisabledRoute = true;
@@ -162,7 +226,7 @@
                 longitudeId = -92.274592;
             }
             RouteInfo = controller.GetRouteInformation(latitudeId, longitudeId);
-            routeId = RouteInfo[0];
+            routeId = RouteInfo[0]; //should probably pass in a model here
             sectionId = RouteInfo[1];
             directionId = RouteInfo[2];
             yearId = RouteInfo[3];
@@ -265,16 +329,17 @@
                 //leftImagesStr[i] = controller.ModifyURLs(leftImagesStr[i]);
             }
 
-            List<string> swappedPoints = controller.SplitReverse(frontImagesStr, IdxB);
+            List<string> swappedPoints = controller.PutFrontAtIndex(frontImagesStr, IdxB);
 
-            //List<string> swappedPointsR = controller.SplitReverse(rightImagesStr, IdxB);
+            //List<string> swappedPointsR = controller.PutFrontAtIndex(rightImagesStr, IdxB);
 
-            //List<string> swappedPointsL = controller.SplitReverse(leftImagesStr, IdxB);
+            //List<string> swappedPointsL = controller.PutFrontAtIndex(leftImagesStr, IdxB);
 
-            List<string> swappedLogmeters = controller.SplitReverse(logmetersStr.ToList(), IdxB);
-            List<string> swappedLatitudes = controller.SplitReverse(latitudesStr.ToList(), IdxB);
-            List<string> swappedLongitudes = controller.SplitReverse(longitudesStr.ToList(), IdxB);
+            List<string> swappedLogmeters = controller.PutFrontAtIndex(logmetersStr.ToList(), IdxB);
+            List<string> swappedLatitudes = controller.PutFrontAtIndex(latitudesStr.ToList(), IdxB);
+            List<string> swappedLongitudes = controller.PutFrontAtIndex(longitudesStr.ToList(), IdxB);
 
+            UnmodifiedURLs = controller.PutFrontAtIndex(frontImagesStr, IdxB);
             Images = swappedPoints;
             //ImagesRight = swappedPointsR;
             //ImagesLeft = swappedPointsL;
@@ -283,6 +348,7 @@
             Longitudes = swappedLongitudes;
 
             spinning = false;
+            await JSRuntime.InvokeVoidAsync("closeNav");
         }
         //==========================================================================================================================
         //==========================================================================================================================
@@ -319,45 +385,13 @@
         }
         //=======================================================================================
 
-        public int idx;
-        IEnumerable<int> negativeValues = new int[] { -100, 100 };
-        int value = 0;
-        int negativeValue = 0;
-        int valueWithStep = 30;
-        double logmile { get; set; }
-        double log { get; set; }
-        private List<string> counties;
-        private List<string> routes;
-        private List<string> sections;
-        private List<string> directions;
-        private List<string> years;
-        //private List<string> cameraSelections = new List<string>() { "f", "fl", "fr", "p" };
-        private int currentCount = 0;
-        private Timer time;
-        public bool loaded = false;
-        public bool isPlay = false;
-        public bool isReverse = false;
-        public bool isPause = true;
-        public bool spinning;
-        public bool IsDisabledSubmit = true;
+        async Task LoadImageAsync(string pathway)
+        {
+            await JSRuntime.InvokeVoidAsync("loadImage", pathway);
+            //return JSRuntime.InvokeVoidAsync("loadImage", pathway).ToString();
+        }
 
-        mmhisContext db = new mmhisContext();
-
-        public string routeId;
-        public string directionId;
-        public string sectionId;
-        public string yearId;
-        public string imgId;
-        public double longitudeId = -92.199997;
-        public double latitudeId = 34.799999;
-        //public string cameraSelection;
-        protected bool IsDisabledRoute = false;
-        protected bool IsDisabledDirection = true;
-        protected bool IsDisabledSection = true;
-        protected bool IsDisabledYear = true;
-        public List<string> Images = new List<string>();
-        //public List<string> ImagesLeft = new List<string>();
-        //public List<string> ImagesRight = new List<string>();
+        
 
         protected override void OnInitialized()
         {
@@ -439,7 +473,7 @@
             IsDisabledSubmit = false;
         }
         //==========================================================================================================================
-        //==========================================================================================================================
+        //===============================================Dropdown Selection Method==================================================
         //==========================================================================================================================
         public void findInitialPoint()
         {
@@ -544,10 +578,10 @@
                 {
                     frontImagesStr[i] = controller.ModifyURLs(frontImagesStr[i]);
                 }
-                List<string> swappedPoints = controller.SplitReverse(frontImagesStr, IdxB);
-                List<string> swappedLogmeters = controller.SplitReverse(logmetersStr.ToList(), IdxB);
-                List<string> swappedLatitudes = controller.SplitReverse(latitudesStr.ToList(), IdxB);
-                List<string> swappedLongitudes = controller.SplitReverse(longitudesStr.ToList(), IdxB);
+                List<string> swappedPoints = controller.PutFrontAtIndex(frontImagesStr, IdxB);
+                List<string> swappedLogmeters = controller.PutFrontAtIndex(logmetersStr.ToList(), IdxB);
+                List<string> swappedLatitudes = controller.PutFrontAtIndex(latitudesStr.ToList(), IdxB);
+                List<string> swappedLongitudes = controller.PutFrontAtIndex(longitudesStr.ToList(), IdxB);
 
                 Images = swappedPoints;
                 Logmeters = swappedLogmeters;
@@ -568,6 +602,7 @@
             showArkansasMarker = true;
             currentCount++;
             spinning = false;
+            await JSRuntime.InvokeVoidAsync("closeNav");
         }
 
         async Task AsyncClearAll()    // this is an async task
@@ -659,7 +694,7 @@
             {
                 time = new Timer();
                 //Set the time interval.
-                time.Interval = 180;
+                time.Interval = 290;
                 time.Elapsed += OnTimeInterval;
                 time.AutoReset = true;
                 // Start the timer.

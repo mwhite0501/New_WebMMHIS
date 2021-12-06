@@ -21,5 +21,20 @@ function Clear() {
     document.getElementById("mySidebar").reset();
 }
 
-setTitle = (title) => {document.title = title; };
+setTitle = (title) => { document.title = title; };
+
+async function loadImage(imageUrl) {
+    let img;
+    const imageLoadPromise = new Promise(resolve => {
+        img = new Image();
+        img.onload = resolve;
+        img.src = imageUrl;
+    });
+
+    await imageLoadPromise;
+    console.log("image loaded");
+    return img;
+}
+
+
 

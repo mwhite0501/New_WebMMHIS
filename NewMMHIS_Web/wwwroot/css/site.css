@@ -190,17 +190,18 @@ iframe {
 }
 
 
-/*Pause/Play button hack ========================================== */
+/*Pause/Play button Checkbox Trick========================================== */
 .playpause label {
     display: inline-block;
     box-sizing: border-box;
+    margin-top: 50px;
     width: 0;
-    height: 50px;
+    height: 120px; /*Change this to change height of button, but be sure to change border-width at the same scale*/
     border-color: transparent transparent transparent #202020;
     transition: 100ms all ease;
     cursor: pointer;
     border-style: solid;
-    border-width: 28px 0 28px 40px;
+    border-width: 60px 0 60px 80px; /*Change this along with height, but be sure to change .playpause input[type=checkbox]:checked + label*/
     position: relative;
 }
 
@@ -209,9 +210,9 @@ iframe {
     left: -9999px;
 }
 
-    .playpause input[type=checkbox]:checked + label {
+    .playpause input[type=checkbox]:checked + label { /*This is the pause portion of the play/pause button*/
         border-style: double;
-        border-width: 0px 0 0px 30px;
+        border-width: 0px 0 0px 60px; 
     }
 
     .playpause input[type=checkbox]:focus + label {
@@ -252,26 +253,43 @@ iframe {
 }
 
 .backbutton{
-    height: 36px;
-    width: 36px;
-    font-size: 100px;
-    background-color: transparent;
+    height: 72px;
+    width: 72px;
+    -webkit-appearance: none;
     background-repeat: no-repeat;
     border: none; 
     outline: none;
-    margin-left: 35%;
+    transform: rotateY(180deg);
+    display: inline;
+    /*padding-bottom: 500px;*/
 }
 
-.forwardbutton{
-    height: 36px;
-    width: 36px;
-    font-size: 100px;
-    background-color: transparent;
+.forwardbutton {
+    height: 72px;
+    width: 72px;
+    -webkit-appearance: none;
     background-repeat: no-repeat;
     border: none;
     outline: none;
+    color: black;
+    /*padding-bottom: 500px;*/
 }
 
-.reversebutton{
+.reversebutton {
     transform: rotate(180deg);
+    color: black;
 }
+
+
+.outer-div {
+    width: 100%;
+    text-align: center;
+}
+
+.inner-div {
+    display: inline-block;
+    margin: 0 auto;
+    padding: 3px;
+    padding-top: 70px;
+}
+
