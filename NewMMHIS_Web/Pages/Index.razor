@@ -23,12 +23,12 @@
         @if (Images.Any())
         {
 
-
-        @*<img src="@ImagesRight[idx]" style="width: 33%; height: auto; position: relative;" />*@
-        @*<img src="@Images[idx]"  style="width: 100%; height: auto; position: relative;" />*@
-        <RadzenImage Path="@Images[idx]" @onload="@(() => LoadImageAsync(Images[idx]))" loading="lazy" Style="width: 100%; height: auto; position: relative;" id="img"></RadzenImage>
-        @*<img src="@ImagesLeft[idx]" style="width: 33%; height: auto; position: relative;" />*@
-
+            int maxslide = Images.Count() - 1;
+            @*<img src="@ImagesRight[idx]" style="width: 33%; height: auto; position: relative;" />*@
+            @*<img src="@Images[idx]"  style="width: 100%; height: auto; position: relative;" />*@
+            <RadzenImage Path="@Images[idx]" @onload="@(() => LoadImageAsync(Images[idx]))" loading="lazy" Style="width: 85%; height: auto; position: relative;" id="img"></RadzenImage>
+            @*<img src="@ImagesLeft[idx]" style="width: 33%; height: auto; position: relative;" />*@
+            <RadzenSlider class="playprogress" @bind-Value="@idx" Style="width:85%;height:35px" Max="@maxslide"></RadzenSlider>
             log = double.Parse(Logmeters[idx]) * 0.000621371192;
             latitudeId = double.Parse(Latitudes[idx]);
             longitudeId = double.Parse(Longitudes[idx]);
@@ -80,7 +80,7 @@
                         <option value="none">Route</option>
                         @foreach (var item in routes)
                         {
-                            <option value="@item">@item</option>
+                        <option value="@item">@item</option>
                         }
                     </InputSelect>
                 </li>
@@ -89,7 +89,7 @@
                         <option value="none">Direction</option>
                         @foreach (var item in directions)
                         {
-                            <option value="@item">@item</option>
+                        <option value="@item">@item</option>
                         }
                     </InputSelect>
                 </li>
@@ -98,7 +98,7 @@
                         <option value="none">Section</option>
                         @foreach (var item in sections)
                         {
-                            <option value="@item">@item</option>
+                        <option value="@item">@item</option>
                         }
                     </InputSelect>
                 </li>
@@ -107,19 +107,28 @@
                         <option value="none">Year</option>
                         @foreach (var item in years)
                         {
-                            <option value="@item">@item</option>
+                        <option value="@item">@item</option>
                         }
                     </InputSelect>
                 </li>
                 <li class="nav-item px-2">
                     <RadzenTextBox Placeholder="Search Logmile" Name="Logmile" Change=@(args => OnChangeLogmeter(args, "TextBox with placeholder")) />
                     @*<RadzenRequiredValidator Component="Logmile" Text="ZIP code is required" Popup=@popup Style="position: absolute" />
-                        <RadzenRegexValidator Component="Logmile" Text="ZIP code must be 5 digits" Pattern="\d{5}" Popup=@popup Style="position: absolute" />*@
+            <RadzenRegexValidator Component="Logmile" Text="ZIP code must be 5 digits" Pattern="\d{5}" Popup=@popup Style="position: absolute" />*@
                 </li>
-                <li class="nav-item px-2">
+                <li class="nav-item px-2" style="padding-bottom: 20px">
                     <input type="submit" class="btn btn-primary" value="Submit" disabled="@IsDisabledSubmit" />
                     <input type="reset" onclick="window.location.reload()" class="btn btn-primary" style="position: relative; " value="Clear" />
                 </li>
+                @*<li class="nav-item px-2">
+                    Center Camera: <RadzenSwitch @bind-Value=@displayCenter Style="margin-bottom: 20px" Change=@(args => OnChange(args, "Switch")) />
+                </li>
+                <li class="nav-item px-2">
+                    Right Camera: <RadzenSwitch @bind-Value=@displayRight Style="margin-bottom: 20px" Change=@(args => OnChange(args, "Switch")) />
+                </li>
+                <li class="nav-item px-2">
+                    Left Camera: <RadzenSwitch @bind-Value=@displayLeft Style="margin-bottom: 20px" Change=@(args => OnChange(args, "Switch")) />
+                </li>*@
                 <li class="nav-item px-2">
                     Logmile: @log
                 </li>
@@ -174,6 +183,9 @@
         public bool isPause = true;
         public bool spinning;
         public bool IsDisabledSubmit = true;
+        public bool displayRight = false;
+        public bool displayLeft = false;
+        public bool displayCenter = true; //display center camera by default
 
         mmhisContext db = new mmhisContext();
 

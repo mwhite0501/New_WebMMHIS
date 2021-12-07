@@ -247,37 +247,37 @@ iframe {
     }
 
 .divider {
-    width: 100px;
+    width: 60px;
     height: auto;
     display: inline-block;
 }
 
-.backbutton{
-    height: 72px;
-    width: 72px;
-    -webkit-appearance: none;
-    background-repeat: no-repeat;
-    border: none; 
+.backbutton {
+
+    border: none;
     outline: none;
     transform: rotateY(180deg);
     display: inline;
     /*padding-bottom: 500px;*/
+    position: relative;
+    bottom: 50px;
 }
 
 .forwardbutton {
-    height: 72px;
-    width: 72px;
-    -webkit-appearance: none;
-    background-repeat: no-repeat;
+
     border: none;
     outline: none;
     color: black;
     /*padding-bottom: 500px;*/
+    display: inline;
+    position: relative;
+    bottom: 50px;
 }
 
 .reversebutton {
     transform: rotate(180deg);
     color: black;
+    position: relative;
 }
 
 
@@ -293,3 +293,6 @@ iframe {
     padding-top: 70px;
 }
 
+.playprogress {
+    width: 1000px;
+}
