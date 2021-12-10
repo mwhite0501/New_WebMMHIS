@@ -4,6 +4,11 @@
 @using System.Collections;
 @using System.Timers;
 @using System.IO;
+@using System;
+@using Newtonsoft.Json;
+@using ImageResizer; 
+@using System.Drawing;
+
 @inject IJSRuntime JSRuntime
 @inject MmhisController controller
 @inject PageModel pageModel
@@ -18,15 +23,19 @@
 
         @if (spinning == true)
         {
-        <div class="spinner"></div>
+            <div class="spinner"></div>
         }
         @if (Images.Any())
         {
-
             int maxslide = Images.Count() - 1;
+
             @*<img src="@ImagesRight[idx]" style="width: 33%; height: auto; position: relative;" />*@
-            @*<img src="@Images[idx]"  style="width: 100%; height: auto; position: relative;" />*@
-            <RadzenImage Path="@Images[idx]" @onload="@(() => LoadImageAsync(Images[idx]))" loading="lazy" Style="width: 85%; height: auto; position: relative;" id="img"></RadzenImage>
+
+            var test = ConvertImageToByteArray(Images[idx]);
+            //var test0 = Resize2Max50Kbytes(test);
+            string test1 = Convert.ToBase64String(test);
+            <img src="data:image/jpg;base64, @test1" style="width: 85%; height: auto;"/>
+            @*<RadzenImage Path="@Images[idx]" @onload="@(() => LoadImageAsync(Images[idx]))" loading="lazy" Style="width: 85%; height: auto; position: relative;" id="img"></RadzenImage>*@
             @*<img src="@ImagesLeft[idx]" style="width: 33%; height: auto; position: relative;" />*@
             <RadzenSlider class="playprogress" @bind-Value="@idx" Style="width:85%;height:35px" Max="@maxslide"></RadzenSlider>
             log = double.Parse(Logmeters[idx]) * 0.000621371192;
@@ -35,34 +44,34 @@
 
         }
         @if (Images.Any()) //if there are any images loaded in the list, display these images
-    {
-        <div class="playpause">
+        {
+            <div class="playpause">
 
-            <button class="backbutton" @onmousedown="() => { idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1; isPause = true; }"><img src="/Images/skip_button.png" /></button>
+                <button class="backbutton" @onmousedown="() => { idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1; isPause = true; }"><img src="/Images/skip_button.png" /></button>
 
-            <div class="divider" />
+                <div class="divider" />
 
-            <input type="checkbox" value="None" id="reverse" name="check" />
-            <label for="reverse" class="reversebutton" tabindex=1 @onmousedown="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></label>
+                <input type="checkbox" value="None" id="reverse" name="check" />
+                <label for="reverse" class="reversebutton" tabindex=1 @onmousedown="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></label>
 
-            <div class="divider" />
+                <div class="divider" />
 
-            <input type="checkbox" value="None" id="playpause" name="check" />
-            <label for="playpause" tabindex=1 @onmousedown="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></label>
+                <input type="checkbox" value="None" id="playpause" name="check" />
+                <label for="playpause" tabindex=1 @onmousedown="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></label>
 
-            <div class="divider" />
+                <div class="divider" />
 
-            <button class="forwardbutton" @onmousedown="() => { idx = idx + 1 >= Images.Count() ? 0 : idx + 1; isPause = true; }"><img src="/Images/skip_button.png" /></button>
-        </div>
-    }
+                <button class="forwardbutton" @onmousedown="() => { idx = idx + 1 >= Images.Count() ? 0 : idx + 1; isPause = true; }"><img src="/Images/skip_button.png" /></button>
+            </div>
+        }
         <div class="inner-div">
             <div class="col-xl-6">
                 <RadzenGoogleMap ApiKey="" Style="width: 1500px; height: 740px; z-index: 1;" id="Map" Zoom="@zoom" Center="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId })" MapClick="@AsyncMapOperation">
                     <Markers>
                         @if (showArkansasMarker && Images.Any())
-                    {
-                        <RadzenGoogleMapMarker Title="Arkansas" Position="@(new GoogleMapPosition() { Lat = Convert.ToDouble(Latitudes[idx]), Lng = Convert.ToDouble(Longitudes[idx]) })" />
-                    }
+                        {
+                            <RadzenGoogleMapMarker Title="Arkansas" Position="@(new GoogleMapPosition() { Lat = Convert.ToDouble(Latitudes[idx]), Lng = Convert.ToDouble(Longitudes[idx]) })" />
+                        }
                     </Markers>
                 </RadzenGoogleMap>
             </div>
@@ -148,6 +157,8 @@
 
 
     @code{
+
+
         PageModel model;
         bool popup;
         //map settings ==========================================================================
@@ -160,7 +171,7 @@
         List<string> Logmeters = new List<string>();
         List<string> Latitudes = new List<string>();
         List<string> Longitudes = new List<string>();
-        List<string> UnmodifiedURLs = new List<string>();
+        List<string> unmodifiedURLs = new List<string>();
 
         public int idx;
         IEnumerable<int> negativeValues = new int[] { -100, 100 };
@@ -204,6 +215,7 @@
         public List<string> Images = new List<string>();
         //public List<string> ImagesLeft = new List<string>();
         //public List<string> ImagesRight = new List<string>();
+        public List<string> precachedImgs = new List<string>();
 
         async void LoadFileAsync(string path)
         {
@@ -226,6 +238,7 @@
             isPause = true;
             log = 0;
             RouteInfo.Clear();
+            idx = 0;
 
             Images.Clear();
             //ImagesRight.Clear();
@@ -334,12 +347,17 @@
             var latitudesStr = latitudesLst.Select(x => x.ToString());
             var longitudesStr = longitudesLst.Select(x => x.ToString());
 
-            for (var i = 0; i < frontImagesStr.Count(); i++)
-            {
-                frontImagesStr[i] = controller.ModifyURLs(frontImagesStr[i]);
-                //rightImagesStr[i] = controller.ModifyURLs(rightImagesStr[i]);
-                //leftImagesStr[i] = controller.ModifyURLs(leftImagesStr[i]);
-            }
+            List<string> preloadImgcpy = frontImagesStr; //unmodified URLs
+            List<string> swappedpreloadImgcpy = controller.PutFrontAtIndex(preloadImgcpy, IdxB);
+
+            unmodifiedURLs = frontImagesStr;
+
+            //for (var i = 0; i < frontImagesStr.Count(); i++)
+            //{
+            //    frontImagesStr[i] = controller.ModifyURLs(frontImagesStr[i]);
+            //    //rightImagesStr[i] = controller.ModifyURLs(rightImagesStr[i]);
+            //    //leftImagesStr[i] = controller.ModifyURLs(leftImagesStr[i]);
+            //}
 
             List<string> swappedPoints = controller.PutFrontAtIndex(frontImagesStr, IdxB);
 
@@ -351,16 +369,29 @@
             List<string> swappedLatitudes = controller.PutFrontAtIndex(latitudesStr.ToList(), IdxB);
             List<string> swappedLongitudes = controller.PutFrontAtIndex(longitudesStr.ToList(), IdxB);
 
-            UnmodifiedURLs = controller.PutFrontAtIndex(frontImagesStr, IdxB);
+            //modifiedURLs = controller.PutFrontAtIndex(frontImagesStr, IdxB);
             Images = swappedPoints;
+
             //ImagesRight = swappedPointsR;
             //ImagesLeft = swappedPointsL;
             Logmeters = swappedLogmeters;
             Latitudes = swappedLatitudes;
             Longitudes = swappedLongitudes;
 
+            //string[] imgz = new string[50];
+            //for (int i = 0; i < 50; i++)
+            //{
+            //    imgz[i] = Images[i];
+            //    await JSRuntime.InvokeVoidAsync("loadImage", imgz[i]);
+            //}
+
+            //var json = JsonConvert.SerializeObject(precachedImgs);
+
+
             spinning = false;
             await JSRuntime.InvokeVoidAsync("closeNav");
+
+
         }
         //==========================================================================================================================
         //==========================================================================================================================
@@ -400,10 +431,12 @@
         async Task LoadImageAsync(string pathway)
         {
             await JSRuntime.InvokeVoidAsync("loadImage", pathway);
+
+
             //return JSRuntime.InvokeVoidAsync("loadImage", pathway).ToString();
         }
 
-        
+
 
         protected override void OnInitialized()
         {
@@ -489,7 +522,7 @@
         //==========================================================================================================================
         public void findInitialPoint()
         {
-
+            idx = 0;
             IsDisabledDirection = true;
             IsDisabledSection = true;
             IsDisabledYear = true;
@@ -706,7 +739,7 @@
             {
                 time = new Timer();
                 //Set the time interval.
-                time.Interval = 290;
+                time.Interval = 250; //around 600 for tablets on cellular
                 time.Elapsed += OnTimeInterval;
                 time.AutoReset = true;
                 // Start the timer.
@@ -740,5 +773,42 @@
             time?.Dispose();
         }
 
+        public static byte[] ConvertImageToByteArray(string filePath)
+        {
+            using (var image = Image.FromFile(filePath))
+            {
+                using (var m = new MemoryStream())
+                {
+                    image.Save(m, image.RawFormat);
+                    return m.ToArray();
+                }
+            }
+        }
+
+        public static byte[] Resize2Max50Kbytes(byte[] byteImageIn)
+        {
+            byte[] currentByteImageArray = byteImageIn;
+            double scale = 1f;
+
+
+            MemoryStream inputMemoryStream = new MemoryStream(byteImageIn);
+            Image fullsizeImage = Image.FromStream(inputMemoryStream);
+
+            while (currentByteImageArray.Length > 50000)
+            {
+                Bitmap fullSizeBitmap = new Bitmap(fullsizeImage, new Size((int)(fullsizeImage.Width * scale), (int)(fullsizeImage.Height * scale)));
+                MemoryStream resultStream = new MemoryStream();
+
+                fullSizeBitmap.Save(resultStream, fullsizeImage.RawFormat);
+
+                currentByteImageArray = resultStream.ToArray();
+                resultStream.Dispose();
+                resultStream.Close();
+
+                scale -= 0.05f;
+            }
+
+            return currentByteImageArray;
+        }
 
     }

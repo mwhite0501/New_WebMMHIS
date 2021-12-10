@@ -84,6 +84,8 @@ namespace NewMMHIS_Web.Controllers
             return second.Concat(first).ToList();
         }
 
+
+
         public List<string> GetRouteInformation(double latitude, double longitude) //takes lat/long, finds the closest roadway point to it
         {
             List<string> RouteInformation = new List<string>();                    //should be a model instead of a list
@@ -296,4 +298,5 @@ namespace NewMMHIS_Web.Controllers
         }
         
     }
+
 }
