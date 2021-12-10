@@ -30,11 +30,10 @@
             int maxslide = Images.Count() - 1;
 
             @*<img src="@ImagesRight[idx]" style="width: 33%; height: auto; position: relative;" />*@
-
-            var test = ConvertImageToByteArray(Images[idx]);
-            //var test0 = Resize2Max50Kbytes(test);
-            string test1 = Convert.ToBase64String(test);
-            <img src="data:image/jpg;base64, @test1" style="width: 85%; height: auto;"/>
+            var byteArray = ConvertImageToByteArray(Images[idx]);
+            //var resizedArray = Resize2Max50Kbytes(byteArray);
+            string imgString = Convert.ToBase64String(byteArray);
+            <img src="data:image/jpg;base64, @imgString" style="width: 85%; height: auto;"/>
             @*<RadzenImage Path="@Images[idx]" @onload="@(() => LoadImageAsync(Images[idx]))" loading="lazy" Style="width: 85%; height: auto; position: relative;" id="img"></RadzenImage>*@
             @*<img src="@ImagesLeft[idx]" style="width: 33%; height: auto; position: relative;" />*@
             <RadzenSlider class="playprogress" @bind-Value="@idx" Style="width:85%;height:35px" Max="@maxslide"></RadzenSlider>
@@ -575,10 +574,10 @@
             var latitudesStr = latitudesLst.Select(x => x.ToString());
             var longitudesStr = longitudesLst.Select(x => x.ToString());
 
-            for (var i = 0; i < frontImagesStr.Count(); i++)
-            {
-                frontImagesStr[i] = controller.ModifyURLs(frontImagesStr[i]);
-            }
+            //for (var i = 0; i < frontImagesStr.Count(); i++)
+            //{
+            //    frontImagesStr[i] = controller.ModifyURLs(frontImagesStr[i]);
+            //}
 
             Images = frontImagesStr;
             Logmeters = logmetersStr.ToList();
@@ -619,10 +618,10 @@
 
                 var IdxB = allPointsBeforeLst.Count(); //4759 points before
 
-                for (var i = 0; i < frontImagesStr.Count(); i++)
-                {
-                    frontImagesStr[i] = controller.ModifyURLs(frontImagesStr[i]);
-                }
+                //for (var i = 0; i < frontImagesStr.Count(); i++)
+                //{
+                //    frontImagesStr[i] = controller.ModifyURLs(frontImagesStr[i]);
+                //}
                 List<string> swappedPoints = controller.PutFrontAtIndex(frontImagesStr, IdxB);
                 List<string> swappedLogmeters = controller.PutFrontAtIndex(logmetersStr.ToList(), IdxB);
                 List<string> swappedLatitudes = controller.PutFrontAtIndex(latitudesStr.ToList(), IdxB);
