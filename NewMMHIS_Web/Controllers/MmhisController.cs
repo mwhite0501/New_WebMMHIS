@@ -111,7 +111,7 @@ namespace NewMMHIS_Web.Controllers
             {
                 while(getClosestPoint.Any() == false) //loop and increase the variance until we do
                 {
-                    variance += 0.0005;
+                    variance += 0.0006;
                     getClosestPoint = from ii in _context.MmhisDamus
                                       join t in _context.MmhisDians
                                       on ii.Ld equals t.Lu
@@ -298,5 +298,6 @@ namespace NewMMHIS_Web.Controllers
         }
         
     }
+  
 
 }
