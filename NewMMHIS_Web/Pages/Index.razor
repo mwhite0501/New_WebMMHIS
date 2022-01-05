@@ -78,7 +78,7 @@
         }
         <div class="inner-div">
             <div class="col-xl-6">
-                <RadzenGoogleMap ApiKey="AIzaSyCYX57YlmnyOVkLhW-WWHSBUBWCUgitQNc" Style="width: 1500px; height: 740px; z-index: 1;" id="Map" Zoom="@zoom" Center="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId })" MapClick="@AsyncMapOperation">
+                <RadzenGoogleMap ApiKey="" Style="width: 1500px; height: 740px; z-index: 1;" id="Map" Zoom="@zoom" Center="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId })" MapClick="@AsyncMapOperation">
                     <Markers>
                         @if (showArkansasMarker && Images.Any())
                         {
@@ -881,7 +881,7 @@
             int fullsizeImageHeight = fullsizeImage.Height;
 
 
-            scale = 400.0f / fullsizeImageWidth;
+            scale = 400.0f / fullsizeImageWidth; //decrease this number for lower quality image
             fullsizeImageWidth = (int)(fullsizeImageWidth * scale);
             fullsizeImageHeight = (int)(fullsizeImageHeight * scale);
             
