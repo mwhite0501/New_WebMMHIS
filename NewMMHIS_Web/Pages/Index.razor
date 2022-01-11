@@ -21,7 +21,8 @@
 
 <button class="openbtn" onclick="openNav()">&#9776; Search</button>
 <div id="main" style="margin-left: 250px">
-
+    @if(IsLandscapeMode == false) //==========================================LANDSCAPE MODE OFF: DEFAULT====================================================
+    {
     <div class="outer-div">
 
         @if (spinning == true)
@@ -78,7 +79,7 @@
         }
         <div class="inner-div">
             <div class="col-xl-6">
-                <RadzenGoogleMap ApiKey="" Style="width: 1500px; height: 740px; z-index: 1;" id="Map" Zoom="@zoom" Center="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId })" MapClick="@AsyncMapOperation">
+                <RadzenGoogleMap ApiKey="@apiKey" Style="width: 1500px; height: 740px; z-index: 1;" id="Map" Zoom="@zoom" Center="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId })" MapClick="@AsyncMapOperation">
                     <Markers>
                         @if (showArkansasMarker && Images.Any())
                         {
@@ -89,7 +90,78 @@
             </div>
         </div>
     </div>
+    }
+     @if(IsLandscapeMode == true) //==============================================LANDSCAPE MODE ON=====================================================
+    {
+    <div class="row">
+        <div class="column">
+        @if (spinning == true)
+        {
+            <div class="spinner"></div>
+        }
+        @if (Images.Any())
+        {
+            int maxslide = Images.Count() - 1;
 
+            @*<img src="@ImagesRight[idx]" style="width: 33%; height: auto; position: relative;" />*@
+            var byteArray = ConvertImageToByteArray(unmodifiedURLs[idx]);
+            if(isHighRes == false)
+            {
+                var resizedArray = Resize2Max50Kbytes(byteArray);
+                string imgString = Convert.ToBase64String(resizedArray);
+                <img src="data:image/jpg;base64, @imgString" style="width: 100%; height: auto;"/>
+            }
+            else
+            {
+                string imgString = Convert.ToBase64String(byteArray);
+                <img src="data:image/jpg;base64, @imgString" style="width: 100%; height: auto;"/>
+            }
+
+            @*<img src=@Images[idx] style="width: 85%; height: auto;"/>*@
+            @*<RadzenImage Path="@Images[idx]" @onload="@(() => LoadImageAsync(Images[idx]))" loading="lazy" Style="width: 85%; height: auto; position: relative;" id="img"></RadzenImage>*@
+            @*<img src="@ImagesLeft[idx]" style="width: 33%; height: auto; position: relative;" />*@
+            <RadzenSlider class="playprogress" @bind-Value="@idx" Style="width:100%;height:35px" Max="@maxslide"></RadzenSlider>
+            log = double.Parse(Logmeters[idx]) * 0.000621371192;
+            latitudeId = double.Parse(Latitudes[idx]);
+            longitudeId = double.Parse(Longitudes[idx]);
+
+        }
+        </div>
+        <div class="column">
+            <div class="col-xl-6">
+                <RadzenGoogleMap ApiKey="@apiKey" Style="width: auto; height: 400px;" id="Map" Zoom="@zoom" Center="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId })" MapClick="@AsyncMapOperation">
+                    <Markers>
+                        @if (showArkansasMarker && Images.Any())
+                        {
+                            <RadzenGoogleMapMarker Title="Arkansas" Position="@(new GoogleMapPosition() { Lat = Convert.ToDouble(Latitudes[idx]), Lng = Convert.ToDouble(Longitudes[idx]) })" />
+                        }
+                    </Markers>
+                </RadzenGoogleMap>
+            </div>
+        </div>
+        @if (Images.Any()) //if there are any images loaded in the list, display these images
+        {
+            <div class="playpause">
+
+                <button class="backbutton" @onmousedown="() => { idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1; isPause = true; }"><img src="/Images/skip_button.png" /></button>
+
+                <div class="divider" />
+
+                <input type="checkbox" value="None" id="reverse" name="check" />
+                <label for="reverse" class="reversebutton" tabindex=1 @onmousedown="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></label>
+
+                <div class="divider" />
+
+                <input type="checkbox" value="None" id="playpause" name="check" />
+                <label for="playpause" tabindex=1 @onmousedown="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></label>
+
+                <div class="divider" />
+
+                <button class="forwardbutton" @onmousedown="() => { idx = idx + 1 >= Images.Count() ? 0 : idx + 1; isPause = true; }"><img src="/Images/skip_button.png" /></button>
+            </div>
+        }
+    </div>
+    }
     <br>
     <div id="mySidebar" class="sidebar">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
@@ -101,7 +173,7 @@
                         <option value="none">Route</option>
                         @foreach (var item in routes)
                         {
-                        <option value="@item">@item</option>
+                            <option value="@item">@item</option>
                         }
                     </InputSelect>
                 </li>
@@ -110,7 +182,7 @@
                         <option value="none">Direction</option>
                         @foreach (var item in directions)
                         {
-                        <option value="@item">@item</option>
+                            <option value="@item">@item</option>
                         }
                     </InputSelect>
                 </li>
@@ -119,7 +191,7 @@
                         <option value="none">Section</option>
                         @foreach (var item in sections)
                         {
-                        <option value="@item">@item</option>
+                            <option value="@item">@item</option>
                         }
                     </InputSelect>
                 </li>
@@ -128,12 +200,12 @@
                         <option value="none">Year</option>
                         @foreach (var item in years)
                         {
-                        <option value="@item">@item</option>
+                            <option value="@item">@item</option>
                         }
                     </InputSelect>
                 </li>
                 <li class="nav-item px-2">
-                    <RadzenTextBox Placeholder="Search Logmile" Name="Logmile" Change=@(args => OnChangeLogmeter(args, "TextBox with placeholder")) />
+                    <RadzenTextBox Placeholder="Search Logmile" Disabled="@IsDisabledLog" Name="Logmile" Change=@(args => OnChangeLogmeter(args, "TextBox with placeholder")) />
                     @*<RadzenRequiredValidator Component="Logmile" Text="ZIP code is required" Popup=@popup Style="position: absolute" />
                      <RadzenRegexValidator Component="Logmile" Text="ZIP code must be 5 digits" Pattern="\d{5}" Popup=@popup Style="position: absolute" />*@
                 </li>
@@ -151,23 +223,26 @@
                 <li class="nav-item px-2">
                     Left Camera: <RadzenSwitch @bind-Value=@displayLeft Style="margin-bottom: 20px" Change=@(args => OnChange(args, "Switch")) />
                 </li>*@
-                <li class="nav-item px-2">
+                <li class="nav-item px-2" style="color:white">
                     Beginning Logmile: <RadzenTextBox Placeholder="BegLog" Name="BegLog" ReadOnly="true" Value="@Math.Round(begLogmile, 3).ToString()" />
                 </li>
-                <li class="nav-item px-2">
+                <li class="nav-item px-2" style="color:white">
                     Ending Logmile:  <RadzenTextBox Placeholder="EndLog" Name="EndLog" ReadOnly="true" Value="@Math.Round(endLogmile, 3).ToString()"/>
                 </li>
-                <li class="nav-item px-2">
+                <li class="nav-item px-2" style="color:white">
                     Current Logmile:  <RadzenTextBox Placeholder="CurLog" Name="CurLog" ReadOnly="true" Value="@Math.Round(log, 3).ToString()"/>
                 </li>
-                <li class="nav-item px-2">
+                <li class="nav-item px-2" style="color:white">
                     Latitude: <RadzenTextBox Placeholder="Latitude" Name="Lat" ReadOnly="true" Value="@latitudeId.ToString()"/>
                 </li>
-                <li class="nav-item px-2">
+                <li class="nav-item px-2" style="color:white">
                     Longitude:  <RadzenTextBox Placeholder="Longitude" Name="Long" ReadOnly="true" Value="@longitudeId.ToString()"/>
                 </li>
-                <li class="nav-item px-2" style="padding-bottom: 20px; padding-top:20px">
+                <li class="nav-item px-2" style="padding-bottom: 20px; padding-top:20px; color:white">
                     High Resolution Mode:<RadzenSwitch @bind-Value=@isHighRes  Style="float: right; margin-left: 5px;"/>
+                </li>
+                <li class="nav-item px-2" style="padding-bottom: 20px; color:white">
+                    Landscape Mode:<RadzenSwitch @bind-Value=@IsLandscapeMode  Style="float: right; margin-left: 5px;"/>
                 </li>
             </EditForm>
 
@@ -180,6 +255,7 @@
 
 @code{
     //List<string> resizedImageStrings = new List<string>();
+    protected string apiKey = "";
     bool isHighRes = false;
     List<string> resizedImageStrings = new List<string>();
     PageModel model;
@@ -238,6 +314,8 @@
     protected bool IsDisabledDirection = true;
     protected bool IsDisabledSection = true;
     protected bool IsDisabledYear = true;
+    protected bool IsDisabledLog = true;
+    protected bool IsLandscapeMode = false;
     public List<string> Images = new List<string>();
     //public List<string> ImagesLeft = new List<string>();
     //public List<string> ImagesRight = new List<string>();
@@ -262,6 +340,7 @@
         IsDisabledSection = true;
         IsDisabledDirection = true;
         IsDisabledYear = true;
+        IsDisabledLog = true;
         isPause = true;
         log = 0;
         RouteInfo.Clear();
@@ -410,6 +489,8 @@
         Longitudes = swappedLongitudes;
 
         spinning = false;
+        IsDisabledLog = false;
+        IsDisabledSubmit = false;
         //await JSRuntime.InvokeVoidAsync("closeNav"); 
 
     }
@@ -545,6 +626,7 @@
     public void yearChanged(string yearEvent)
     {
         yearId = yearEvent;
+        IsDisabledLog = false; //allow log search
         IsDisabledSubmit = false;
     }
     //==========================================================================================================================
@@ -604,6 +686,9 @@
         var logmetersStr = logmetersLst.Select(x => x.ToString());
         var latitudesStr = latitudesLst.Select(x => x.ToString());
         var longitudesStr = longitudesLst.Select(x => x.ToString());
+
+        begLogmile = logmetersLst.First() * 0.000621371;
+        endLogmile = logmetersLst.Last() * 0.000621371;
 
         //for (var i = 0; i < frontImagesStr.Count(); i++)
         //{
@@ -678,7 +763,7 @@
         showArkansasMarker = true;
         currentCount++;
         spinning = false;
-        await JSRuntime.InvokeVoidAsync("closeNav");
+        //await JSRuntime.InvokeVoidAsync("closeNav");
     }
 
     async Task AsyncClearAll()    // this is an async task
