@@ -152,17 +152,22 @@
                     Left Camera: <RadzenSwitch @bind-Value=@displayLeft Style="margin-bottom: 20px" Change=@(args => OnChange(args, "Switch")) />
                 </li>*@
                 <li class="nav-item px-2">
-                    Logmile: @log
+                    Beginning Logmile: <RadzenTextBox Placeholder="BegLog" Name="BegLog" ReadOnly="true" Value="@Math.Round(begLogmile, 3).ToString()" />
                 </li>
                 <li class="nav-item px-2">
-                    Latitude: @latitudeId
+                    Ending Logmile:  <RadzenTextBox Placeholder="EndLog" Name="EndLog" ReadOnly="true" Value="@Math.Round(endLogmile, 3).ToString()"/>
                 </li>
                 <li class="nav-item px-2">
-                    Longitudes: @longitudeId
+                    Current Logmile:  <RadzenTextBox Placeholder="CurLog" Name="CurLog" ReadOnly="true" Value="@Math.Round(log, 3).ToString()"/>
                 </li>
-                <li class="nav-item px-2" style="padding-bottom: 20px">
-
-                    High Resolution Mode<RadzenCheckBox @bind-Value=@isHighRes Style="float: right; margin-left: 5px;"></RadzenCheckBox>
+                <li class="nav-item px-2">
+                    Latitude: <RadzenTextBox Placeholder="Latitude" Name="Lat" ReadOnly="true" Value="@latitudeId.ToString()"/>
+                </li>
+                <li class="nav-item px-2">
+                    Longitude:  <RadzenTextBox Placeholder="Longitude" Name="Long" ReadOnly="true" Value="@longitudeId.ToString()"/>
+                </li>
+                <li class="nav-item px-2" style="padding-bottom: 20px; padding-top:20px">
+                    High Resolution Mode:<RadzenSwitch @bind-Value=@isHighRes  Style="float: right; margin-left: 5px;"/>
                 </li>
             </EditForm>
 
@@ -197,6 +202,8 @@
     int value = 0;
     int negativeValue = 0;
     int valueWithStep = 30;
+    double begLogmile { get; set; }
+    double endLogmile { get; set; }
     double logmile { get; set; }
     double log { get; set; }
     private List<string> counties;
@@ -367,6 +374,9 @@
         var latitudesStr = latitudesLst.Select(x => x.ToString());
         var longitudesStr = longitudesLst.Select(x => x.ToString());
 
+        begLogmile = logmetersLst.First() * 0.000621371;
+        endLogmile = logmetersLst.Last() * 0.000621371;
+
         List<string> preloadImgcpy = frontImagesStr; //unmodified URLs
         List<string> swappedpreloadImgcpy = controller.PutFrontAtIndex(preloadImgcpy, IdxB);
 
@@ -400,7 +410,7 @@
         Longitudes = swappedLongitudes;
 
         spinning = false;
-        await JSRuntime.InvokeVoidAsync("closeNav"); 
+        //await JSRuntime.InvokeVoidAsync("closeNav"); 
 
     }
 
