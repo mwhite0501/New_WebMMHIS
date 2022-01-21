@@ -31,6 +31,7 @@
         }
         @if (Images.Any())
         {
+            zoom=15;
             int maxslide = Images.Count() - 1;
 
             @*<img src="@ImagesRight[idx]" style="width: 33%; height: auto; position: relative;" />*@
@@ -101,6 +102,7 @@
         }
         @if (Images.Any())
         {
+            zoom = 13;
             int maxslide = Images.Count() - 1;
 
             @*<img src="@ImagesRight[idx]" style="width: 33%; height: auto; position: relative;" />*@
@@ -161,7 +163,7 @@
             </div>
         }
     </div>
-    }
+    }@*=================================================================END LANDSCAPE MODE=====================================================================*@
     <br>
     <div id="mySidebar" class="sidebar">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
@@ -254,8 +256,9 @@
 
 
 @code{
+    //want to rethink input so that it stays free until submit
     //List<string> resizedImageStrings = new List<string>();
-    protected string apiKey = "";
+    protected string apiKey = "AIzaSyBt-ngHyHKTgXm3PiHRNctFU08f2GXE8no";
     bool isHighRes = false;
     List<string> resizedImageStrings = new List<string>();
     PageModel model;
@@ -583,7 +586,7 @@
         if (firstRender)
         {
             //return Task.Delay(0);
-            await JSRuntime.InvokeVoidAsync("setTitle", "Arkansas Highway Viewer");
+            await JSRuntime.InvokeVoidAsync("setTitle", "Arkansas Highways");
         }
     }
 
