@@ -34,18 +34,19 @@ namespace NewMMHIS_Web
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<mmhisContext>();
-            services.AddSingleton<PageModel>();
+            services.AddScoped<mmhisContext>();
+            services.AddScoped<PageModel>();
             services.AddScoped<DialogService>(); //Radzen stuff
             services.AddScoped<NotificationService>(); //Radzen stuff
             services.AddScoped<TooltipService>(); //Radzen stuff
             services.AddScoped<ContextMenuService>(); //Radzen stuff
             services.AddServerSideBlazor().AddCircuitOptions(options => { options.DetailedErrors = true; });
+            services.AddSingleton<CounterService>();
             services.AddHttpClient("mmhisweb", client => { 
                 client.BaseAddress = new Uri("https://localhost:44310/");
             });
 
-            services.AddSingleton<MmhisController>();
+            services.AddScoped<MmhisController>();
             services.AddMvc(setupAction: options => options.EnableEndpointRouting = false)
                 .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_3_0);
         }

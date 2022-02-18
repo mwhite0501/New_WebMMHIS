@@ -18,7 +18,7 @@
 @inject HttpClient _httpClient
 
     <meta charset="utf-8">
-
+    <Counter></Counter>
 <button class="openbtn" onclick="openNav()">&#9776; Search</button>
 <div id="main" style="margin-left: 250px">
     @if(IsLandscapeMode == false) //==========================================LANDSCAPE MODE OFF: DEFAULT====================================================
@@ -34,19 +34,31 @@
             zoom=15;
             int maxslide = Images.Count() - 1;
 
-            @*<img src="@ImagesRight[idx]" style="width: 33%; height: auto; position: relative;" />*@
-            var byteArray = ConvertImageToByteArray(unmodifiedURLs[idx]);
-            if(isHighRes == false)
-            {
-                var resizedArray = Resize2Max50Kbytes(byteArray);
-                string imgString = Convert.ToBase64String(resizedArray);
-                <img src="data:image/jpg;base64, @imgString" style="width: 85%; height: auto;"/>
-            }
-            else
-            {
-                string imgString = Convert.ToBase64String(byteArray);
-                <img src="data:image/jpg;base64, @imgString" style="width: 85%; height: auto;"/>
-            }
+                @*<img src="@ImagesRight[idx]" style="width: 33%; height: auto; position: relative;" />*@
+                var byteArray = ConvertImageToByteArray(unmodifiedURLs[idx]);
+@*                var byteArrayRight = ConvertImageToByteArray(unmodifiedURLsRight[idx]);
+                var byteArrayLeft = ConvertImageToByteArray(unmodifiedURLsLeft[idx]);*@
+                if(isHighRes == false)
+                {
+                    var resizedArray = Resize2Max50Kbytes(byteArray);
+@*                    var resizedArrayRight = Resize2Max50Kbytes(byteArrayRight);
+                    var resizedArrayLeft = Resize2Max50Kbytes(byteArrayLeft);*@
+
+                    string imgString = Convert.ToBase64String(resizedArray);
+@*                    string imgStringRight = Convert.ToBase64String(resizedArrayRight);
+                    string imgStringLeft = Convert.ToBase64String(resizedArrayLeft);*@
+@*                    <img src="data:image/jpg;base64, @imgStringRight" style="width: 33%; height: auto;"/>*@
+                    <img src="data:image/jpg;base64, @imgString" style="width: 85%; height: auto;"/>
+@*                    <img src="data:image/jpg;base64, @imgStringLeft" style="width: 33%; height: auto;"/>*@
+
+
+                }
+                else
+                {
+                    string imgString = Convert.ToBase64String(byteArray);
+                
+                    <img src="data:image/jpg;base64, @imgString" style="width: 85%; height: auto;"/>
+                }
 
             @*<img src=@Images[idx] style="width: 85%; height: auto;"/>*@
             @*<RadzenImage Path="@Images[idx]" @onload="@(() => LoadImageAsync(Images[idx]))" loading="lazy" Style="width: 85%; height: auto; position: relative;" id="img"></RadzenImage>*@
@@ -275,6 +287,8 @@
     List<string> Longitudes = new List<string>();
     List<string> modifiedURLs = new List<string>();
     List<string> unmodifiedURLs = new List<string>();
+    List<string> unmodifiedURLsRight = new List<string>();
+    List<string> unmodifiedURLsLeft = new List<string>();
 
     public int idx;
     IEnumerable<int> negativeValues = new int[] { -100, 100 };
@@ -320,8 +334,8 @@
     protected bool IsDisabledLog = true;
     protected bool IsLandscapeMode = false;
     public List<string> Images = new List<string>();
-    //public List<string> ImagesLeft = new List<string>();
-    //public List<string> ImagesRight = new List<string>();
+    public List<string> ImagesLeft = new List<string>();
+    public List<string> ImagesRight = new List<string>();
     public List<string> precachedImgs = new List<string>();
     NetworkInterface[] adapters = NetworkInterface.GetAllNetworkInterfaces();
 
@@ -472,6 +486,8 @@
         //}
 
         List<string> swappedPoints = controller.PutFrontAtIndex(frontImagesStr, IdxB);
+        //List<string> swappedPointsRight = controller.PutFrontAtIndex(rightImagesStr, IdxB); 
+        //List<string> swappedPointsLeft = controller.PutFrontAtIndex(leftImagesStr, IdxB);
 
         //List<string> swappedPointsR = controller.PutFrontAtIndex(rightImagesStr, IdxB);
 
@@ -482,8 +498,13 @@
         List<string> swappedLongitudes = controller.PutFrontAtIndex(longitudesStr.ToList(), IdxB);
 
         unmodifiedURLs = swappedPoints;
+        //unmodifiedURLsRight = swappedPointsRight;
+        //unmodifiedURLsLeft = swappedPointsLeft;
         modifiedURLs = controller.PutFrontAtIndex(frontImagesStr, IdxB);
+
         Images = swappedPoints;
+        //ImagesRight = swappedPointsRight;
+        //ImagesLeft = swappedPointsLeft;
 
         //ImagesRight = swappedPointsR;
         //ImagesLeft = swappedPointsL;
