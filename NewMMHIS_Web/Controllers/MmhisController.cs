@@ -60,6 +60,7 @@ namespace NewMMHIS_Web.Controllers
             var strList = roads.Select(r => r.TheYear).Distinct().OrderByDescending(x => x).ToList();
             return strList;
         }
+
         public List<long> removePoints(List<long> Points, List<long> setDiff) //takes the set difference between two lists and removes it from the list
         {                                                                     //this is done to make sure both lists match up
             foreach (long point in setDiff)
@@ -151,6 +152,11 @@ namespace NewMMHIS_Web.Controllers
             var logInfo = from i in _context.MmhisDians
                           where i.Ld == getClosestPointLd.FirstOrDefault()
                           select i.Logmeter0;// * 0.000621371;
+
+            var getNotes = from i in _context.MmhisDamus
+                          where i.Ld == getClosestPoint.FirstOrDefault()
+                          select i.Note;
+
             var latInfoP = latInfo.FirstOrDefault().ToString();
             var longInfoP = longInfo.FirstOrDefault().ToString();
             var logInfoP = logInfo.FirstOrDefault().ToString();
@@ -167,6 +173,9 @@ namespace NewMMHIS_Web.Controllers
             RouteInformation.Add(longInfoP);
             RouteInformation.Add(dainsLd);
             RouteInformation.Add(dainsLu);
+
+            RouteInformation.Add(getNotes.FirstOrDefault());
+
             return RouteInformation;
         }
 
@@ -182,6 +191,13 @@ namespace NewMMHIS_Web.Controllers
                      && r.Section == p.Section
                      && r.TheYear == p.Year
                      select r;
+
+            var roadIdNote = from r in _context.MmhisDamus                                   //get notes on specific route, section, direction, year combo
+                         where r.Route == p.Route
+                         && r.MmhisDirection == p.Direction
+                         && r.Section == p.Section
+                         && r.TheYear == p.Year
+                         select r.Note;
 
             var roadIdLt = roadId.FirstOrDefault();
             
@@ -199,6 +215,7 @@ namespace NewMMHIS_Web.Controllers
             dataModel.Roadway = roadId;
             dataModel.Points = points;
             dataModel.PointData = pointData;
+            dataModel.Notes = roadIdNote;
             
             return dataModel;
         }

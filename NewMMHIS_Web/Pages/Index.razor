@@ -31,6 +31,10 @@
         }
         @if (Images.Any())
         {
+            if (notes.Any())
+            {
+                <p style="color:red"><b>NOTE: @notes.FirstOrDefault().ToUpper()</b></p>
+            } 
             zoom=15;
             int maxslide = Images.Count() - 1;
 
@@ -270,7 +274,7 @@
 @code{
     //want to rethink input so that it stays free until submit
     //List<string> resizedImageStrings = new List<string>();
-    protected string apiKey = "";
+    protected string apiKey = ;
     bool isHighRes = false;
     List<string> resizedImageStrings = new List<string>();
     PageModel model;
@@ -337,6 +341,7 @@
     public List<string> ImagesLeft = new List<string>();
     public List<string> ImagesRight = new List<string>();
     public List<string> precachedImgs = new List<string>();
+    public List<string> notes = new List<string>();
     NetworkInterface[] adapters = NetworkInterface.GetAllNetworkInterfaces();
 
     async void LoadFileAsync(string path)
@@ -392,7 +397,7 @@
         pageModel.Longitude = longitudeId;
         pageModel.Ld = (long)Convert.ToDouble(RouteInfo[7]); //dains Ld
         pageModel.Lu = (long)Convert.ToDouble(RouteInfo[8]);// dains Lu
-        var dataModel = controller.getData(pageModel); //dataModel.Roadway, dataModel.Points, dataModel.PointData
+        var dataModel = controller.getData(pageModel); //dataModel.Roadway, dataModel.Points, dataModel.PointData, dataModel.Notes
 
         var allPoints = from r in dataModel.Points //4772
                         select r.Ld;
@@ -409,6 +414,8 @@
                             where r.FieldName == "f"
                             orderby r.Lu ascending
                             select r.Lu;
+
+        notes = dataModel.Notes.ToList();
 
         var PointData = frontImagesLu.ToList();
         var Points = allPoints.ToList();
@@ -702,6 +709,8 @@
                          where r.FieldName == "f"
                          orderby r.Lu ascending
                          select p.Longitude;
+
+        notes = dataModel.Notes.ToList();
 
         var frontImagesStr = frontImages.ToList();
         var logmetersLst = log.ToList();
