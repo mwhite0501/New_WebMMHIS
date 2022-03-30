@@ -56,6 +56,6 @@ function preloadImages(array) {
     }
 }
 
-
-
-
+function isDevice() {
+    return /android|Android|webos|iPhone|iPad|Blackberry|iPod|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(navigator.userAgent);
+}

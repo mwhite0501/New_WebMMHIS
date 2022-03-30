@@ -18,6 +18,7 @@
 @inject HttpClient _httpClient
 
     <meta charset="utf-8">
+
     <Counter></Counter>
 <button class="openbtn" onclick="openNav()">&#9776; Search</button>
 <div id="main" style="margin-left: 250px">
@@ -75,24 +76,49 @@
         }
         @if (Images.Any()) //if there are any images loaded in the list, display these images
         {
-            <div class="playpause">
+                if(isMobile == false) //if a mobile device is not detected. JSInterop was used
+                {
+                    <div class="playpause">
 
-                <button class="backbutton" @onmousedown="() => { idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1; isPause = true; }"><img src="/Images/skip_button.png" /></button>
+                    <button class="backbutton" @onmousedown="() => { idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1; isPause = true; }"><img src="/Images/skip_button.png" /></button>
 
-                <div class="divider" />
+                    <div class="divider" />
 
-                <input type="checkbox" value="None" id="reverse" name="check" />
-                <label for="reverse" class="reversebutton" tabindex=1 @onmousedown="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></label>
+                    <input type="checkbox" value="None" id="reverse" name="check" />
+                    <label for="reverse" class="reversebutton" tabindex=1 @onmousedown="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></label>
 
-                <div class="divider" />
+                    <div class="divider" />
 
-                <input type="checkbox" value="None" id="playpause" name="check" />
-                <label for="playpause" tabindex=1 @onmousedown="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></label>
+                    <input type="checkbox" value="None" id="playpause" name="check" />
+                    <label for="playpause" tabindex=1 @onmousedown="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></label>
 
-                <div class="divider" />
+                    <div class="divider" />
 
-                <button class="forwardbutton" @onmousedown="() => { idx = idx + 1 >= Images.Count() ? 0 : idx + 1; isPause = true; }"><img src="/Images/skip_button.png" /></button>
-            </div>
+                    <button class="forwardbutton" @onmousedown="() => { idx = idx + 1 >= Images.Count() ? 0 : idx + 1; isPause = true; }"><img src="/Images/skip_button.png" /></button>
+                    </div>
+                }
+                else
+                {
+                    <div class="playpause">
+
+                    <button class="backbutton" @ontouchstart="() => { idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1; isPause = true; }"><img src="/Images/skip_button.png" /></button>
+
+                    <div class="divider" />
+
+                    <input type="checkbox" value="None" id="reverse" name="check" />
+                    <label for="reverse" class="reversebutton" tabindex=1 @ontouchstart="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></label>
+
+                    <div class="divider" />
+
+                    <input type="checkbox" value="None" id="playpause" name="check" />
+                    <label for="playpause" tabindex=1 @ontouchstart="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></label>
+
+                    <div class="divider" />
+
+                    <button class="forwardbutton" @ontouchstart="() => { idx = idx + 1 >= Images.Count() ? 0 : idx + 1; isPause = true; }"><img src="/Images/skip_button.png" /></button>
+                    </div>
+                }
+
         }
         <div class="inner-div">
             <div class="col-xl-6">
@@ -275,6 +301,7 @@
     //want to rethink input so that it stays free until submit
     //List<string> resizedImageStrings = new List<string>();
     protected string apiKey = "";
+    bool isMobile;
     bool isHighRes = false;
     List<string> resizedImageStrings = new List<string>();
     PageModel model;
@@ -573,7 +600,7 @@
     async Task LoadImageAsync(string pathway)
     {
         await JSRuntime.InvokeVoidAsync("loadImage", pathway);
-
+        
 
         //return JSRuntime.InvokeVoidAsync("loadImage", pathway).ToString();
     }
@@ -614,7 +641,12 @@
         if (firstRender)
         {
             //return Task.Delay(0);
+
             await JSRuntime.InvokeVoidAsync("setTitle", "Arkansas Highways");
+            isMobile = await JSRuntime.InvokeAsync<bool>("isDevice");
+                
+            StateHasChanged();
+
         }
     }
 

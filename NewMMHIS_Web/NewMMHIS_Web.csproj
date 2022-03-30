@@ -19,7 +19,7 @@
     <PackageReference Include="Microsoft.SqlServer.Types" Version="14.0.1016.290" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Radzen.Blazor" Version="3.11.8" />
+    <PackageReference Include="Radzen.Blazor" Version="3.16.6" />
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
   </ItemGroup>
 
