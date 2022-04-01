@@ -20,6 +20,12 @@
 <meta charset="utf-8">
 
 <button class="openbtn" onclick="openNav()">&#9776; Search</button>
+@isMobile
+@isMobile
+@isMobile
+@isMobile
+@isMobile
+@isMobile
 <div id="main" style="margin-left: 250px">
     @if(IsLandscapeMode == false) //==========================================LANDSCAPE MODE OFF: DEFAULT====================================================
     {
@@ -52,7 +58,7 @@
 @*              string imgStringRight = Convert.ToBase64String(resizedArrayRight);
                 string imgStringLeft = Convert.ToBase64String(resizedArrayLeft);*@
 @*              <img src="data:image/jpg;base64, @imgStringRight" style="width: 33%; height: auto;"/>*@
-                <img src="data:image/jpg;base64, @imgString" style="width: 100%; "/>
+                <img src="data:image/jpg;base64, @imgString" style="width: 85%; "/>
 @*              <img src="data:image/jpg;base64, @imgStringLeft" style="width: 33%; height: auto;"/>*@
 
 
@@ -61,13 +67,13 @@
             {
                 string imgString = Convert.ToBase64String(byteArray);
                
-                <img src="data:image/jpg;base64, @imgString" style="width: 100%;"/>
+                <img src="data:image/jpg;base64, @imgString" style="width: 85%;"/>
             }
 
             @*<img src=@Images[idx] style="width: 85%; height: auto;"/>*@
             @*<RadzenImage Path="@Images[idx]" @onload="@(() => LoadImageAsync(Images[idx]))" loading="lazy" Style="width: 85%; height: auto; position: relative;" id="img"></RadzenImage>*@
             @*<img src="@ImagesLeft[idx]" style="width: 33%; height: auto; position: relative;" />*@
-            <RadzenSlider class="playprogress" @bind-Value="@idx" Style="width:100%;height:35px" Max="@maxslide"></RadzenSlider>
+            <RadzenSlider class="playprogress" @bind-Value="@idx" Style="width:85%;height:35px" Max="@maxslide"></RadzenSlider>
             log = double.Parse(Logmeters[idx]) * 0.000621371192;
             latitudeId = double.Parse(Latitudes[idx]);
             longitudeId = double.Parse(Longitudes[idx]);
@@ -80,7 +86,7 @@
                     <menu>
                     <button class="rw"  @ontouchstart="() => { idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1; isPause = true; }" ></button>
                     <button class="play" style="transform: rotate(180deg); transform: rotateY(180deg);" @ontouchstart="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></button>
-                    <button class="pause" @ontouchstart="() => {isPause = true;}"></button>
+                    <button class="pause" @ontouchstart="() => {for(int i = 0; i<4;i++){isPause=true;}}"></button>
                     <button class="play" @ontouchstart="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></button>
                     <button class="ff"  @ontouchstart="() => { idx = idx + 1 >= Images.Count() ? 0 : idx + 1; isPause = true; }"></button>
                     </menu>
@@ -90,7 +96,7 @@
                     <menu>
                     <button class="rw"  @onmousedown="() => { idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1; isPause = true; }"></button>
                     <button class="play" style="transform: rotate(180deg); transform: rotateY(180deg);" @onmousedown="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></button>
-                    <button class="pause" @onmousedown="() => {isPause = true;}"></button>
+                    <button class="pause" @onmousedown="() => {for(int i = 0; i<4;i++){isPause=true;}}"></button>
                     <button class="play" @onmousedown="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></button>
                     <button class="ff"  @onmousedown="() => { idx = idx + 1 >= Images.Count() ? 0 : idx + 1; isPause = true; }"></button>
                     </menu>
@@ -150,7 +156,7 @@
         </div>
         <div class="column">
             <div class="col-xl-6">
-                <RadzenGoogleMap ApiKey="@apiKey" Style="width: auto; height: 400px;" id="Map" Zoom="@zoom" Center="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId })" MapClick="@AsyncMapOperation">
+                <RadzenGoogleMap ApiKey="@apiKey" Style="width: 700px; height:450px" id="Map" Zoom="@zoom" Center="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId })" MapClick="@AsyncMapOperation">
                     <Markers>
                         @if (showArkansasMarker && Images.Any())
                         {
