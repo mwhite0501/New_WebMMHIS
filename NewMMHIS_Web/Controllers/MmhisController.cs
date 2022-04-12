@@ -38,13 +38,6 @@ namespace NewMMHIS_Web.Controllers
             var bktstring = sortList.ConvertAll<string>(x => x.ToString());
             return bktstring;
         }
-        public List<string> GetUniqueDirections()//the direction of traffic for a given route (ex A, B, N, S, E, W)
-        {
-            var roads = from r in _context.MmhisDamus
-                        select r;
-            var directionList = roads.Select(r => r.MmhisDirection).Distinct().ToList();
-            return directionList;
-        }
         public List<string> GetUniqueSections()
         {
             var roads = from r in _context.MmhisDamus
@@ -53,6 +46,14 @@ namespace NewMMHIS_Web.Controllers
             return sectionList;
 
         }
+        public List<string> GetUniqueDirections()//the direction of traffic for a given route (ex A, B, N, S, E, W)
+        {
+            var roads = from r in _context.MmhisDamus
+                        select r;
+            var directionList = roads.Select(r => r.MmhisDirection).Distinct().ToList();
+            return directionList;
+        }
+        
         public List<string> GetUniqueYears() //all the years we have data on
         {
             var roads = from r in _context.MmhisDamus
@@ -152,10 +153,11 @@ namespace NewMMHIS_Web.Controllers
             var logInfo = from i in _context.MmhisDians
                           where i.Ld == getClosestPointLd.FirstOrDefault()
                           select i.Logmeter0;// * 0.000621371;
-
             var getNotes = from i in _context.MmhisDamus
                           where i.Ld == getClosestPoint.FirstOrDefault()
                           select i.Note;
+            var countyInfo = from i in getInfo
+                             select i.County;
 
             var latInfoP = latInfo.FirstOrDefault().ToString();
             var longInfoP = longInfo.FirstOrDefault().ToString();
@@ -173,8 +175,8 @@ namespace NewMMHIS_Web.Controllers
             RouteInformation.Add(longInfoP);
             RouteInformation.Add(dainsLd);
             RouteInformation.Add(dainsLu);
-
             RouteInformation.Add(getNotes.FirstOrDefault());
+            RouteInformation.Add(countyInfo.FirstOrDefault());
 
             return RouteInformation;
         }
@@ -191,6 +193,13 @@ namespace NewMMHIS_Web.Controllers
                      && r.Section == p.Section
                      && r.TheYear == p.Year
                      select r;
+
+            //if roadId is null, cause an exception, invalid route combination
+            if (!roadId.Any())
+            {
+                //test
+                return null;
+            }
 
             var roadIdNote = from r in _context.MmhisDamus                                   //get notes on specific route, section, direction, year combo
                          where r.Route == p.Route

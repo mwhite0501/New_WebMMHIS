@@ -198,7 +198,16 @@
         <ul class="nav flex-column">
             <EditForm Model="@controller" OnValidSubmit="AsyncLongOperation">
                 <li class="nav-item px-2">
-                    <InputSelect id="routeControl" Disabled="@IsDisabledRoute" Value="routeId" ValueChanged="@( (string s) => routeChanged(s))" ValueExpression="@( () => routeId)" class="form-control">
+                    <InputSelect id="countyControl" Value="countyId" ValueChanged="@( (string s) => countyChanged(s))" ValueExpression="@( () => countyId)" class="form-control">
+                        <option value="none">County</option>
+                        @foreach (var item in counties)
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    </InputSelect>
+                </li>
+                <li class="nav-item px-2">
+                    <InputSelect id="routeControl" Value="routeId" ValueChanged="@( (string s) => routeChanged(s))" ValueExpression="@( () => routeId)" class="form-control">
                         <option value="none">Route</option>
                         @foreach (var item in routes)
                         {
@@ -207,16 +216,7 @@
                     </InputSelect>
                 </li>
                 <li class="nav-item px-2">
-                    <InputSelect Disabled="@IsDisabledDirection" Value="directionId" ValueChanged="@( (string s) => directionChanged(s))" ValueExpression="@( () => directionId)" class="form-control">
-                        <option value="none">Direction</option>
-                        @foreach (var item in directions)
-                        {
-                            <option value="@item">@item</option>
-                        }
-                    </InputSelect>
-                </li>
-                <li class="nav-item px-2">
-                    <InputSelect Disabled="@IsDisabledSection" Value="sectionId" ValueChanged="@( (string s) => sectionChanged(s))" ValueExpression="@( () => sectionId)" class="form-control">
+                    <InputSelect Value="sectionId" ValueChanged="@( (string s) => sectionChanged(s))" ValueExpression="@( () => sectionId)" class="form-control">
                         <option value="none">Section</option>
                         @foreach (var item in sections)
                         {
@@ -225,7 +225,17 @@
                     </InputSelect>
                 </li>
                 <li class="nav-item px-2">
-                    <InputSelect Disabled="@IsDisabledYear" Value="yearId" ValueChanged="@( (string s) => yearChanged(s))" ValueExpression="@( () => yearId)" class="form-control">
+                    <InputSelect Value="directionId" ValueChanged="@( (string s) => directionChanged(s))" ValueExpression="@( () => directionId)" class="form-control">
+                        <option value="none">Direction</option>
+                        @foreach (var item in directions)
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    </InputSelect>
+                </li>
+
+                <li class="nav-item px-2">
+                    <InputSelect Value="yearId" ValueChanged="@( (string s) => yearChanged(s))" ValueExpression="@( () => yearId)" class="form-control">
                         <option value="none">Year</option>
                         @foreach (var item in years)
                         {
@@ -234,7 +244,7 @@
                     </InputSelect>
                 </li>
                 <li class="nav-item px-2">
-                    <RadzenTextBox Placeholder="Search Logmile" Disabled="@IsDisabledLog" Name="Logmile" Change=@(args => OnChangeLogmeter(args, "TextBox with placeholder")) />
+                    <RadzenTextBox Placeholder="Search Logmile" Name="Logmile" Change=@(args => OnChangeLogmeter(args, "TextBox with placeholder")) />
                     @*<RadzenRequiredValidator Component="Logmile" Text="ZIP code is required" Popup=@popup Style="position: absolute" />
                      <RadzenRegexValidator Component="Logmile" Text="ZIP code must be 5 digits" Pattern="\d{5}" Popup=@popup Style="position: absolute" />*@
                 </li>
@@ -283,441 +293,507 @@
 
 
 @code{
-        //want to rethink input so that it stays free until submit
-        //List<string> resizedImageStrings = new List<string>();
-        protected string apiKey = "";
-        bool isMobile;
-        bool isHighRes = false;
-        List<string> resizedImageStrings = new List<string>();
-        PageModel model;
-        bool popup;
-        //map settings ==========================================================================
-        int zoom = 8;
-        bool showArkansasMarker;
-        bool playpause = false;
-        string clickedPosition = "";
-        bool isTouchScreen;
-        List<string> RouteInfo = new List<string>();
-        List<string> Logmeters = new List<string>();
-        List<string> Latitudes = new List<string>();
-        List<string> Longitudes = new List<string>();
-        List<string> modifiedURLs = new List<string>();
-        List<string> unmodifiedURLs = new List<string>();
-        List<string> unmodifiedURLsRight = new List<string>();
-        List<string> unmodifiedURLsLeft = new List<string>();
+    //want to rethink input so that it stays free until submit
+    //List<string> resizedImageStrings = new List<string>();
+    protected string apiKey = "";
+    bool isMobile;
+    bool isHighRes = false;
+    List<string> resizedImageStrings = new List<string>();
+    PageModel model;
+    bool popup;
+    //map settings ==========================================================================
+    int zoom = 8;
+    bool showArkansasMarker;
+    bool playpause = false;
+    string clickedPosition = "";
+    bool isTouchScreen;
+    List<string> RouteInfo = new List<string>();
+    List<string> Logmeters = new List<string>();
+    List<string> Latitudes = new List<string>();
+    List<string> Longitudes = new List<string>();
+    List<string> modifiedURLs = new List<string>();
+    List<string> unmodifiedURLs = new List<string>();
+    List<string> unmodifiedURLsRight = new List<string>();
+    List<string> unmodifiedURLsLeft = new List<string>();
 
-        public int idx;
-        IEnumerable<int> negativeValues = new int[] { -100, 100 };
-        int value = 0;
-        int negativeValue = 0;
-        int valueWithStep = 30;
-        double begLogmile { get; set; }
-        double endLogmile { get; set; }
-        double logmile { get; set; }
-        double log { get; set; }
-        private List<string> counties;
-        private List<string> routes;
-        private List<string> sections;
-        private List<string> directions;
-        private List<string> years;
-        //private List<string> cameraSelections = new List<string>() { "f", "fl", "fr", "p" };
-        private int currentCount = 0;
-        private Timer time;
-        public bool loaded = false;
-        public bool isPlay = false;
-        public bool isReverse = false;
-        public bool isPause = true;
-        public bool spinning;
-        public bool IsDisabledSubmit = true;
-        public bool displayRight = false;
-        public bool displayLeft = false;
-        public bool displayCenter = true; //display center camera by default
+    public int idx;
+    IEnumerable<int> negativeValues = new int[] { -100, 100 };
+    int value = 0;
+    int negativeValue = 0;
+    int valueWithStep = 30;
+    double begLogmile { get; set; }
+    double endLogmile { get; set; }
+    double logmile { get; set; }
+    double log { get; set; }
+    private List<string> counties;
+    private List<string> routes;
+    private List<string> sections;
+    private List<string> directions;
+    private List<string> years;
+    //private List<string> cameraSelections = new List<string>() { "f", "fl", "fr", "p" };
+    private int currentCount = 0;
+    private Timer time;
+    public bool loaded = false;
+    public bool isPlay = false;
+    public bool isReverse = false;
+    public bool isPause = true;
+    public bool spinning;
+    public bool IsDisabledSubmit = true;
+    public bool displayRight = false;
+    public bool displayLeft = false;
+    public bool displayCenter = true; //display center camera by default
 
-        mmhisContext db = new mmhisContext();
+    mmhisContext db = new mmhisContext();
 
-        public string routeId;
-        public string directionId;
-        public string sectionId;
-        public string yearId;
-        public string imgId;
-        public double longitudeId = -92.199997;
-        public double latitudeId = 34.799999;
-        //public string cameraSelection;
-        protected bool IsDisabledRoute = false;
-        protected bool IsDisabledDirection = true;
-        protected bool IsDisabledSection = true;
-        protected bool IsDisabledYear = true;
-        protected bool IsDisabledLog = true;
-        protected bool IsLandscapeMode = false;
-        public List<string> Images = new List<string>();
-        public List<string> ImagesLeft = new List<string>();
-        public List<string> ImagesRight = new List<string>();
-        public List<string> precachedImgs = new List<string>();
-        public List<string> notes = new List<string>();
-        NetworkInterface[] adapters = NetworkInterface.GetAllNetworkInterfaces();
+    public string routeId;
+    public string directionId;
+    public string sectionId;
+    public string yearId;
+    public string imgId;
+    public double longitudeId = -92.199997;
+    public double latitudeId = 34.799999;
+    public string countyId;
+    //public string cameraSelection;
+    protected bool IsDisabledRoute = false;
+    protected bool IsDisabledDirection = true;
+    protected bool IsDisabledSection = true;
+    protected bool IsDisabledYear = true;
+    protected bool IsDisabledLog = true;
+    protected bool IsLandscapeMode = false;
+    public List<string> Images = new List<string>();
+    public List<string> ImagesLeft = new List<string>();
+    public List<string> ImagesRight = new List<string>();
+    public List<string> precachedImgs = new List<string>();
+    public List<string> notes = new List<string>();
+    NetworkInterface[] adapters = NetworkInterface.GetAllNetworkInterfaces();
 
-        async void LoadFileAsync(string path)
+    async void LoadFileAsync(string path)
+    {
+        string imageUrl = path;
+        using var response = await _httpClient.GetAsync(imageUrl).ConfigureAwait(false);
+        var imageBytes = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+    }
+
+
+    //==========================================================================================================================
+    //==================================================Map Selection Method====================================================
+    //==========================================================================================================================
+    async void OnMapClick(GoogleMapClickEventArgs args)
+    {
+        spinning = true;
+        IsDisabledRoute = true;
+        IsDisabledSection = true;
+        IsDisabledDirection = true;
+        IsDisabledYear = true;
+        IsDisabledLog = true;
+        isPause = true;
+        log = 0;
+        RouteInfo.Clear();
+        idx = 0;
+
+        Images.Clear();
+        //ImagesRight.Clear();
+        //ImagesLeft.Clear();
+        pageModel.Clear();
+        //pageModel = new PageModel();
+        if (latitudeId > 36.5 || latitudeId < 33 || longitudeId < -94.66 || longitudeId > -89.629890) //make sure it's in state or default to a position
         {
-            string imageUrl = path;
-            using var response = await _httpClient.GetAsync(imageUrl).ConfigureAwait(false);
-            var imageBytes = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+            latitudeId = 34.751354;
+            longitudeId = -92.274592;
+        }
+        RouteInfo = controller.GetRouteInformation(latitudeId, longitudeId);
+        routeId = RouteInfo[0]; //should probably pass in a model here
+        sectionId = RouteInfo[1];
+        directionId = RouteInfo[2];
+        yearId = RouteInfo[3];
+        logmile = Convert.ToDouble(RouteInfo[4]);
+        latitudeId = Convert.ToDouble(RouteInfo[5]);
+        longitudeId = Convert.ToDouble(RouteInfo[6]);
+        log = logmile * 0.000621371;
+        countyId = (RouteInfo[10]);
+
+        pageModel.Route = routeId;
+        pageModel.Direction = directionId;
+        pageModel.Section = sectionId;
+        pageModel.Year = yearId;
+        pageModel.Logmeter = logmile;
+        pageModel.Latitude = latitudeId;
+        pageModel.Longitude = longitudeId;
+        pageModel.Ld = (long)Convert.ToDouble(RouteInfo[7]); //dains Ld
+        pageModel.Lu = (long)Convert.ToDouble(RouteInfo[8]);// dains Lu
+        pageModel.County = countyId;
+
+        var dataModel = controller.getData(pageModel); //dataModel.Roadway, dataModel.Points, dataModel.PointData, dataModel.Notes
+
+        var allPoints = from r in dataModel.Points //4772
+                        select r.Ld;
+
+        var allPointsBefore = from r in dataModel.Points
+                              where r.Logmeter0 < pageModel.Logmeter
+                              orderby r.Logmeter0 ascending
+                              select r.Ld;
+
+        //need to make sure these Lds exsist as pointData.Lus
+        //count number of missing values
+        var frontImagesLu = from r in dataModel.PointData //grabs all the front facing images for the route
+                            join p in dataModel.Points on r.Lu equals p.Ld
+                            where r.FieldName == "f"
+                            orderby r.Lu ascending
+                            select r.Lu;
+
+        notes = dataModel.Notes.ToList();
+
+        var PointData = frontImagesLu.ToList();
+        var Points = allPoints.ToList();
+
+        var setDiff = Points.Except(PointData);
+        var setDiffLst = setDiff.ToList();
+
+        var allPointsBeforeLst = allPointsBefore.ToList();
+        allPointsBeforeLst = controller.removePoints(allPointsBeforeLst, setDiffLst);
+
+        var IdxB = allPointsBeforeLst.Count(); //4759 points before
+
+        var frontImages = from r in dataModel.PointData //grabs all the front facing images for the route
+                          join p in dataModel.Points on r.Lu equals p.Ld
+                          where r.FieldName == "f"
+                          orderby r.Lu ascending
+                          select r.FieldValue;
+
+        //var leftImages = from r in dataModel.PointData //grabs all the front facing images for the route
+        //                 join p in dataModel.Points on r.Lu equals p.Ld
+        //                 where r.FieldName == "fr"
+        //                 orderby r.Lu ascending
+        //                 select r.FieldValue;
+
+        //var rightImages = from r in dataModel.PointData //grabs all the front facing images for the route
+        //                  join p in dataModel.Points on r.Lu equals p.Ld
+        //                  where r.FieldName == "fl"
+        //                  orderby r.Lu ascending
+        //                  select r.FieldValue;
+
+
+        var logmeters = from r in dataModel.PointData //grabs all the front facing images for the route
+                        join p in dataModel.Points on r.Lu equals p.Ld
+                        where r.FieldName == "f"
+                        orderby r.Lu ascending
+                        select p.Logmeter0;
+
+        var latitudes = from r in dataModel.PointData //grabs all the front facing images for the route
+                        join p in dataModel.Points on r.Lu equals p.Ld
+                        where r.FieldName == "f"
+                        orderby r.Lu ascending
+                        select p.Latitude;
+
+        var longitudes = from r in dataModel.PointData //grabs all the front facing images for the route
+                         join p in dataModel.Points on r.Lu equals p.Ld
+                         where r.FieldName == "f"
+                         orderby r.Lu ascending
+                         select p.Longitude;
+
+
+        var frontImagesStr = frontImages.ToList();
+        //var rightImagesStr = rightImages.ToList();
+        //var leftImagesStr = leftImages.ToList();
+
+        var logmetersLst = logmeters.ToList();
+        var latitudesLst = latitudes.ToList();
+        var longitudesLst = longitudes.ToList();
+        var logmetersStr = logmetersLst.Select(x => x.ToString());
+        var latitudesStr = latitudesLst.Select(x => x.ToString());
+        var longitudesStr = longitudesLst.Select(x => x.ToString());
+
+        begLogmile = logmetersLst.First() * 0.000621371;
+        endLogmile = logmetersLst.Last() * 0.000621371;
+
+        List<string> preloadImgcpy = frontImagesStr; //unmodified URLs
+        List<string> swappedpreloadImgcpy = controller.PutFrontAtIndex(preloadImgcpy, IdxB);
+
+        //modifiedURLs = frontImagesStr;
+
+        //for (var i = 0; i < frontImagesStr.Count(); i++)
+        //{
+        //    frontImagesStr[i] = controller.ModifyURLs(frontImagesStr[i]);
+        //    //rightImagesStr[i] = controller.ModifyURLs(rightImagesStr[i]);
+        //    //leftImagesStr[i] = controller.ModifyURLs(leftImagesStr[i]);
+        //}
+
+        List<string> swappedPoints = controller.PutFrontAtIndex(frontImagesStr, IdxB);
+        //List<string> swappedPointsRight = controller.PutFrontAtIndex(rightImagesStr, IdxB); 
+        //List<string> swappedPointsLeft = controller.PutFrontAtIndex(leftImagesStr, IdxB);
+
+        //List<string> swappedPointsR = controller.PutFrontAtIndex(rightImagesStr, IdxB);
+
+        //List<string> swappedPointsL = controller.PutFrontAtIndex(leftImagesStr, IdxB);
+
+        List<string> swappedLogmeters = controller.PutFrontAtIndex(logmetersStr.ToList(), IdxB);
+        List<string> swappedLatitudes = controller.PutFrontAtIndex(latitudesStr.ToList(), IdxB);
+        List<string> swappedLongitudes = controller.PutFrontAtIndex(longitudesStr.ToList(), IdxB);
+
+        unmodifiedURLs = swappedPoints;
+        //unmodifiedURLsRight = swappedPointsRight;
+        //unmodifiedURLsLeft = swappedPointsLeft;
+        modifiedURLs = controller.PutFrontAtIndex(frontImagesStr, IdxB);
+
+        Images = swappedPoints;
+        //ImagesRight = swappedPointsRight;
+        //ImagesLeft = swappedPointsLeft;
+
+        //ImagesRight = swappedPointsR;
+        //ImagesLeft = swappedPointsL;
+        Logmeters = swappedLogmeters;
+        Latitudes = swappedLatitudes;
+        Longitudes = swappedLongitudes;
+
+        spinning = false;
+        IsDisabledLog = false;
+        IsDisabledSubmit = false;
+        //await JSRuntime.InvokeVoidAsync("closeNav"); 
+
+    }
+
+
+    async Task AsyncMapOperation(GoogleMapClickEventArgs args)    // this is an async task
+    {
+        spinning = true;
+        Images.Clear();
+
+        clickedPosition = $"Map clicked LAT : {args.Position.Lat}, LNG: {args.Position.Lng}";
+        latitudeId = args.Position.Lat;
+        longitudeId = args.Position.Lng;
+        showArkansasMarker = true;
+        IsDisabledDirection = false;
+        IsDisabledSection = false;
+        IsDisabledYear = false;
+        zoom = 15;
+        await Task.Run(() => OnMapClick(args));  //<--here!
+        currentCount++;
+        spinning = false;
+    }
+
+    void OnMarkerClick(GoogleMapClickEventArgs args)
+    {
+        clickedPosition = $"Map clicked LAT : {args.Position.Lat}, LNG: {args.Position.Lng}";
+    }
+
+    async Task AsyncMarkerOperation(GoogleMapClickEventArgs args)    // this is an async task
+    {
+        spinning = true;
+        await Task.Run(() => OnMarkerClick(args));  //<--here!
+        currentCount++;
+        spinning = false;
+    }
+
+    //=======================================================================================
+
+    async Task LoadImageAsync(string pathway)
+    {
+        await JSRuntime.InvokeVoidAsync("loadImage", pathway);
+
+
+        //return JSRuntime.InvokeVoidAsync("loadImage", pathway).ToString();
+    }
+
+    protected override void OnInitialized()
+    {
+        routes = controller.GetUniqueRoutes();
+        sections = controller.GetUniqueSections();
+        years = controller.GetUniqueYears();
+        directions = controller.GetUniqueDirections();
+        counties = controller.GetUniqueCounties();
+        IsDisabledSection = true;
+        IsDisabledYear = true;
+        IsDisabledDirection = true;
+    }
+
+    void ClearSelection()
+    {
+        routeId = null; //could try null
+        sectionId = null;
+        directionId = null;
+        yearId = null;
+        IsDisabledDirection = true;
+        IsDisabledSection = true;
+        IsDisabledYear = true;
+        isPlay = false;
+        isReverse = false;
+        time.Enabled = false;
+        showArkansasMarker = false;
+        zoom = 8;
+        Images.Clear();
+        pageModel = new PageModel();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            //return Task.Delay(0);
+
+            await JSRuntime.InvokeVoidAsync("setTitle", "Arkansas Highways");
+            isMobile = await JSRuntime.InvokeAsync<bool>("isDevice");
+
+            StateHasChanged();
+
+        }
+    }
+
+    public void countyChanged(string countyEvent)
+    {
+        countyId = countyEvent;
+        var route = db.MmhisDamus.Select(r => r).Where(r => r.County == countyEvent);
+        routes = route.Select(r => r.Route).Distinct().ToList();
+    }
+    //public void routeChanged(string routeEvent)
+    //{
+    //    //need to check values of all fields for valid combinations
+    //    IsDisabledDirection = false;
+    //    routeId = routeEvent;
+    //    sections.Clear();
+    //    directions.Clear();
+    //    years.Clear();
+    //    var direct = db.MmhisDamus.Select(r => r).Where(r => r.Route == routeEvent);
+    //    directions = direct.Select(r => r.MmhisDirection).Distinct().ToList();
+    //    IsDisabledRoute = true;
+
+    //}
+
+    public void routeChanged(string routeEvent)
+    {
+        //need to check values of all fields for valid combinations
+        IsDisabledSection = false;
+        routeId = routeEvent;
+        sections.Clear();
+        directions.Clear();
+        years.Clear();
+        var direct = db.MmhisDamus.Select(r => r).Where(r => r.Route == routeEvent);
+        sections = direct.Select(r => r.Section).Distinct().ToList();
+        IsDisabledRoute = true;
+
+    }
+
+    public void sectionChanged(string sectionEvent)
+    {
+        IsDisabledDirection = false;
+        sectionId = sectionEvent;
+        var direct = db.MmhisDamus.Select(r => r).Where(r => r.Route == routeId);
+        direct = direct.Where(r => r.Section == sectionId);
+        directions = direct.Select(r => r.MmhisDirection).Distinct().ToList();
+        IsDisabledDirection = false;
+        if(directionId == null || routeId == null)
+        {
+            IsDisabledSubmit = true;
         }
 
+    }
 
-        //==========================================================================================================================
-        //==================================================Map Selection Method====================================================
-        //==========================================================================================================================
-        async void OnMapClick(GoogleMapClickEventArgs args)
+    public void directionChanged(string directionEvent)
+    {
+        IsDisabledYear = false;
+        directionId = directionEvent;
+        years.Clear();
+        var year = db.MmhisDamus.Select(r => r).Where(r => r.MmhisDirection == directionEvent);
+        year = year.Where(r => r.Route == routeId);
+        year = year.Where(r => r.MmhisDirection == directionId);
+        year = year.Where(r => r.Section == sectionId);
+        years = year.Select(r => r.TheYear).Distinct().OrderByDescending(x => x).ToList();
+        IsDisabledSection = true;
+        if(sectionId == null || directionId == null || routeId == null)
         {
-            spinning = true;
-            IsDisabledRoute = true;
-            IsDisabledSection = true;
-            IsDisabledDirection = true;
-            IsDisabledYear = true;
-            IsDisabledLog = true;
-            isPause = true;
-            log = 0;
-            RouteInfo.Clear();
-            idx = 0;
-
-            Images.Clear();
-            //ImagesRight.Clear();
-            //ImagesLeft.Clear();
-            pageModel.Clear();
-            //pageModel = new PageModel();
-            if (latitudeId > 36.5 || latitudeId < 33 || longitudeId < -94.66 || longitudeId > -89.629890) //make sure it's in state or default to a position
-            {
-                latitudeId = 34.751354;
-                longitudeId = -92.274592;
-            }
-            RouteInfo = controller.GetRouteInformation(latitudeId, longitudeId);
-            routeId = RouteInfo[0]; //should probably pass in a model here
-            sectionId = RouteInfo[1];
-            directionId = RouteInfo[2];
-            yearId = RouteInfo[3];
-            logmile = Convert.ToDouble(RouteInfo[4]);
-            latitudeId = Convert.ToDouble(RouteInfo[5]);
-            longitudeId = Convert.ToDouble(RouteInfo[6]);
-            log = logmile * 0.000621371;
-
-            pageModel.Route = routeId;
-            pageModel.Direction = directionId;
-            pageModel.Section = sectionId;
-            pageModel.Year = yearId;
-            pageModel.Logmeter = logmile;
-            pageModel.Latitude = latitudeId;
-            pageModel.Longitude = longitudeId;
-            pageModel.Ld = (long)Convert.ToDouble(RouteInfo[7]); //dains Ld
-            pageModel.Lu = (long)Convert.ToDouble(RouteInfo[8]);// dains Lu
-            var dataModel = controller.getData(pageModel); //dataModel.Roadway, dataModel.Points, dataModel.PointData, dataModel.Notes
-
-            var allPoints = from r in dataModel.Points //4772
-                            select r.Ld;
-
-            var allPointsBefore = from r in dataModel.Points
-                                  where r.Logmeter0 < pageModel.Logmeter
-                                  orderby r.Logmeter0 ascending
-                                  select r.Ld;
-
-            //need to make sure these Lds exsist as pointData.Lus
-            //count number of missing values
-            var frontImagesLu = from r in dataModel.PointData //grabs all the front facing images for the route
-                                join p in dataModel.Points on r.Lu equals p.Ld
-                                where r.FieldName == "f"
-                                orderby r.Lu ascending
-                                select r.Lu;
-
-            notes = dataModel.Notes.ToList();
-
-            var PointData = frontImagesLu.ToList();
-            var Points = allPoints.ToList();
-
-            var setDiff = Points.Except(PointData);
-            var setDiffLst = setDiff.ToList();
-
-            var allPointsBeforeLst = allPointsBefore.ToList();
-            allPointsBeforeLst = controller.removePoints(allPointsBeforeLst, setDiffLst);
-
-            var IdxB = allPointsBeforeLst.Count(); //4759 points before
-
-            var frontImages = from r in dataModel.PointData //grabs all the front facing images for the route
-                              join p in dataModel.Points on r.Lu equals p.Ld
-                              where r.FieldName == "f"
-                              orderby r.Lu ascending
-                              select r.FieldValue;
-
-            //var leftImages = from r in dataModel.PointData //grabs all the front facing images for the route
-            //                 join p in dataModel.Points on r.Lu equals p.Ld
-            //                 where r.FieldName == "fr"
-            //                 orderby r.Lu ascending
-            //                 select r.FieldValue;
-
-            //var rightImages = from r in dataModel.PointData //grabs all the front facing images for the route
-            //                  join p in dataModel.Points on r.Lu equals p.Ld
-            //                  where r.FieldName == "fl"
-            //                  orderby r.Lu ascending
-            //                  select r.FieldValue;
+            IsDisabledSubmit = true;
+        }
+    }
 
 
-            var logmeters = from r in dataModel.PointData //grabs all the front facing images for the route
-                            join p in dataModel.Points on r.Lu equals p.Ld
-                            where r.FieldName == "f"
-                            orderby r.Lu ascending
-                            select p.Logmeter0;
 
-            var latitudes = from r in dataModel.PointData //grabs all the front facing images for the route
-                            join p in dataModel.Points on r.Lu equals p.Ld
-                            where r.FieldName == "f"
-                            orderby r.Lu ascending
-                            select p.Latitude;
-
-            var longitudes = from r in dataModel.PointData //grabs all the front facing images for the route
-                             join p in dataModel.Points on r.Lu equals p.Ld
-                             where r.FieldName == "f"
-                             orderby r.Lu ascending
-                             select p.Longitude;
-
-
-            var frontImagesStr = frontImages.ToList();
-            //var rightImagesStr = rightImages.ToList();
-            //var leftImagesStr = leftImages.ToList();
-
-            var logmetersLst = logmeters.ToList();
-            var latitudesLst = latitudes.ToList();
-            var longitudesLst = longitudes.ToList();
-            var logmetersStr = logmetersLst.Select(x => x.ToString());
-            var latitudesStr = latitudesLst.Select(x => x.ToString());
-            var longitudesStr = longitudesLst.Select(x => x.ToString());
-
-            begLogmile = logmetersLst.First() * 0.000621371;
-            endLogmile = logmetersLst.Last() * 0.000621371;
-
-            List<string> preloadImgcpy = frontImagesStr; //unmodified URLs
-            List<string> swappedpreloadImgcpy = controller.PutFrontAtIndex(preloadImgcpy, IdxB);
-
-            //modifiedURLs = frontImagesStr;
-
-            //for (var i = 0; i < frontImagesStr.Count(); i++)
-            //{
-            //    frontImagesStr[i] = controller.ModifyURLs(frontImagesStr[i]);
-            //    //rightImagesStr[i] = controller.ModifyURLs(rightImagesStr[i]);
-            //    //leftImagesStr[i] = controller.ModifyURLs(leftImagesStr[i]);
-            //}
-
-            List<string> swappedPoints = controller.PutFrontAtIndex(frontImagesStr, IdxB);
-            //List<string> swappedPointsRight = controller.PutFrontAtIndex(rightImagesStr, IdxB); 
-            //List<string> swappedPointsLeft = controller.PutFrontAtIndex(leftImagesStr, IdxB);
-
-            //List<string> swappedPointsR = controller.PutFrontAtIndex(rightImagesStr, IdxB);
-
-            //List<string> swappedPointsL = controller.PutFrontAtIndex(leftImagesStr, IdxB);
-
-            List<string> swappedLogmeters = controller.PutFrontAtIndex(logmetersStr.ToList(), IdxB);
-            List<string> swappedLatitudes = controller.PutFrontAtIndex(latitudesStr.ToList(), IdxB);
-            List<string> swappedLongitudes = controller.PutFrontAtIndex(longitudesStr.ToList(), IdxB);
-
-            unmodifiedURLs = swappedPoints;
-            //unmodifiedURLsRight = swappedPointsRight;
-            //unmodifiedURLsLeft = swappedPointsLeft;
-            modifiedURLs = controller.PutFrontAtIndex(frontImagesStr, IdxB);
-
-            Images = swappedPoints;
-            //ImagesRight = swappedPointsRight;
-            //ImagesLeft = swappedPointsLeft;
-
-            //ImagesRight = swappedPointsR;
-            //ImagesLeft = swappedPointsL;
-            Logmeters = swappedLogmeters;
-            Latitudes = swappedLatitudes;
-            Longitudes = swappedLongitudes;
-
-            spinning = false;
-            IsDisabledLog = false;
+    public void yearChanged(string yearEvent)
+    {
+        yearId = yearEvent;
+        IsDisabledLog = false; //allow log search
+        if(yearId == null || sectionId == null || directionId == null || routeId == null)
+        {
+            IsDisabledSubmit = true;
+        }
+        else{
             IsDisabledSubmit = false;
-            //await JSRuntime.InvokeVoidAsync("closeNav"); 
+        }
+
+    }
+
+    //==========================================================================================================================
+    //===============================================Dropdown Selection Method==================================================
+    //==========================================================================================================================
+
+    public void findInitialPoint()
+    {
+        idx = 0;
+        IsDisabledDirection = true;
+        IsDisabledSection = true;
+        IsDisabledYear = true;
+        IsDisabledRoute = true;
+        pageModel.Route = routeId;
+        pageModel.Direction = directionId;
+        pageModel.Section = sectionId;
+        pageModel.Year = yearId;
+        pageModel.Logmeter = logmile;
+        pageModel.Latitude = latitudeId;
+        pageModel.Longitude = longitudeId;
+        pageModel.County = countyId;
+        bool isValid = true;
+        var dataModel = controller.getData(pageModel); //dataModel.Roadway, dataModel.Points, dataModel.PointData
+
+        if (dataModel == null)
+        {
+            //invalid input
+            isValid = false;
+            pageModel.Route = "70";
+            pageModel.Direction = "A";
+            pageModel.Section = "12";
+            pageModel.Year = "2020-07";
+            pageModel.Logmeter = 13830;
+            pageModel.Latitude = 34.751865;
+            pageModel.Longitude = -92.27451;
+            pageModel.County = countyId;
+            dataModel = controller.getData(pageModel);
+
 
         }
 
+        var lat = from r in dataModel.Points
+                  select r.Latitude;
+        var lng  = from r in dataModel.Points
+                  select r.Longitude;
+        var log = from r in dataModel.Points
+                  select r.Logmeter0;
 
-        async Task AsyncMapOperation(GoogleMapClickEventArgs args)    // this is an async task
-        {
-            spinning = true;
-            Images.Clear();
+        logmile = log.FirstOrDefault() * 0.000621371;
 
-            clickedPosition = $"Map clicked LAT : {args.Position.Lat}, LNG: {args.Position.Lng}";
-            latitudeId = args.Position.Lat;
-            longitudeId = args.Position.Lng;
-            showArkansasMarker = true;
-            IsDisabledDirection = false;
-            IsDisabledSection = false;
-            IsDisabledYear = false;
-            zoom = 15;
-            await Task.Run(() => OnMapClick(args));  //<--here!
-            currentCount++;
-            spinning = false;
+        latitudeId = Convert.ToDouble(lat.FirstOrDefault());
+        longitudeId = Convert.ToDouble(lng.FirstOrDefault());
+
+        var dianLds = from r in dataModel.Points
+                      select r.Ld;
+
+        var frontImages = from r in dataModel.PointData
+                          where r.FieldName == "f"                          //want to make sure each point corresponds to the correct Ld in dians
+                          select r.FieldValue;
+
+        var latitudes = from r in dataModel.PointData //grabs all the front facing images for the route
+                        join p in dataModel.Points on r.Lu equals p.Ld
+                        where r.FieldName == "f"
+                        orderby r.Lu ascending
+                        select p.Latitude;
+
+        var longitudes = from r in dataModel.PointData //grabs all the front facing images for the route
+                         join p in dataModel.Points on r.Lu equals p.Ld
+                         where r.FieldName == "f"
+                         orderby r.Lu ascending
+                         select p.Longitude;
+
+        notes = dataModel.Notes.ToList();
+        if(isValid == false){
+            notes.Insert(0, "INVALID INPUT - Default Route Selected. Please Clear and make a new selection.");
         }
-
-        void OnMarkerClick(GoogleMapClickEventArgs args)
-        {
-            clickedPosition = $"Map clicked LAT : {args.Position.Lat}, LNG: {args.Position.Lng}";
-        }
-
-        async Task AsyncMarkerOperation(GoogleMapClickEventArgs args)    // this is an async task
-        {
-            spinning = true;
-            await Task.Run(() => OnMarkerClick(args));  //<--here!
-            currentCount++;
-            spinning = false;
-        }
-
-        //=======================================================================================
-
-        async Task LoadImageAsync(string pathway)
-        {
-            await JSRuntime.InvokeVoidAsync("loadImage", pathway);
-        
-
-            //return JSRuntime.InvokeVoidAsync("loadImage", pathway).ToString();
-        }
-
-        protected override void OnInitialized()
-        {
-            routes = controller.GetUniqueRoutes();
-            sections = controller.GetUniqueSections();
-            years = controller.GetUniqueYears();
-            directions = controller.GetUniqueDirections();
-            IsDisabledSection = true;
-            IsDisabledYear = true;
-            IsDisabledDirection = true;
-        }
-
-        void ClearSelection()
-        {
-            routeId = null; //could try null
-            sectionId = null;
-            directionId = null;
-            yearId = null;
-            IsDisabledDirection = true;
-            IsDisabledSection = true;
-            IsDisabledYear = true;
-            isPlay = false;
-            isReverse = false;
-            time.Enabled = false;
-            showArkansasMarker = false;
-            zoom = 8;
-            Images.Clear();
-            pageModel = new PageModel();
-        }
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            if (firstRender)
-            {
-                //return Task.Delay(0);
-
-                await JSRuntime.InvokeVoidAsync("setTitle", "Arkansas Highways");
-                isMobile = await JSRuntime.InvokeAsync<bool>("isDevice");
-                
-                StateHasChanged();
-
-            }
-        }
-
-        public void routeChanged(string routeEvent)
-        {
-            //need to check values of all fields for valid combinations
-            IsDisabledDirection = false;
-            routeId = routeEvent;
-            sections.Clear();
-            var direct = db.MmhisDamus.Select(r => r).Where(r => r.Route == routeEvent);
-            directions = direct.Select(r => r.MmhisDirection).Distinct().ToList();
-            IsDisabledRoute = true;
-        }
-
-        public void directionChanged(string directionEvent)
-        {
-            IsDisabledSection = false;
-            directionId = directionEvent;
-            sections.Clear();
-            var sect = db.MmhisDamus.Select(r => r).Where(r => r.Route == routeId);
-            sect = sect.Where(r => r.MmhisDirection == directionId);
-            sections = sect.Select(r => r.Section).Distinct().ToList();
-            IsDisabledDirection = true;
-        }
-
-        public void sectionChanged(string sectionEvent)
-        {
-            IsDisabledYear = false;
-            sectionId = sectionEvent;
-            years.Clear();
-            var year = db.MmhisDamus.Select(r => r).Where(r => r.Section == sectionEvent);
-            year = year.Where(r => r.Route == routeId);
-            year = year.Where(r => r.MmhisDirection == directionId);
-            year = year.Where(r => r.Section == sectionId);
-            years = year.Select(r => r.TheYear).Distinct().OrderByDescending(x => x).ToList();
-            IsDisabledSection = true;
-
-        }
-
-        public void yearChanged(string yearEvent)
-        {
-            yearId = yearEvent;
-            IsDisabledLog = false; //allow log search
-            IsDisabledSubmit = false;
-        }
-
-        //==========================================================================================================================
-        //===============================================Dropdown Selection Method==================================================
-        //==========================================================================================================================
-
-        public void findInitialPoint()
-        {
-            idx = 0;
-            IsDisabledDirection = true;
-            IsDisabledSection = true;
-            IsDisabledYear = true;
-            IsDisabledRoute = true;
-            pageModel.Route = routeId;
-            pageModel.Direction = directionId;
-            pageModel.Section = sectionId;
-            pageModel.Year = yearId;
-            pageModel.Logmeter = logmile;
-            pageModel.Latitude = latitudeId;
-            pageModel.Longitude = longitudeId;
-            var dataModel = controller.getData(pageModel); //dataModel.Roadway, dataModel.Points, dataModel.PointData
-
-            var lat = from r in dataModel.Points
-                      select r.Latitude;
-            var lng  = from r in dataModel.Points
-                      select r.Longitude;
-            var log = from r in dataModel.Points
-                      select r.Logmeter0;
-
-            logmile = log.FirstOrDefault() * 0.000621371;
-
-            latitudeId = Convert.ToDouble(lat.FirstOrDefault());
-            longitudeId = Convert.ToDouble(lng.FirstOrDefault());
-
-            var dianLds = from r in dataModel.Points
-                          select r.Ld;
-
-            var frontImages = from r in dataModel.PointData
-                              where r.FieldName == "f"                          //want to make sure each point corresponds to the correct Ld in dians
-                              select r.FieldValue;
-
-            var latitudes = from r in dataModel.PointData //grabs all the front facing images for the route
-                            join p in dataModel.Points on r.Lu equals p.Ld
-                            where r.FieldName == "f"
-                            orderby r.Lu ascending
-                            select p.Latitude;
-
-            var longitudes = from r in dataModel.PointData //grabs all the front facing images for the route
-                             join p in dataModel.Points on r.Lu equals p.Ld
-                             where r.FieldName == "f"
-                             orderby r.Lu ascending
-                             select p.Longitude;
-
-            notes = dataModel.Notes.ToList();
 
             var frontImagesStr = frontImages.ToList();
             var logmetersLst = log.ToList();
@@ -896,28 +972,6 @@
         {
             int timeInterval = 120;
 
-            //foreach (NetworkInterface adapter in adapters)
-            //{
-            //    //check if it's connected
-            //    if (adapter.OperationalStatus == OperationalStatus.Up
-            //        //the netowrk interface uses a mobile broadband interface for WiMax devices
-            //        && (adapter.NetworkInterfaceType == NetworkInterfaceType.Wman
-            //        //the network interface uses a mobile broadband interface for GSM-based devices
-            //        || adapter.NetworkInterfaceType == NetworkInterfaceType.Wwanpp
-            //        //the network interface uses a mobile broadband interface for CDMA-based devices
-            //        || adapter.NetworkInterfaceType == NetworkInterfaceType.Wwanpp2))
-            //    {
-            //        //adapter is probably cellular
-            //        timeInterval = 500;
-            //    }
-            //}
-            //var isFastConnection = CheckForInternetConnection();
-
-            //if(isFastConnection == false)
-            //{
-            //    timeInterval = 1000;
-            //}
-
             if (firstRender)
             {
                 time = new Timer();
@@ -931,38 +985,6 @@
             base.OnAfterRender(firstRender);
         }
 
-        protected double CheckSpeed()
-        {
-            double[] speeds = new double[5];
-            for (int i = 0; i < 5; i++)
-            {
-                int jQueryFileSize = 164; //Size of File in KB.
-                WebClient client = new WebClient();
-                DateTime startTime = DateTime.Now;
-                client.DownloadFile("http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js", "script.js");
-                DateTime endTime = DateTime.Now;
-                speeds[i] = Math.Round((jQueryFileSize / (endTime - startTime).TotalSeconds));
-            }
-            var avgSpd = string.Format("Download Speed: {0}KB/s", speeds.Average());
-            return speeds.Average();
-        }
-
-        public static bool CheckForInternetConnection(int timeoutMs = 201, string url = null)
-        {
-            try
-            {
-                url = "https://www.google.com";
-                var request = (HttpWebRequest)WebRequest.Create(url);
-                request.KeepAlive = false;
-                request.Timeout = timeoutMs;
-                using (var response = (HttpWebResponse)request.GetResponse())
-                    return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
 
         private async void OnTimeInterval(object sender, ElapsedEventArgs e)
         {
@@ -1020,7 +1042,6 @@
             resizedImage.Save(outputMemoryStream, ImageFormat.Jpeg);
             byte[] resizedByteImageArray = outputMemoryStream.ToArray();
             return resizedByteImageArray;
-
         }
 
     }

@@ -28,6 +28,7 @@ namespace NewMMHIS_Web.Models
         public int NumRows { get; set; }
         public List<string> Images { get; set; }
         public string ImageSelection { get; set; }
+        public string Notes { get; set; }
 
         public void Clear()
         {
