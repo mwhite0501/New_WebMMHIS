@@ -17,15 +17,10 @@
 @inject PageModel pageModel
 @inject HttpClient _httpClient
 
-<meta charset="utf-8">
+<meta charset="utf-8"  user-scalable = no>
 
 <button class="openbtn" onclick="openNav()">&#9776; Search</button>
-@isMobile
-@isMobile
-@isMobile
-@isMobile
-@isMobile
-@isMobile
+
 <div id="main" style="margin-left: 250px">
     @if(IsLandscapeMode == false) //==========================================LANDSCAPE MODE OFF: DEFAULT====================================================
     {
@@ -283,6 +278,15 @@
                 <li class="nav-item px-2" style="padding-bottom: 20px; color:white">
                     Landscape Mode:<RadzenSwitch @bind-Value=@IsLandscapeMode  Style="float: right; margin-left: 5px;"/>
                 </li>
+                <li class="nav-item px-2" style="padding-bottom: 10px; color:white">
+                     Image Quality:
+                     <RadzenSlider @bind-Value=@imgQuality TValue="float" Step="10" Min="300" Max="1000" Change=@(args => OnChange(args, "Slider from 0 to 100")) Class="w-100" />
+                </li>
+                <li class="nav-item px-2" style="padding-bottom: 10px; color:white">
+                     Interval(decrease to speed up):
+                     <RadzenSlider @bind-Value=@imgSpeed TValue="int" Step="10" Min="90" Max="400" Change=@(args => OnChange(args, "Slider from 0 to 100")) Class="w-100" />
+                </li>
+
             </EditForm>
 
         </ul>
@@ -298,6 +302,8 @@
     protected string apiKey = "";
     bool isMobile;
     bool isHighRes = false;
+    float imgQuality=400;
+    int imgSpeed=120;
     List<string> resizedImageStrings = new List<string>();
     PageModel model;
     bool popup;
@@ -974,7 +980,7 @@
 
         protected override void OnAfterRender(bool firstRender)
         {
-            int timeInterval = 120;
+            int timeInterval = imgSpeed;
 
             if (firstRender)
             {
@@ -1005,7 +1011,7 @@
             {
                 OnSubmitStop();
             }
-
+            time.Interval = imgSpeed;
             await InvokeAsync(() => StateHasChanged());
         }
 
@@ -1027,7 +1033,7 @@
             }
         }
 
-        public static byte[] Resize2Max50Kbytes(byte[] byteImageIn)
+        public byte[] Resize2Max50Kbytes(byte[] byteImageIn)
         {
             byte[] currentByteImageArray = byteImageIn;
             double scale = 1f;
@@ -1037,7 +1043,7 @@
             int fullsizeImageWidth = fullsizeImage.Width;
             int fullsizeImageHeight = fullsizeImage.Height;
 
-            scale = 500.0f / fullsizeImageWidth; //decrease this number for lower quality image
+            scale = imgQuality / fullsizeImageWidth; //decrease this number for lower quality image
             fullsizeImageWidth = (int)(fullsizeImageWidth * scale);
             fullsizeImageHeight = (int)(fullsizeImageHeight * scale);
             
