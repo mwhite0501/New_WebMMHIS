@@ -17,7 +17,7 @@
 @inject PageModel pageModel
 @inject HttpClient _httpClient
 
-<meta charset="utf-8"  user-scalable = no>
+<meta charset="utf-8">
 
 <button class="openbtn" onclick="openNav()">&#9776; Search</button>
 
@@ -55,7 +55,7 @@
 @*              <img src="data:image/jpg;base64, @imgStringRight" style="width: 33%; height: auto;"/>*@
                 <img src="data:image/jpg;base64, @imgString" style="width: 100%; "/>
 @*              <img src="data:image/jpg;base64, @imgStringLeft" style="width: 33%; height: auto;"/>*@
-
+                
 
             }
             else
@@ -78,7 +78,7 @@
         {
                 if(isMobile == true) //if a mobile device is not detected. JSInterop was used
                 {
-                    <menu>
+                    <menu class="medium">
                     <button class="rw"  @ontouchstart="() => { idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1; isPause = true; }" ></button>
                     <button class="play" style="transform: rotate(180deg); transform: rotateY(180deg);" @ontouchstart="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></button>
                     <button class="pause" @ontouchstart="() => {for(int i = 0; i<4;i++){isPause=true;}}"></button>
@@ -88,7 +88,7 @@
                 }
                 else if(isMobile == false)
                 {
-                    <menu>
+                    <menu class="small">
                     <button class="rw"  @onmousedown="() => { idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1; isPause = true; }"></button>
                     <button class="play" style="transform: rotate(180deg); transform: rotateY(180deg);" @onmousedown="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></button>
                     <button class="pause" @onmousedown="() => {for(int i = 0; i<4;i++){isPause=true;}}"></button>
@@ -165,7 +165,7 @@
         {
             if(isMobile == true) //if a mobile device is not detected. JSInterop was used
             {
-                <menu>
+                <menu class="medium">
                 <button class="rw"  @ontouchstart="() => { idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1; isPause = true; }" ></button>
                 <button class="play" style="transform: rotate(180deg); transform: rotateY(180deg);" @ontouchstart="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></button>
                 <button class="pause" @ontouchstart="() => {isPause = true;}"></button>
@@ -175,7 +175,7 @@
             }
             else if(isMobile == false)
             {
-                <menu>
+                <menu class="small">
                 <button class="rw"  @onmousedown="() => { idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1; isPause = true; }"></button>
                 <button class="play" style="transform: rotate(180deg); transform: rotateY(180deg);" @onmousedown="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></button>
                 <button class="pause" @onmousedown="() => {isPause = true;}"></button>
@@ -248,7 +248,7 @@
                     <input type="reset" onclick="window.location.reload()" class="btn btn-primary" style="position: relative; " value="Clear" />
                 </li>
 
-                @*<li class="nav-item px-2">
+                <li class="nav-item px-2">
                     Center Camera: <RadzenSwitch @bind-Value=@displayCenter Style="margin-bottom: 20px" Change=@(args => OnChange(args, "Switch")) />
                 </li>
                 <li class="nav-item px-2">
@@ -256,7 +256,7 @@
                 </li>
                 <li class="nav-item px-2">
                     Left Camera: <RadzenSwitch @bind-Value=@displayLeft Style="margin-bottom: 20px" Change=@(args => OnChange(args, "Switch")) />
-                </li>*@
+                </li>
                 <li class="nav-item px-2" style="color:white">
                     Beginning Logmile: <RadzenTextBox Placeholder="BegLog" Name="BegLog" ReadOnly="true" Value="@Math.Round(begLogmile, 3).ToString()" />
                 </li>
@@ -290,8 +290,7 @@
             </EditForm>
 
         </ul>
-    </div>
-    
+    </div>   
 </div>
 
 
@@ -302,7 +301,7 @@
     protected string apiKey = "";
     bool isMobile;
     bool isHighRes = false;
-    float imgQuality=400;
+    float imgQuality=800; //the higher values mean higher quality images. 
     int imgSpeed=120;
     List<string> resizedImageStrings = new List<string>();
     PageModel model;
@@ -369,7 +368,6 @@
     public List<string> Images = new List<string>();
     public List<string> ImagesLeft = new List<string>();
     public List<string> ImagesRight = new List<string>();
-    public List<string> precachedImgs = new List<string>();
     public List<string> notes = new List<string>();
     NetworkInterface[] adapters = NetworkInterface.GetAllNetworkInterfaces();
 
@@ -478,7 +476,6 @@
         //                  orderby r.Lu ascending
         //                  select r.FieldValue;
 
-
         var logmeters = from r in dataModel.PointData //grabs all the front facing images for the route
                         join p in dataModel.Points on r.Lu equals p.Ld
                         where r.FieldName == "f"
@@ -529,7 +526,6 @@
         //List<string> swappedPointsLeft = controller.PutFrontAtIndex(leftImagesStr, IdxB);
 
         //List<string> swappedPointsR = controller.PutFrontAtIndex(rightImagesStr, IdxB);
-
         //List<string> swappedPointsL = controller.PutFrontAtIndex(leftImagesStr, IdxB);
 
         List<string> swappedLogmeters = controller.PutFrontAtIndex(logmetersStr.ToList(), IdxB);
@@ -559,7 +555,7 @@
     }
 
 
-    async Task AsyncMapOperation(GoogleMapClickEventArgs args)    // this is an async task
+    async Task AsyncMapOperation(GoogleMapClickEventArgs args) 
     {
         spinning = true;
         Images.Clear();
@@ -828,7 +824,7 @@
 
             if (pageModel.Logmeter > 0)
             {
-                var allPoints = from r in dataModel.Points //4772
+                var allPoints = from r in dataModel.Points 
                                 select r.Ld;
 
                 var allPointsBefore = from r in dataModel.Points
@@ -858,7 +854,7 @@
                 var allPointsBeforeLst = allPointsBefore.ToList();
                 allPointsBeforeLst = controller.removePoints(allPointsBeforeLst, setDiffLst);
 
-                var IdxB = allPointsBeforeLst.Count(); //4759 points before
+                var IdxB = allPointsBeforeLst.Count(); 
 
                 //for (var i = 0; i < frontImagesStr.Count(); i++)
                 //{
