@@ -34,47 +34,108 @@
         {
             if (notes.FirstOrDefault().Any())
             {
-                <p style="color:red"><b>NOTE: @notes.FirstOrDefault().ToUpper()</b></p>
+                    <p style="color:red"><b>NOTE: @notes.FirstOrDefault().ToUpper()</b></p>
             } 
             zoom=15;
             int maxslide = Images.Count() - 1;
-
-            @*<img src="@ImagesRight[idx]" style="width: 33%; height: auto; position: relative;" />*@
-            var byteArray = ConvertImageToByteArray(unmodifiedURLs[idx]);
-@*          var byteArrayRight = ConvertImageToByteArray(unmodifiedURLsRight[idx]);
-            var byteArrayLeft = ConvertImageToByteArray(unmodifiedURLsLeft[idx]);*@
-            if(isHighRes == false)
+            
+            switch(imgType)
             {
-                var resizedArray = Resize2Max50Kbytes(byteArray);
-@*              var resizedArrayRight = Resize2Max50Kbytes(byteArrayRight);
-                var resizedArrayLeft = Resize2Max50Kbytes(byteArrayLeft);*@
+            case 1:
+                var byteArrayRight = ConvertImageToByteArray(unmodifiedURLsRight[idx]); //index out of range on older routes
+                if(isHighRes == false)
+                {
+                    var resizedArrayRight = Resize2Max50Kbytes(byteArrayRight);
+                    string imgStringRight = Convert.ToBase64String(resizedArrayRight);
+                    <img src="data:image/jpg;base64, @imgStringRight" style="width: 100%; height: auto;"/>
+                }
+                else
+                {
+                    string imgStringRight = Convert.ToBase64String(byteArrayRight);
+                    <img src="data:image/jpg;base64, @imgStringRight" style="width: 100%; height: auto;"/>
+                }
+                break;
+            case 2:
+                var byteArrayLeft = ConvertImageToByteArray(unmodifiedURLsLeft[idx]); //index out of range on older routes
+                if(isHighRes == false)
+                {
+                    var resizedArrayLeft = Resize2Max50Kbytes(byteArrayLeft); 
+                    string imgStringLeft = Convert.ToBase64String(resizedArrayLeft);
+                    <img src="data:image/jpg;base64, @imgStringLeft" style="width: 100%; height: auto;"/>
+                }
+                else
+                {
+                    string imgStringLeft = Convert.ToBase64String(byteArrayLeft);
+                    <img src="data:image/jpg;base64, @imgStringLeft" style="width: 100%; height: auto;"/>
+                }
+                break;
+            case 3:
+                var byteArrayRRight = ConvertImageToByteArray(unmodifiedURLsRRight[idx]);
+                if(isHighRes == false)
+                {
+                    var resizedArrayRRight = Resize2Max50Kbytes(byteArrayRRight);
+                    string imgStringRRight = Convert.ToBase64String(resizedArrayRRight);
+                    <img src="data:image/jpg;base64, @imgStringRRight" style="width: 100%; height: auto;"/>
+                }
+                else
+                {
+                    string imgStringRRight = Convert.ToBase64String(byteArrayRRight);
+                    <img src="data:image/jpg;base64, @imgStringRRight" style="width: 100%; height: auto;"/>
+                }
+                break;
+            case 4:
+                var byteArrayRLeft = ConvertImageToByteArray(unmodifiedURLsRLeft[idx]);
+                if(isHighRes == false)
+                {
+                    var resizedArrayRLeft = Resize2Max50Kbytes(byteArrayRLeft); 
+                    string imgStringRLeft = Convert.ToBase64String(resizedArrayRLeft);
+                    <img src="data:image/jpg;base64, @imgStringRLeft" style="width: 100%; height: auto;"/>
+                }
+                else
+                {
+                    string imgStringRLeft = Convert.ToBase64String(byteArrayRLeft);
+                    <img src="data:image/jpg;base64, @imgStringRLeft" style="width: 100%; height: auto;"/>
 
-                string imgString = Convert.ToBase64String(resizedArray);
-@*              string imgStringRight = Convert.ToBase64String(resizedArrayRight);
-                string imgStringLeft = Convert.ToBase64String(resizedArrayLeft);*@
-@*              <img src="data:image/jpg;base64, @imgStringRight" style="width: 33%; height: auto;"/>*@
-                <img src="data:image/jpg;base64, @imgString" style="width: 100%; "/>
-@*              <img src="data:image/jpg;base64, @imgStringLeft" style="width: 33%; height: auto;"/>*@
-                
+                }
+                break;
+            case 5:
+                var byteArrayPave = ConvertImageToByteArray(unmodifiedURLsPave[idx]);
+                if(isHighRes == false)
+                {
+                    var resizedArrayPave = Resize2Max50Kbytes(byteArrayPave);
+                    string imgStringPave = Convert.ToBase64String(resizedArrayPave);
+                    <img src="data:image/jpg;base64, @imgStringPave" style="width: 100%; height: auto;"/>
+                }
+                else
+                {
+                    string imgStringPave = Convert.ToBase64String(byteArrayPave);
+                    <img src="data:image/jpg;base64, @imgStringPave" style="width: 100%; height: auto;"/>
+                }
+                break;
+            default:
+                var byteArray = ConvertImageToByteArray(unmodifiedURLs[idx]);
+                if(isHighRes == false)
+                {
+                    var resizedArray = Resize2Max50Kbytes(byteArray);
+                    string imgString = Convert.ToBase64String(resizedArray);
+                    <img src="data:image/jpg;base64, @imgString" style="width: 100%;"/>
+                }
+                else
+                {
+                    string imgString = Convert.ToBase64String(byteArray);
+                    <img src="data:image/jpg;base64, @imgString" style="width: 100%;"/>
+                }
+                break;
+        }
 
-            }
-            else
-            {
-                string imgString = Convert.ToBase64String(byteArray);
-               
-                <img src="data:image/jpg;base64, @imgString" style="width: 100%;"/>
-            }
 
-            @*<img src=@Images[idx] style="width: 85%; height: auto;"/>*@
-            @*<RadzenImage Path="@Images[idx]" @onload="@(() => LoadImageAsync(Images[idx]))" loading="lazy" Style="width: 85%; height: auto; position: relative;" id="img"></RadzenImage>*@
-            @*<img src="@ImagesLeft[idx]" style="width: 33%; height: auto; position: relative;" />*@
-            <RadzenSlider class="playprogress" @bind-Value="@idx" Style="width:100%;height:35px" Max="@maxslide"></RadzenSlider>
-            log = double.Parse(Logmeters[idx]) * 0.000621371192;
-            latitudeId = double.Parse(Latitudes[idx]);
-            longitudeId = double.Parse(Longitudes[idx]);
+        <RadzenSlider class="playprogress" @bind-Value="@idx" Style="width:100%;height:35px" Max="@maxslide"></RadzenSlider>
+        log = double.Parse(Logmeters[idx]) * 0.000621371192;
+        latitudeId = double.Parse(Latitudes[idx]);
+        longitudeId = double.Parse(Longitudes[idx]);
 
         }
-        @if (Images.Any()) //if there are any images loaded in the list, display these images
+        @if (Images.Any()) //if there are any images loaded in the list, display these buttons
         {
                 if(isMobile == true) //if a mobile device is not detected. JSInterop was used
                 {
@@ -125,18 +186,93 @@
             zoom = 13;
             int maxslide = Images.Count() - 1;
 
-            @*<img src="@ImagesRight[idx]" style="width: 33%; height: auto; position: relative;" />*@
-            var byteArray = ConvertImageToByteArray(unmodifiedURLs[idx]);
-            if(isHighRes == false)
+            switch(imgType)
             {
-                var resizedArray = Resize2Max50Kbytes(byteArray);
-                string imgString = Convert.ToBase64String(resizedArray);
-                <img src="data:image/jpg;base64, @imgString" style="width: 100%; height: auto;"/>
-            }
-            else
-            {
-                string imgString = Convert.ToBase64String(byteArray);
-                <img src="data:image/jpg;base64, @imgString" style="width: 100%; height: auto;"/>
+            case 1:
+                var byteArrayRight = ConvertImageToByteArray(unmodifiedURLsRight[idx]);
+                if(isHighRes == false)
+                {
+                    var resizedArrayRight = Resize2Max50Kbytes(byteArrayRight);
+                    string imgStringRight = Convert.ToBase64String(resizedArrayRight);
+                    <img src="data:image/jpg;base64, @imgStringRight" style="width: 100%; height: auto;"/>
+                }
+                else
+                {
+                    string imgStringRight = Convert.ToBase64String(byteArrayRight);
+                    <img src="data:image/jpg;base64, @imgStringRight" style="width: 100%; height: auto;"/>
+                }
+                break;
+            case 2:
+                var byteArrayLeft = ConvertImageToByteArray(unmodifiedURLsLeft[idx]);
+                if(isHighRes == false)
+                {
+                    var resizedArrayLeft = Resize2Max50Kbytes(byteArrayLeft); 
+                    string imgStringLeft = Convert.ToBase64String(resizedArrayLeft);
+                    <img src="data:image/jpg;base64, @imgStringLeft" style="width: 100%; height: auto;"/>
+                }
+                else
+                {
+                    string imgStringLeft = Convert.ToBase64String(byteArrayLeft);
+                    <img src="data:image/jpg;base64, @imgStringLeft" style="width: 100%; height: auto;"/>
+                }
+                break;
+            case 3:
+                var byteArrayRRight = ConvertImageToByteArray(unmodifiedURLsRRight[idx]);
+                if(isHighRes == false)
+                {
+                    var resizedArrayRRight = Resize2Max50Kbytes(byteArrayRRight);
+                    string imgStringRRight = Convert.ToBase64String(resizedArrayRRight);
+                    <img src="data:image/jpg;base64, @imgStringRRight" style="width: 100%; height: auto;"/>
+                }
+                else
+                {
+                    string imgStringRRight = Convert.ToBase64String(byteArrayRRight);
+                    <img src="data:image/jpg;base64, @imgStringRRight" style="width: 100%; height: auto;"/>
+                }
+                break;
+            case 4:
+                var byteArrayRLeft = ConvertImageToByteArray(unmodifiedURLsRLeft[idx]);
+                if(isHighRes == false)
+                {
+                    var resizedArrayRLeft = Resize2Max50Kbytes(byteArrayRLeft); 
+                    string imgStringRLeft = Convert.ToBase64String(resizedArrayRLeft);
+                    <img src="data:image/jpg;base64, @imgStringRLeft" style="width: 100%; height: auto;"/>
+                }
+                else
+                {
+                    string imgStringRLeft = Convert.ToBase64String(byteArrayRLeft);
+                    <img src="data:image/jpg;base64, @imgStringRLeft" style="width: 100%; height: auto;"/>
+
+                }
+                break;
+            case 5:
+                var byteArrayPave = ConvertImageToByteArray(unmodifiedURLsPave[idx]);
+                if(isHighRes == false)
+                {
+                    var resizedArrayPave = Resize2Max50Kbytes(byteArrayPave);
+                    string imgStringPave = Convert.ToBase64String(resizedArrayPave);
+                    <img src="data:image/jpg;base64, @imgStringPave" style="width: 100%; height: auto;"/>
+                }
+                else
+                {
+                    string imgStringPave = Convert.ToBase64String(byteArrayPave);
+                    <img src="data:image/jpg;base64, @imgStringPave" style="width: 100%; height: auto;"/>
+                }
+                break;
+            default:
+                var byteArray = ConvertImageToByteArray(unmodifiedURLs[idx]);
+                if(isHighRes == false)
+                {
+                    var resizedArray = Resize2Max50Kbytes(byteArray);
+                    string imgString = Convert.ToBase64String(resizedArray);
+                    <img src="data:image/jpg;base64, @imgString" style="width: 100%;"/>
+                }
+                else
+                {
+                    string imgString = Convert.ToBase64String(byteArray);
+                    <img src="data:image/jpg;base64, @imgString" style="width: 100%;"/>
+                }
+                break;
             }
 
             @*<img src=@Images[idx] style="width: 85%; height: auto;"/>*@
@@ -240,22 +376,20 @@
                 </li>
                 <li class="nav-item px-2">
                     <RadzenTextBox Placeholder="Search Logmile" Name="Logmile" Change=@(args => OnChangeLogmeter(args, "TextBox with placeholder")) />
-                    @*<RadzenRequiredValidator Component="Logmile" Text="ZIP code is required" Popup=@popup Style="position: absolute" />
-                     <RadzenRegexValidator Component="Logmile" Text="ZIP code must be 5 digits" Pattern="\d{5}" Popup=@popup Style="position: absolute" />*@
                 </li>
                 <li class="nav-item px-2" style="padding-bottom: 20px">
                     <input type="submit" class="btn btn-primary" value="Submit" disabled="@IsDisabledSubmit" />
                     <input type="reset" onclick="window.location.reload()" class="btn btn-primary" style="position: relative; " value="Clear" />
                 </li>
-
-                <li class="nav-item px-2">
-                    Center Camera: <RadzenSwitch @bind-Value=@displayCenter Style="margin-bottom: 20px" Change=@(args => OnChange(args, "Switch")) />
-                </li>
-                <li class="nav-item px-2">
-                    Right Camera: <RadzenSwitch @bind-Value=@displayRight Style="margin-bottom: 20px" Change=@(args => OnChange(args, "Switch")) />
-                </li>
-                <li class="nav-item px-2">
-                    Left Camera: <RadzenSwitch @bind-Value=@displayLeft Style="margin-bottom: 20px" Change=@(args => OnChange(args, "Switch")) />
+                <li class="nav-item px-2" style="color:white">
+                    Camera Selection: <InputSelect @bind-Value="imgType">
+                                          <option label="Right">1</option>
+                                          <option label="Left">2</option>
+                                          <option label="Rear Right">3</option>
+                                          <option label="Rear Left">4</option>
+                                          <option label="Pavement">5</option>
+                                          <option label="Center">6</option>
+                                      </InputSelect>
                 </li>
                 <li class="nav-item px-2" style="color:white">
                     Beginning Logmile: <RadzenTextBox Placeholder="BegLog" Name="BegLog" ReadOnly="true" Value="@Math.Round(begLogmile, 3).ToString()" />
@@ -296,15 +430,19 @@
 
 
 @code{
-    //want to rethink input so that it stays free until submit
-    //List<string> resizedImageStrings = new List<string>();
+    //TODO: Pause after camera is changed
+    //add ability to type selections instead of just scrolling
+    //changing date after touch selection errors out, need to fix
+    //camera directions appear as numbers on mobile devices
     protected string apiKey = "";
     bool isMobile;
     bool isHighRes = false;
-    float imgQuality=800; //the higher values mean higher quality images. 
+    float imgQuality=600; 
     int imgSpeed=120;
+    int imgType=6;
     List<string> resizedImageStrings = new List<string>();
     PageModel model;
+
     bool popup;
     //map settings ==========================================================================
     int zoom = 8;
@@ -320,6 +458,9 @@
     List<string> unmodifiedURLs = new List<string>();
     List<string> unmodifiedURLsRight = new List<string>();
     List<string> unmodifiedURLsLeft = new List<string>();
+    List<string> unmodifiedURLsRRight = new List<string>();
+    List<string> unmodifiedURLsRLeft = new List<string>();
+    List<string> unmodifiedURLsPave = new List<string>();
 
     public int idx;
     IEnumerable<int> negativeValues = new int[] { -100, 100 };
@@ -365,11 +506,15 @@
     protected bool IsDisabledYear = true;
     protected bool IsDisabledLog = true;
     protected bool IsLandscapeMode = false;
-    public List<string> Images = new List<string>();
-    public List<string> ImagesLeft = new List<string>();
-    public List<string> ImagesRight = new List<string>();
+
+    //Cameras 
+    public List<string> Images = new List<string>();             //front
+    public List<string> ImagesLeft = new List<string>();         //front left
+    public List<string> ImagesRight = new List<string>();        //front right
+    public List<string> ImagesRearLeft = new List<string>();
+    public List<string> ImagesRearRight = new List<string>();
+    public List<string> ImagesPavement = new List<string>();
     public List<string> notes = new List<string>();
-    NetworkInterface[] adapters = NetworkInterface.GetAllNetworkInterfaces();
 
     async void LoadFileAsync(string path)
     {
@@ -396,10 +541,13 @@
         idx = 0;
 
         Images.Clear();
-        //ImagesRight.Clear();
-        //ImagesLeft.Clear();
+        ImagesRight.Clear();
+        ImagesLeft.Clear();
+        ImagesRearLeft.Clear();
+        ImagesRearRight.Clear();
+        ImagesPavement.Clear();
         pageModel.Clear();
-        //pageModel = new PageModel();
+
         if (latitudeId > 36.5 || latitudeId < 33 || longitudeId < -94.66 || longitudeId > -89.629890) //make sure it's in state or default to a position
         {
             latitudeId = 34.751354;
@@ -456,7 +604,7 @@
         var allPointsBeforeLst = allPointsBefore.ToList();
         allPointsBeforeLst = controller.removePoints(allPointsBeforeLst, setDiffLst);
 
-        var IdxB = allPointsBeforeLst.Count(); //4759 points before
+        var IdxB = allPointsBeforeLst.Count(); 
 
         var frontImages = from r in dataModel.PointData //grabs all the front facing images for the route
                           join p in dataModel.Points on r.Lu equals p.Ld
@@ -464,17 +612,35 @@
                           orderby r.Lu ascending
                           select r.FieldValue;
 
-        //var leftImages = from r in dataModel.PointData //grabs all the front facing images for the route
-        //                 join p in dataModel.Points on r.Lu equals p.Ld
-        //                 where r.FieldName == "fr"
-        //                 orderby r.Lu ascending
-        //                 select r.FieldValue;
+        var leftImages = from r in dataModel.PointData 
+                         join p in dataModel.Points on r.Lu equals p.Ld
+                         where r.FieldName == "fl"
+                         orderby r.Lu ascending
+                         select r.FieldValue;
 
-        //var rightImages = from r in dataModel.PointData //grabs all the front facing images for the route
-        //                  join p in dataModel.Points on r.Lu equals p.Ld
-        //                  where r.FieldName == "fl"
-        //                  orderby r.Lu ascending
-        //                  select r.FieldValue;
+        var rightImages = from r in dataModel.PointData 
+                          join p in dataModel.Points on r.Lu equals p.Ld
+                          where r.FieldName == "fr"
+                          orderby r.Lu ascending
+                          select r.FieldValue;
+
+        var leftRearImages = from r in dataModel.PointData
+                             join p in dataModel.Points on r.Lu equals p.Ld
+                             where r.FieldName == "rl"
+                             orderby r.Lu ascending
+                             select r.FieldValue;
+
+        var rightRearImages = from r in dataModel.PointData
+                              join p in dataModel.Points on r.Lu equals p.Ld
+                              where r.FieldName == "rr"
+                              orderby r.Lu ascending
+                              select r.FieldValue;
+
+        var pavementImages = from r in dataModel.PointData
+                             join p in dataModel.Points on r.Lu equals p.Ld
+                             where r.FieldName == "p"
+                             orderby r.Lu ascending
+                             select r.FieldValue;
 
         var logmeters = from r in dataModel.PointData //grabs all the front facing images for the route
                         join p in dataModel.Points on r.Lu equals p.Ld
@@ -496,8 +662,11 @@
 
 
         var frontImagesStr = frontImages.ToList();
-        //var rightImagesStr = rightImages.ToList();
-        //var leftImagesStr = leftImages.ToList();
+        var rightImagesStr = rightImages.ToList();
+        var leftImagesStr = leftImages.ToList();
+        var rearLeftImagesStr = leftRearImages.ToList();
+        var rearRightImagesStr = rightRearImages.ToList();
+        var pavementImagesStr = pavementImages.ToList();
 
         var logmetersLst = logmeters.ToList();
         var latitudesLst = latitudes.ToList();
@@ -512,37 +681,31 @@
         List<string> preloadImgcpy = frontImagesStr; //unmodified URLs
         List<string> swappedpreloadImgcpy = controller.PutFrontAtIndex(preloadImgcpy, IdxB);
 
-        //modifiedURLs = frontImagesStr;
-
-        //for (var i = 0; i < frontImagesStr.Count(); i++)
-        //{
-        //    frontImagesStr[i] = controller.ModifyURLs(frontImagesStr[i]);
-        //    //rightImagesStr[i] = controller.ModifyURLs(rightImagesStr[i]);
-        //    //leftImagesStr[i] = controller.ModifyURLs(leftImagesStr[i]);
-        //}
-
         List<string> swappedPoints = controller.PutFrontAtIndex(frontImagesStr, IdxB);
-        //List<string> swappedPointsRight = controller.PutFrontAtIndex(rightImagesStr, IdxB); 
-        //List<string> swappedPointsLeft = controller.PutFrontAtIndex(leftImagesStr, IdxB);
-
-        //List<string> swappedPointsR = controller.PutFrontAtIndex(rightImagesStr, IdxB);
-        //List<string> swappedPointsL = controller.PutFrontAtIndex(leftImagesStr, IdxB);
+        List<string> swappedPointsRight = controller.PutFrontAtIndex(rightImagesStr, IdxB); 
+        List<string> swappedPointsLeft = controller.PutFrontAtIndex(leftImagesStr, IdxB);
+        List<string> swappedPointsRearRight = controller.PutFrontAtIndex(rearRightImagesStr, IdxB);
+        List<string> swappedPointsRearLeft = controller.PutFrontAtIndex(rearLeftImagesStr, IdxB);
+        List<string> swappedPointsPavement = controller.PutFrontAtIndex(pavementImagesStr, IdxB);
 
         List<string> swappedLogmeters = controller.PutFrontAtIndex(logmetersStr.ToList(), IdxB);
         List<string> swappedLatitudes = controller.PutFrontAtIndex(latitudesStr.ToList(), IdxB);
         List<string> swappedLongitudes = controller.PutFrontAtIndex(longitudesStr.ToList(), IdxB);
 
         unmodifiedURLs = swappedPoints;
-        //unmodifiedURLsRight = swappedPointsRight;
-        //unmodifiedURLsLeft = swappedPointsLeft;
-        modifiedURLs = controller.PutFrontAtIndex(frontImagesStr, IdxB);
+        unmodifiedURLsRight = swappedPointsRight;
+        unmodifiedURLsLeft = swappedPointsLeft;
+        unmodifiedURLsRRight = swappedPointsRearRight;
+        unmodifiedURLsRLeft = swappedPointsRearLeft;
+        unmodifiedURLsPave = swappedPointsPavement;
 
         Images = swappedPoints;
-        //ImagesRight = swappedPointsRight;
-        //ImagesLeft = swappedPointsLeft;
+        ImagesRight = swappedPointsRight;
+        ImagesLeft = swappedPointsLeft;
+        ImagesRearRight = swappedPointsRearRight;
+        ImagesRearLeft = swappedPointsRearLeft;
+        ImagesPavement = swappedPointsPavement;
 
-        //ImagesRight = swappedPointsR;
-        //ImagesLeft = swappedPointsL;
         Logmeters = swappedLogmeters;
         Latitudes = swappedLatitudes;
         Longitudes = swappedLongitudes;
@@ -550,7 +713,6 @@
         spinning = false;
         IsDisabledLog = false;
         IsDisabledSubmit = false;
-        //await JSRuntime.InvokeVoidAsync("closeNav"); 
 
     }
 
@@ -647,19 +809,6 @@
         routes = route.Select(r => r.Route).Distinct().OrderBy(r => r).ToList();
 
     }
-    //public void routeChanged(string routeEvent)
-    //{
-    //    //need to check values of all fields for valid combinations
-    //    IsDisabledDirection = false;
-    //    routeId = routeEvent;
-    //    sections.Clear();
-    //    directions.Clear();
-    //    years.Clear();
-    //    var direct = db.MmhisDamus.Select(r => r).Where(r => r.Route == routeEvent);
-    //    directions = direct.Select(r => r.MmhisDirection).Distinct().ToList();
-    //    IsDisabledRoute = true;
-
-    //}
 
     public void routeChanged(string routeEvent)
     {
@@ -781,8 +930,24 @@
                       select r.Ld;
 
         var frontImages = from r in dataModel.PointData
-                          where r.FieldName == "f"                          //want to make sure each point corresponds to the correct Ld in dians
+                          where r.FieldName == "f"                          
                           select r.FieldValue;
+        var rightImages = from r in dataModel.PointData
+                          where r.FieldName == "fr"                          
+                          select r.FieldValue;
+        var leftImages = from r in dataModel.PointData
+                          where r.FieldName == "fl"                          
+                          select r.FieldValue;
+        var leftRearImages = from r in dataModel.PointData
+                          where r.FieldName == "rl"                          
+                          select r.FieldValue;
+        var rightRearImages = from r in dataModel.PointData
+                          where r.FieldName == "rr"                          
+                          select r.FieldValue;
+        var pavementImages = from r in dataModel.PointData
+                          where r.FieldName == "p"                          
+                          select r.FieldValue;
+
 
         var latitudes = from r in dataModel.PointData //grabs all the front facing images for the route
                         join p in dataModel.Points on r.Lu equals p.Ld
@@ -798,10 +963,16 @@
 
         notes = dataModel.Notes.ToList();
         if(isValid == false){
-            notes.Insert(0, "INVALID INPUT - Default Route Selected. Please make a new selection.");
+            notes.Insert(0, "INVALID INPUT - Default Route Selected. Please 'Clear' and make a new selection.");
         }
 
             var frontImagesStr = frontImages.ToList();
+            var frontRightImagesStr = rightImages.ToList();
+            var frontLeftImagesStr = leftImages.ToList();
+            var rearLeftImagesStr = leftRearImages.ToList();
+            var rearRightImagesStr = rightRearImages.ToList();
+            var pavementImagesStr = pavementImages.ToList();
+
             var logmetersLst = log.ToList();
             var latitudesLst = latitudes.ToList();
             var longitudesLst = longitudes.ToList();
@@ -817,7 +988,19 @@
             //    frontImagesStr[i] = controller.ModifyURLs(frontImagesStr[i]);
             //}
             unmodifiedURLs = frontImagesStr;
+            unmodifiedURLsRight = frontRightImagesStr;
+            unmodifiedURLsLeft = frontLeftImagesStr;
+            unmodifiedURLsRRight = rearRightImagesStr;
+            unmodifiedURLsRLeft = rearLeftImagesStr;
+            unmodifiedURLsPave = pavementImagesStr;
+
             Images = frontImagesStr;
+            ImagesRight = unmodifiedURLsRight;
+            ImagesLeft = unmodifiedURLsLeft;
+            ImagesRearRight = unmodifiedURLsRRight;
+            ImagesRearLeft = unmodifiedURLsRLeft;
+            ImagesPavement = unmodifiedURLsPave;
+
             Logmeters = logmetersStr.ToList();
             Latitudes = latitudesStr.ToList();
             Longitudes = longitudesStr.ToList();
@@ -861,12 +1044,24 @@
                 //    frontImagesStr[i] = controller.ModifyURLs(frontImagesStr[i]);
                 //}
                 List<string> swappedPoints = controller.PutFrontAtIndex(frontImagesStr, IdxB);
+                List<string> swappedPointsRight = controller.PutFrontAtIndex(frontRightImagesStr, IdxB);
+                List<string> swappedPointsLeft = controller.PutFrontAtIndex(frontLeftImagesStr, IdxB);
+                List<string> swappedPointsRRight = controller.PutFrontAtIndex(rearRightImagesStr, IdxB);
+                List<string> swappedPointsRLeft = controller.PutFrontAtIndex(rearLeftImagesStr, IdxB);
+                List<string> swappedPointsPavement = controller.PutFrontAtIndex(pavementImagesStr, IdxB);
+
                 List<string> swappedLogmeters = controller.PutFrontAtIndex(logmetersStr.ToList(), IdxB);
                 List<string> swappedLatitudes = controller.PutFrontAtIndex(latitudesStr.ToList(), IdxB);
                 List<string> swappedLongitudes = controller.PutFrontAtIndex(longitudesStr.ToList(), IdxB);
 
                 Images = swappedPoints;
+                unmodifiedURLsRight = swappedPointsRight;
+                unmodifiedURLsLeft = swappedPointsLeft;
+                unmodifiedURLsRRight = swappedPointsRRight;
+                unmodifiedURLsRLeft = swappedPointsRLeft;
+                unmodifiedURLsPave = swappedPointsPavement;
                 unmodifiedURLs = swappedPoints;
+
                 Logmeters = swappedLogmeters;
                 Latitudes = swappedLatitudes;
                 Longitudes = swappedLongitudes;
@@ -971,6 +1166,7 @@
         {
             isPlay = false;
             isReverse = false;
+            
             time.Enabled = false;
         }
 
