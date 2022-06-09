@@ -428,17 +428,20 @@
 </div>
 
 
-
+F
 @code{
     //TODO: Pause after camera is changed
     //add ability to type selections instead of just scrolling
     //changing date after touch selection errors out, need to fix
     //camera directions appear as numbers on mobile devices
+    //try to change where logmile is displayed
+    //for county numbers, have name as well
+
     protected string apiKey = "";
     bool isMobile;
     bool isHighRes = false;
     float imgQuality=600; 
-    int imgSpeed=120;
+    int imgSpeed=220;
     int imgType=6;
     List<string> resizedImageStrings = new List<string>();
     PageModel model;
@@ -548,11 +551,12 @@
         ImagesPavement.Clear();
         pageModel.Clear();
 
-        if (latitudeId > 36.5 || latitudeId < 33 || longitudeId < -94.66 || longitudeId > -89.629890) //make sure it's in state or default to a position
+        if (latitudeId > 36.5 || latitudeId < 33 || longitudeId < -94.66 || longitudeId > -89.629890) //make sure it's in state of arkansas or default to a position
         {
             latitudeId = 34.751354;
             longitudeId = -92.274592;
         }
+
         RouteInfo = controller.GetRouteInformation(latitudeId, longitudeId);
         routeId = RouteInfo[0]; //should probably pass in a model here
         sectionId = RouteInfo[1];
