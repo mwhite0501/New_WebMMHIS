@@ -34,7 +34,7 @@ namespace NewMMHIS_Web.Controllers
             var roads = from r in _context.MmhisDamus
                         select r;
             var strList = roads.Select(r => r.Route).Distinct().ToList();
-            var sortList = strList.Select(int.Parse).OrderBy(x => x).ToList();
+            var sortList = strList.Select(x => x).OrderBy(x => x).ToList();
             var bktstring = sortList.ConvertAll<string>(x => x.ToString());
             return bktstring;
         }
@@ -75,7 +75,7 @@ namespace NewMMHIS_Web.Controllers
         {
             List<string> first = new List<string>();
             List<string> second = new List<string>();
-            for (int i = 0; i < index; i++)
+            for (int i = 0; i < index-1; i++)
             {
                 first.Add(list[i]);
             }

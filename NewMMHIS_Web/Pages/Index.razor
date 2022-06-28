@@ -36,9 +36,9 @@
             {
                     <p style="color:red"><b>NOTE: @notes.FirstOrDefault().ToUpper()</b></p>
             } 
-            zoom=15;
+            //zoom=15;
             int maxslide = Images.Count() - 1;
-            
+            if(!File.Exists(unmodifiedURLs[idx])){idx++;}
             switch(imgType)
             {
             case 1:
@@ -127,10 +127,14 @@
                 }
                 break;
         }
-
+        @if(!Images.Any())
+        {
+            idx++;
+        }
 
         <RadzenSlider class="playprogress" @bind-Value="@idx" Style="width:100%;height:35px" Max="@maxslide"></RadzenSlider>
-        log = double.Parse(Logmeters[idx]) * 0.000621371192;
+
+        log = pageModel.Logmeter * 0.000621371192;
         latitudeId = double.Parse(Latitudes[idx]);
         longitudeId = double.Parse(Longitudes[idx]);
 
@@ -183,9 +187,9 @@
         }
         @if (Images.Any())
         {
-            zoom = 13;
+            //zoom = 13;
             int maxslide = Images.Count() - 1;
-
+            if(!File.Exists(unmodifiedURLs[idx])){idx++;}
             switch(imgType)
             {
             case 1:
@@ -287,7 +291,7 @@
         </div>
         <div class="column">
             <div class="col-xl-6">
-                <RadzenGoogleMap ApiKey="@apiKey" Style="width: 700px; height:450px" id="Map" Zoom="@zoom" Center="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId })" MapClick="@AsyncMapOperation">
+                <RadzenGoogleMap ApiKey="@apiKey" Style="width: 700px; height:450px" id="Map" Zoom="@zoom" Center="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId})" MapClick="@AsyncMapOperation">
                     <Markers>
                         @if (showArkansasMarker && Images.Any())
                         {
@@ -337,6 +341,17 @@
                         }
                     </InputSelect>
                 </li>
+@*                <li class="nav-item px-2">
+                    <RadzenCard>
+                        <RadzenDropDown AllowClear="true" TValue="string" Class="w-100" 
+                                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
+                                        Data=@routes
+                                        Value="@routeId"
+                                        Placeholder="Route"
+                                        ValueChanged="@( ( s) => routeChanged(s))"
+                                        ValueExpression="@( () => routeId)"/>
+                        </RadzenCard>
+                </li>*@
                 <li class="nav-item px-2">
                     <InputSelect id="routeControl" Value="routeId" ValueChanged="@( (string s) => routeChanged(s))" ValueExpression="@( () => routeId)" class="form-control">
                         <option value="none">Route</option>
@@ -420,22 +435,25 @@
                      Interval(decrease to speed up):
                      <RadzenSlider @bind-Value=@imgSpeed TValue="int" Step="10" Min="90" Max="400" Change=@(args => OnChange(args, "Slider from 0 to 100")) Class="w-100" />
                 </li>
-
+                <li class="nav-item px-2" style="padding-bottom: 10px; color:white">
+                     Map Zoom:
+                     <RadzenSlider @bind-Value=@zoom TValue="int" Step="1" Min="8" Max="20" Change=@(args => OnChange(args, "Slider from 0 to 100")) Class="w-100" />
+                </li>
             </EditForm>
-
         </ul>
     </div>   
 </div>
 
 
-F
+
 @code{
     //TODO: Pause after camera is changed
     //add ability to type selections instead of just scrolling
-    //changing date after touch selection errors out, need to fix
     //camera directions appear as numbers on mobile devices
-    //try to change where logmile is displayed
+    //try to change where logmile is displayed?
     //for county numbers, have name as well
+    //30 11 B doesnt work                                            !
+    //fix logmile search rounding issue                              !
 
     protected string apiKey = "";
     bool isMobile;
@@ -542,6 +560,7 @@ F
         log = 0;
         RouteInfo.Clear();
         idx = 0;
+        zoom = 15;
 
         Images.Clear();
         ImagesRight.Clear();
@@ -565,7 +584,7 @@ F
         logmile = Convert.ToDouble(RouteInfo[4]);
         latitudeId = Convert.ToDouble(RouteInfo[5]);
         longitudeId = Convert.ToDouble(RouteInfo[6]);
-        log = logmile * 0.000621371;
+        log = logmile * 0.000621371192;
         countyId = (RouteInfo[10]);
 
         pageModel.Route = routeId;
@@ -714,6 +733,8 @@ F
         Latitudes = swappedLatitudes;
         Longitudes = swappedLongitudes;
 
+        directionChanged(pageModel.Direction); //used to correctly populate the year drop down
+
         spinning = false;
         IsDisabledLog = false;
         IsDisabledSubmit = false;
@@ -733,7 +754,7 @@ F
         IsDisabledDirection = false;
         IsDisabledSection = false;
         IsDisabledYear = false;
-        zoom = 15;
+        //zoom = 15;
         await Task.Run(() => OnMapClick(args));  //<--here!
         currentCount++;
         spinning = false;
@@ -918,6 +939,8 @@ F
 
         }
 
+
+
         var lat = from r in dataModel.Points
                   select r.Latitude;
         var lng  = from r in dataModel.Points
@@ -1009,7 +1032,7 @@ F
             Latitudes = latitudesStr.ToList();
             Longitudes = longitudesStr.ToList();
 
-            if (pageModel.Logmeter > 0)
+            if (pageModel.Logmeter > 0) //if someone searches for a logmeter
             {
                 var allPoints = from r in dataModel.Points 
                                 select r.Ld;
@@ -1047,24 +1070,44 @@ F
                 //{
                 //    frontImagesStr[i] = controller.ModifyURLs(frontImagesStr[i]);
                 //}
-                List<string> swappedPoints = controller.PutFrontAtIndex(frontImagesStr, IdxB);
-                List<string> swappedPointsRight = controller.PutFrontAtIndex(frontRightImagesStr, IdxB);
-                List<string> swappedPointsLeft = controller.PutFrontAtIndex(frontLeftImagesStr, IdxB);
-                List<string> swappedPointsRRight = controller.PutFrontAtIndex(rearRightImagesStr, IdxB);
-                List<string> swappedPointsRLeft = controller.PutFrontAtIndex(rearLeftImagesStr, IdxB);
-                List<string> swappedPointsPavement = controller.PutFrontAtIndex(pavementImagesStr, IdxB);
+
+                //need to check to make sure all ImagesStr contain data
+                if(frontImagesStr.Any())
+                {
+                    List<string> swappedPoints = controller.PutFrontAtIndex(frontImagesStr, IdxB);
+                    Images = swappedPoints;
+                    unmodifiedURLs = swappedPoints;
+                }
+                
+                if(frontRightImagesStr.Any())
+                {
+                    List<string> swappedPointsRight = controller.PutFrontAtIndex(frontRightImagesStr, IdxB);
+                    unmodifiedURLsRight = swappedPointsRight;
+                }
+                if(frontLeftImagesStr.Any())
+                {
+                    List<string> swappedPointsLeft = controller.PutFrontAtIndex(frontLeftImagesStr, IdxB);
+                    unmodifiedURLsLeft = swappedPointsLeft;
+                }
+                if(rearRightImagesStr.Any())
+                {
+                    List<string> swappedPointsRRight = controller.PutFrontAtIndex(rearRightImagesStr, IdxB);
+                    unmodifiedURLsRRight = swappedPointsRRight;
+                }
+                if(rearLeftImagesStr.Any())
+                {
+                    List<string> swappedPointsRLeft = controller.PutFrontAtIndex(rearLeftImagesStr, IdxB);
+                    unmodifiedURLsRLeft = swappedPointsRLeft;
+                }
+                if(pavementImagesStr.Any())
+                {
+                    List<string> swappedPointsPavement = controller.PutFrontAtIndex(pavementImagesStr, IdxB);
+                    unmodifiedURLsPave = swappedPointsPavement;
+                }
 
                 List<string> swappedLogmeters = controller.PutFrontAtIndex(logmetersStr.ToList(), IdxB);
                 List<string> swappedLatitudes = controller.PutFrontAtIndex(latitudesStr.ToList(), IdxB);
                 List<string> swappedLongitudes = controller.PutFrontAtIndex(longitudesStr.ToList(), IdxB);
-
-                Images = swappedPoints;
-                unmodifiedURLsRight = swappedPointsRight;
-                unmodifiedURLsLeft = swappedPointsLeft;
-                unmodifiedURLsRRight = swappedPointsRRight;
-                unmodifiedURLsRLeft = swappedPointsRLeft;
-                unmodifiedURLsPave = swappedPointsPavement;
-                unmodifiedURLs = swappedPoints;
 
                 Logmeters = swappedLogmeters;
                 Latitudes = swappedLatitudes;
@@ -1076,7 +1119,7 @@ F
         //==========================================================================================================================
         //==========================================================================================================================
 
-        async Task AsyncLongOperation()    // this is an async task
+        async Task AsyncLongOperation() 
         {
             spinning = true;
             Images.Clear();
