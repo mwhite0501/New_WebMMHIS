@@ -45,7 +45,7 @@
                 var byteArrayRight = ConvertImageToByteArray(unmodifiedURLsRight[idx]); //index out of range on older routes
                 if(isHighRes == false)
                 {
-                    var resizedArrayRight = Resize2Max50Kbytes(byteArrayRight);
+                    var resizedArrayRight = ResizeImage(byteArrayRight);
                     string imgStringRight = Convert.ToBase64String(resizedArrayRight);
                     <img src="data:image/jpg;base64, @imgStringRight" style="width: 100%; height: auto;"/>
                 }
@@ -59,7 +59,7 @@
                 var byteArrayLeft = ConvertImageToByteArray(unmodifiedURLsLeft[idx]); //index out of range on older routes
                 if(isHighRes == false)
                 {
-                    var resizedArrayLeft = Resize2Max50Kbytes(byteArrayLeft); 
+                    var resizedArrayLeft = ResizeImage(byteArrayLeft); 
                     string imgStringLeft = Convert.ToBase64String(resizedArrayLeft);
                     <img src="data:image/jpg;base64, @imgStringLeft" style="width: 100%; height: auto;"/>
                 }
@@ -73,7 +73,7 @@
                 var byteArrayRRight = ConvertImageToByteArray(unmodifiedURLsRRight[idx]);
                 if(isHighRes == false)
                 {
-                    var resizedArrayRRight = Resize2Max50Kbytes(byteArrayRRight);
+                    var resizedArrayRRight = ResizeImage(byteArrayRRight);
                     string imgStringRRight = Convert.ToBase64String(resizedArrayRRight);
                     <img src="data:image/jpg;base64, @imgStringRRight" style="width: 100%; height: auto;"/>
                 }
@@ -87,7 +87,7 @@
                 var byteArrayRLeft = ConvertImageToByteArray(unmodifiedURLsRLeft[idx]);
                 if(isHighRes == false)
                 {
-                    var resizedArrayRLeft = Resize2Max50Kbytes(byteArrayRLeft); 
+                    var resizedArrayRLeft = ResizeImage(byteArrayRLeft); 
                     string imgStringRLeft = Convert.ToBase64String(resizedArrayRLeft);
                     <img src="data:image/jpg;base64, @imgStringRLeft" style="width: 100%; height: auto;"/>
                 }
@@ -102,7 +102,7 @@
                 var byteArrayPave = ConvertImageToByteArray(unmodifiedURLsPave[idx]);
                 if(isHighRes == false)
                 {
-                    var resizedArrayPave = Resize2Max50Kbytes(byteArrayPave);
+                    var resizedArrayPave = ResizeImage(byteArrayPave);
                     string imgStringPave = Convert.ToBase64String(resizedArrayPave);
                     <img src="data:image/jpg;base64, @imgStringPave" style="width: 100%; height: auto;"/>
                 }
@@ -116,7 +116,7 @@
                 var byteArray = ConvertImageToByteArray(unmodifiedURLs[idx]);
                 if(isHighRes == false)
                 {
-                    var resizedArray = Resize2Max50Kbytes(byteArray);
+                    var resizedArray = ResizeImage(byteArray);
                     string imgString = Convert.ToBase64String(resizedArray);
                     <img src="data:image/jpg;base64, @imgString" style="width: 100%;"/>
                 }
@@ -196,7 +196,7 @@
                 var byteArrayRight = ConvertImageToByteArray(unmodifiedURLsRight[idx]);
                 if(isHighRes == false)
                 {
-                    var resizedArrayRight = Resize2Max50Kbytes(byteArrayRight);
+                    var resizedArrayRight = ResizeImage(byteArrayRight);
                     string imgStringRight = Convert.ToBase64String(resizedArrayRight);
                     <img src="data:image/jpg;base64, @imgStringRight" style="width: 100%; height: auto;"/>
                 }
@@ -210,7 +210,7 @@
                 var byteArrayLeft = ConvertImageToByteArray(unmodifiedURLsLeft[idx]);
                 if(isHighRes == false)
                 {
-                    var resizedArrayLeft = Resize2Max50Kbytes(byteArrayLeft); 
+                    var resizedArrayLeft = ResizeImage(byteArrayLeft); 
                     string imgStringLeft = Convert.ToBase64String(resizedArrayLeft);
                     <img src="data:image/jpg;base64, @imgStringLeft" style="width: 100%; height: auto;"/>
                 }
@@ -224,7 +224,7 @@
                 var byteArrayRRight = ConvertImageToByteArray(unmodifiedURLsRRight[idx]);
                 if(isHighRes == false)
                 {
-                    var resizedArrayRRight = Resize2Max50Kbytes(byteArrayRRight);
+                    var resizedArrayRRight = ResizeImage(byteArrayRRight);
                     string imgStringRRight = Convert.ToBase64String(resizedArrayRRight);
                     <img src="data:image/jpg;base64, @imgStringRRight" style="width: 100%; height: auto;"/>
                 }
@@ -238,7 +238,7 @@
                 var byteArrayRLeft = ConvertImageToByteArray(unmodifiedURLsRLeft[idx]);
                 if(isHighRes == false)
                 {
-                    var resizedArrayRLeft = Resize2Max50Kbytes(byteArrayRLeft); 
+                    var resizedArrayRLeft = ResizeImage(byteArrayRLeft); 
                     string imgStringRLeft = Convert.ToBase64String(resizedArrayRLeft);
                     <img src="data:image/jpg;base64, @imgStringRLeft" style="width: 100%; height: auto;"/>
                 }
@@ -253,7 +253,7 @@
                 var byteArrayPave = ConvertImageToByteArray(unmodifiedURLsPave[idx]);
                 if(isHighRes == false)
                 {
-                    var resizedArrayPave = Resize2Max50Kbytes(byteArrayPave);
+                    var resizedArrayPave = ResizeImage(byteArrayPave);
                     string imgStringPave = Convert.ToBase64String(resizedArrayPave);
                     <img src="data:image/jpg;base64, @imgStringPave" style="width: 100%; height: auto;"/>
                 }
@@ -267,7 +267,7 @@
                 var byteArray = ConvertImageToByteArray(unmodifiedURLs[idx]);
                 if(isHighRes == false)
                 {
-                    var resizedArray = Resize2Max50Kbytes(byteArray);
+                    var resizedArray = ResizeImage(byteArray);
                     string imgString = Convert.ToBase64String(resizedArray);
                     <img src="data:image/jpg;base64, @imgString" style="width: 100%;"/>
                 }
@@ -451,8 +451,7 @@
     //add ability to type selections instead of just scrolling
     //camera directions appear as numbers on mobile devices
     //try to change where logmile is displayed?
-    //for county numbers, have name as well
-    //30 11 B doesnt work                                            !
+    //for county numbers, have name as well                                          !
     //fix logmile search rounding issue                              !
 
     protected string apiKey = "";
@@ -1272,7 +1271,7 @@
             }
         }
 
-        public byte[] Resize2Max50Kbytes(byte[] byteImageIn)
+        public byte[] ResizeImage(byte[] byteImageIn)
         {
             byte[] currentByteImageArray = byteImageIn;
             double scale = 1f;
