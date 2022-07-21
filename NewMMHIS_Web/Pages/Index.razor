@@ -547,7 +547,7 @@
     //==========================================================================================================================
     //==================================================Map Selection Method====================================================
     //==========================================================================================================================
-    async void OnMapClick(GoogleMapClickEventArgs args)
+    void OnMapClick(GoogleMapClickEventArgs args)
     {
         spinning = true;
         IsDisabledRoute = true;
@@ -599,7 +599,7 @@
 
         var dataModel = controller.getData(pageModel); //dataModel.Roadway, dataModel.Points, dataModel.PointData, dataModel.Notes
 
-        var allPoints = from r in dataModel.Points //4772
+        var allPoints = from r in dataModel.Points 
                         select r.Ld;
 
         var allPointsBefore = from r in dataModel.Points
@@ -664,19 +664,21 @@
                              orderby r.Lu ascending
                              select r.FieldValue;
 
-        var logmeters = from r in dataModel.PointData //grabs all the front facing images for the route
-                        join p in dataModel.Points on r.Lu equals p.Ld
+        var logmeters = from r in dataModel.PointData                   //r = mmhisfens(picture location)
+                        join p in dataModel.Points on r.Lu equals p.Ld  //p = mmhisdian(log, lat, long) 
                         where r.FieldName == "f"
                         orderby r.Lu ascending
                         select p.Logmeter0;
 
-        var latitudes = from r in dataModel.PointData //grabs all the front facing images for the route
+        var missingLogmeters = frontImages.Count() - logmeters.Count();
+
+        var latitudes = from r in dataModel.PointData 
                         join p in dataModel.Points on r.Lu equals p.Ld
                         where r.FieldName == "f"
                         orderby r.Lu ascending
                         select p.Latitude;
 
-        var longitudes = from r in dataModel.PointData //grabs all the front facing images for the route
+        var longitudes = from r in dataModel.PointData 
                          join p in dataModel.Points on r.Lu equals p.Ld
                          where r.FieldName == "f"
                          orderby r.Lu ascending
@@ -697,6 +699,9 @@
         var latitudesStr = latitudesLst.Select(x => x.ToString());
         var longitudesStr = longitudesLst.Select(x => x.ToString());
 
+        //if logmeters.size is not equal to frontImagesStr.size
+        //remove 
+
         begLogmile = logmetersLst.First() * 0.000621371;
         endLogmile = logmetersLst.Last() * 0.000621371;
 
@@ -710,9 +715,9 @@
         List<string> swappedPointsRearLeft = controller.PutFrontAtIndex(rearLeftImagesStr, IdxB);
         List<string> swappedPointsPavement = controller.PutFrontAtIndex(pavementImagesStr, IdxB);
 
-        List<string> swappedLogmeters = controller.PutFrontAtIndex(logmetersStr.ToList(), IdxB);
-        List<string> swappedLatitudes = controller.PutFrontAtIndex(latitudesStr.ToList(), IdxB);
-        List<string> swappedLongitudes = controller.PutFrontAtIndex(longitudesStr.ToList(), IdxB);
+        List<string> swappedLogmeters = controller.PutFrontAtIndex(logmetersStr.ToList(), IdxB - missingLogmeters);
+        List<string> swappedLatitudes = controller.PutFrontAtIndex(latitudesStr.ToList(), IdxB - missingLogmeters);
+        List<string> swappedLongitudes = controller.PutFrontAtIndex(longitudesStr.ToList(), IdxB - missingLogmeters);
 
         unmodifiedURLs = swappedPoints;
         unmodifiedURLsRight = swappedPointsRight;
@@ -1071,6 +1076,8 @@
                 //}
 
                 //need to check to make sure all ImagesStr contain data
+                var missingLogmeters = frontImages.Count() - logmeters.Count();
+
                 if(frontImagesStr.Any())
                 {
                     List<string> swappedPoints = controller.PutFrontAtIndex(frontImagesStr, IdxB);
@@ -1104,9 +1111,9 @@
                     unmodifiedURLsPave = swappedPointsPavement;
                 }
 
-                List<string> swappedLogmeters = controller.PutFrontAtIndex(logmetersStr.ToList(), IdxB);
-                List<string> swappedLatitudes = controller.PutFrontAtIndex(latitudesStr.ToList(), IdxB);
-                List<string> swappedLongitudes = controller.PutFrontAtIndex(longitudesStr.ToList(), IdxB);
+                List<string> swappedLogmeters = controller.PutFrontAtIndex(logmetersStr.ToList(), IdxB - missingLogmeters);
+                List<string> swappedLatitudes = controller.PutFrontAtIndex(latitudesStr.ToList(), IdxB - missingLogmeters);
+                List<string> swappedLongitudes = controller.PutFrontAtIndex(longitudesStr.ToList(), IdxB - missingLogmeters);
 
                 Logmeters = swappedLogmeters;
                 Latitudes = swappedLatitudes;
