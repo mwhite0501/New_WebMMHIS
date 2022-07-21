@@ -134,7 +134,7 @@
 
         <RadzenSlider class="playprogress" @bind-Value="@idx" Style="width:100%;height:35px" Max="@maxslide"></RadzenSlider>
 
-        log = pageModel.Logmeter * 0.000621371192;
+        log = double.Parse(Logmeters[idx]) * 0.000621371192;
         latitudeId = double.Parse(Latitudes[idx]);
         longitudeId = double.Parse(Longitudes[idx]);
 
@@ -283,6 +283,7 @@
             @*<RadzenImage Path="@Images[idx]" @onload="@(() => LoadImageAsync(Images[idx]))" loading="lazy" Style="width: 85%; height: auto; position: relative;" id="img"></RadzenImage>*@
             @*<img src="@ImagesLeft[idx]" style="width: 33%; height: auto; position: relative;" />*@
             <RadzenSlider class="playprogress" @bind-Value="@idx" Style="width:100%;height:35px" Max="@maxslide"></RadzenSlider>
+            
             log = double.Parse(Logmeters[idx]) * 0.000621371192;
             latitudeId = double.Parse(Latitudes[idx]);
             longitudeId = double.Parse(Longitudes[idx]);
@@ -518,6 +519,7 @@
     public string imgId;
     public double longitudeId = -92.199997;
     public double latitudeId = 34.799999;
+    public int missingLogmeters;
     public string countyId;
     //public string cameraSelection;
     protected bool IsDisabledRoute = false;
@@ -603,7 +605,7 @@
                         select r.Ld;
 
         var allPointsBefore = from r in dataModel.Points
-                              where r.Logmeter0 < pageModel.Logmeter
+                              where r.Logmeter0 <= pageModel.Logmeter
                               orderby r.Logmeter0 ascending
                               select r.Ld;
 
@@ -624,7 +626,7 @@
         var setDiffLst = setDiff.ToList();
 
         var allPointsBeforeLst = allPointsBefore.ToList();
-        allPointsBeforeLst = controller.removePoints(allPointsBeforeLst, setDiffLst);
+        //allPointsBeforeLst = controller.removePoints(allPointsBeforeLst, setDiffLst);
 
         var IdxB = allPointsBeforeLst.Count(); 
 
@@ -670,7 +672,7 @@
                         orderby r.Lu ascending
                         select p.Logmeter0;
 
-        var missingLogmeters = frontImages.Count() - logmeters.Count();
+        missingLogmeters = frontImages.Count() - logmeters.Count();
 
         var latitudes = from r in dataModel.PointData 
                         join p in dataModel.Points on r.Lu equals p.Ld
@@ -715,9 +717,9 @@
         List<string> swappedPointsRearLeft = controller.PutFrontAtIndex(rearLeftImagesStr, IdxB);
         List<string> swappedPointsPavement = controller.PutFrontAtIndex(pavementImagesStr, IdxB);
 
-        List<string> swappedLogmeters = controller.PutFrontAtIndex(logmetersStr.ToList(), IdxB - missingLogmeters);
-        List<string> swappedLatitudes = controller.PutFrontAtIndex(latitudesStr.ToList(), IdxB - missingLogmeters);
-        List<string> swappedLongitudes = controller.PutFrontAtIndex(longitudesStr.ToList(), IdxB - missingLogmeters);
+        List<string> swappedLogmeters = controller.PutFrontAtIndex(logmetersStr.ToList(), IdxB);
+        List<string> swappedLatitudes = controller.PutFrontAtIndex(latitudesStr.ToList(), IdxB);
+        List<string> swappedLongitudes = controller.PutFrontAtIndex(longitudesStr.ToList(), IdxB);
 
         unmodifiedURLs = swappedPoints;
         unmodifiedURLsRight = swappedPointsRight;
@@ -1066,7 +1068,7 @@
                 var setDiffLst = setDiff.ToList();
 
                 var allPointsBeforeLst = allPointsBefore.ToList();
-                allPointsBeforeLst = controller.removePoints(allPointsBeforeLst, setDiffLst);
+                //allPointsBeforeLst = controller.removePoints(allPointsBeforeLst, setDiffLst);
 
                 var IdxB = allPointsBeforeLst.Count(); 
 
@@ -1076,7 +1078,7 @@
                 //}
 
                 //need to check to make sure all ImagesStr contain data
-                var missingLogmeters = frontImages.Count() - logmeters.Count();
+                
 
                 if(frontImagesStr.Any())
                 {
@@ -1111,9 +1113,9 @@
                     unmodifiedURLsPave = swappedPointsPavement;
                 }
 
-                List<string> swappedLogmeters = controller.PutFrontAtIndex(logmetersStr.ToList(), IdxB - missingLogmeters);
-                List<string> swappedLatitudes = controller.PutFrontAtIndex(latitudesStr.ToList(), IdxB - missingLogmeters);
-                List<string> swappedLongitudes = controller.PutFrontAtIndex(longitudesStr.ToList(), IdxB - missingLogmeters);
+                List<string> swappedLogmeters = controller.PutFrontAtIndex(logmetersStr.ToList(), IdxB);
+                List<string> swappedLatitudes = controller.PutFrontAtIndex(latitudesStr.ToList(), IdxB);
+                List<string> swappedLongitudes = controller.PutFrontAtIndex(longitudesStr.ToList(), IdxB);
 
                 Logmeters = swappedLogmeters;
                 Latitudes = swappedLatitudes;
