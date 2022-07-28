@@ -713,9 +713,27 @@
         List<string> swappedPoints = controller.PutFrontAtIndex(frontImagesStr, IdxB);
         List<string> swappedPointsRight = controller.PutFrontAtIndex(rightImagesStr, IdxB); 
         List<string> swappedPointsLeft = controller.PutFrontAtIndex(leftImagesStr, IdxB);
-        List<string> swappedPointsRearRight = controller.PutFrontAtIndex(rearRightImagesStr, IdxB);
-        List<string> swappedPointsRearLeft = controller.PutFrontAtIndex(rearLeftImagesStr, IdxB);
-        List<string> swappedPointsPavement = controller.PutFrontAtIndex(pavementImagesStr, IdxB);
+        if (rearRightImagesStr.Any())
+        {
+            List<string> swappedPointsRearRight = controller.PutFrontAtIndex(rearRightImagesStr, IdxB);
+            unmodifiedURLsRRight = swappedPointsRearRight;
+            ImagesRearRight = swappedPointsRearRight;
+        }
+        if (rearLeftImagesStr.Any())
+        {
+            List<string> swappedPointsRearLeft = controller.PutFrontAtIndex(rearLeftImagesStr, IdxB);
+            unmodifiedURLsRLeft = swappedPointsRearLeft;
+            ImagesRearLeft = swappedPointsRearLeft;
+        }
+        if (pavementImagesStr.Any())
+        {
+            List<string> swappedPointsPavement = controller.PutFrontAtIndex(pavementImagesStr, IdxB);
+            unmodifiedURLsPave = swappedPointsPavement;
+            ImagesPavement = swappedPointsPavement;
+        }
+        
+        
+        
 
         List<string> swappedLogmeters = controller.PutFrontAtIndex(logmetersStr.ToList(), IdxB);
         List<string> swappedLatitudes = controller.PutFrontAtIndex(latitudesStr.ToList(), IdxB);
@@ -723,17 +741,11 @@
 
         unmodifiedURLs = swappedPoints;
         unmodifiedURLsRight = swappedPointsRight;
-        unmodifiedURLsLeft = swappedPointsLeft;
-        unmodifiedURLsRRight = swappedPointsRearRight;
-        unmodifiedURLsRLeft = swappedPointsRearLeft;
-        unmodifiedURLsPave = swappedPointsPavement;
+        unmodifiedURLsLeft = swappedPointsLeft;     
 
         Images = swappedPoints;
         ImagesRight = swappedPointsRight;
         ImagesLeft = swappedPointsLeft;
-        ImagesRearRight = swappedPointsRearRight;
-        ImagesRearLeft = swappedPointsRearLeft;
-        ImagesPavement = swappedPointsPavement;
 
         Logmeters = swappedLogmeters;
         Latitudes = swappedLatitudes;

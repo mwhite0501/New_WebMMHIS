@@ -75,11 +75,11 @@ namespace NewMMHIS_Web.Controllers
         {
             List<string> first = new List<string>();
             List<string> second = new List<string>();
-            for (int i = 0; i < index-1; i++)
+            for (int i = 0; i < index; i++)             //need to fix this function so that I dont get an exception when the lists are different sizes
             {
                 first.Add(list[i]);
             }
-            for (int i = index; i < list.Count; i++)
+            for (int i = index-1; i < list.Count; i++)
             {
                 second.Add(list[i]);
             }
