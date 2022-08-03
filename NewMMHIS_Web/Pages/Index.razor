@@ -338,7 +338,7 @@
                         <option value="none">County</option>
                         @foreach (var item in counties)
                         {
-                            <option value="@item">@item</option>
+                            <option value="@item">@item - @CountiesLookup[Int32.Parse(@item)]</option>
                         }
                     </InputSelect>
                 </li>
@@ -429,12 +429,18 @@
                     Landscape Mode:<RadzenSwitch @bind-Value=@IsLandscapeMode  Style="float: right; margin-left: 5px;"/>
                 </li>
                 <li class="nav-item px-2" style="padding-bottom: 10px; color:white">
-                     Image Quality:
-                     <RadzenSlider @bind-Value=@imgQuality TValue="float" Step="10" Min="300" Max="1000" Change=@(args => OnChange(args, "Slider from 0 to 100")) Class="w-100" />
+                     Image Quality: <InputSelect @bind-Value="imgQuality" style="float: right; margin-left: 5px;">
+                                          <option label="Low">300</option>
+                                          <option label="Medium">600</option>
+                                          <option label="High">900</option>
+                     </InputSelect>
                 </li>
                 <li class="nav-item px-2" style="padding-bottom: 10px; color:white">
-                     Interval(decrease to speed up):
-                     <RadzenSlider @bind-Value=@imgSpeed TValue="int" Step="10" Min="90" Max="400" Change=@(args => OnChange(args, "Slider from 0 to 100")) Class="w-100" />
+                     Route Speed: <InputSelect @bind-Value="imgSpeed" style="float: right; margin-left: 5px;">
+                                          <option label="Low">400</option>
+                                          <option label="Medium">220</option>
+                                          <option label="High">100</option>
+                     </InputSelect>
                 </li>
                 <li class="nav-item px-2" style="padding-bottom: 10px; color:white">
                      Map Zoom:
@@ -454,6 +460,17 @@
     //try to change where logmile is displayed?
     //for county numbers, have name as well                                          !
     //fix logmile search rounding issue                              !
+    string[] CountiesLookup = {"","Arkansas","Ashley","Baxter","Benton","Boone","Bradley","Calhoun","Carroll",
+                               "Chicot","Clark","Clay","Cleburne","Cleveland","Columbia",
+                               "Conway","Craighead","Crawford","Crittenden","Cross","Dallas",
+                               "Desha","Drew","Faulkner","Franklin","Fulton","Garland","Grant",
+                               "Greene","Hempstead","Hot Spring","Howard","Independence","Izard","Jackson",
+                               "Jefferson","Johnson","Lafayette","Lawrence","Lee","Lincoln",
+                               "Little River","Logan","Lonoke","Madison","Marion","Miller","Mississippi",
+                               "Monroe","Montgomery","Nevada","Newton","Ouachita","Perry","",
+                               "Perry","Phillips","Pike","Poinsett","Polk","Pop","Prairie","Pulaski",
+                               "Randolph","Saline","Scott","Searcy","Sebastian","Sevier","Sharp",
+                               "St.Francis","Stone","Union","Van Buren","Washington","White","Woodruff","Yell"};
 
     protected string apiKey = "";
     bool isMobile;
@@ -464,7 +481,6 @@
     List<string> resizedImageStrings = new List<string>();
     PageModel model;
 
-    bool popup;
     //map settings ==========================================================================
     int zoom = 8;
     bool showArkansasMarker;
@@ -732,9 +748,6 @@
             ImagesPavement = swappedPointsPavement;
         }
         
-        
-        
-
         List<string> swappedLogmeters = controller.PutFrontAtIndex(logmetersStr.ToList(), IdxB);
         List<string> swappedLatitudes = controller.PutFrontAtIndex(latitudesStr.ToList(), IdxB);
         List<string> swappedLongitudes = controller.PutFrontAtIndex(longitudesStr.ToList(), IdxB);
@@ -746,6 +759,7 @@
         Images = swappedPoints;
         ImagesRight = swappedPointsRight;
         ImagesLeft = swappedPointsLeft;
+
 
         Logmeters = swappedLogmeters;
         Latitudes = swappedLatitudes;

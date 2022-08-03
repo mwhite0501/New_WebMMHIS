@@ -27,7 +27,8 @@ namespace NewMMHIS_Web.Controllers
             var strList = roads.Select(r => r.County).Distinct().ToList();
             var sortList = strList.Select(int.Parse).OrderBy(x => x).ToList();
             var bktstring = sortList.ConvertAll<string>(x => x.ToString());
-            return bktstring;
+            var diststring = bktstring.Distinct().ToList();
+            return diststring;
         }
         public List<string> GetUniqueRoutes()
         {
