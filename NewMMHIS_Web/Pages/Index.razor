@@ -399,12 +399,12 @@
                 </li>
                 <li class="nav-item px-2" style="color:white">
                     Camera Selection: <InputSelect @bind-Value="imgType">
-                                          <option label="Right">1</option>
-                                          <option label="Left">2</option>
-                                          <option label="Rear Right">3</option>
-                                          <option label="Rear Left">4</option>
-                                          <option label="Pavement">5</option>
-                                          <option label="Center">6</option>
+                                          <option value=1 label="Right">Right</option>
+                                          <option value=2 label="Left">Left</option>
+                                          <option value=3 label="Rear Right">Rear Right</option>
+                                          <option value=4 label="Rear Left">Rear Left</option>
+                                          <option value=5 label="Pavement">Pavement</option>
+                                          <option value=6 label="Center">Center</option>
                                       </InputSelect>
                 </li>
                 <li class="nav-item px-2" style="color:white">
@@ -428,18 +428,20 @@
                 <li class="nav-item px-2" style="padding-bottom: 20px; color:white">
                     Landscape Mode:<RadzenSwitch @bind-Value=@IsLandscapeMode  Style="float: right; margin-left: 5px;"/>
                 </li>
+                @if (isMobile == true) { imgQuality = 377; }
                 <li class="nav-item px-2" style="padding-bottom: 10px; color:white">
                      Image Quality: <InputSelect @bind-Value="imgQuality" style="float: right; margin-left: 5px;">
-                                          <option label="Low">300</option>
-                                          <option label="Medium">600</option>
-                                          <option label="High">900</option>
+                                          <option value=377 label="Low">Low</option>
+                                          <option value=600 label="Medium">Medium</option>
+                                          <option value=900 label="High">High</option>
                      </InputSelect>
                 </li>
+                @if(isMobile == true){ imgSpeed = 400; }
                 <li class="nav-item px-2" style="padding-bottom: 10px; color:white">
                      Route Speed: <InputSelect @bind-Value="imgSpeed" style="float: right; margin-left: 5px;">
-                                          <option label="Low">400</option>
-                                          <option label="Medium">220</option>
-                                          <option label="High">100</option>
+                                          <option value=400 label="Slow">Slow</option>
+                                          <option value=220 label="Medium">Medium</option>
+                                          <option value=100 label="Fast">Fast</option>
                      </InputSelect>
                 </li>
                 <li class="nav-item px-2" style="padding-bottom: 10px; color:white">
@@ -747,7 +749,7 @@
             unmodifiedURLsPave = swappedPointsPavement;
             ImagesPavement = swappedPointsPavement;
         }
-        
+
         List<string> swappedLogmeters = controller.PutFrontAtIndex(logmetersStr.ToList(), IdxB);
         List<string> swappedLatitudes = controller.PutFrontAtIndex(latitudesStr.ToList(), IdxB);
         List<string> swappedLongitudes = controller.PutFrontAtIndex(longitudesStr.ToList(), IdxB);
@@ -863,8 +865,8 @@
     {
         countyId = countyEvent;
         var route = db.MmhisDamus.Select(r => r).Where(r => r.County == countyEvent);
-        routes = route.Select(r => r.Route).Distinct().OrderBy(r => r).ToList();
-
+        routes = route.Select(r => r.Route).Distinct().OrderBy(r => r.Length).ThenBy(o => o).ToList();
+        routeChanged(routes.FirstOrDefault());
     }
 
     public void routeChanged(string routeEvent)
@@ -876,7 +878,7 @@
         directions.Clear();
         years.Clear();
         var direct = db.MmhisDamus.Select(r => r).Where(r => r.Route == routeEvent);
-        sections = direct.Select(r => r.Section).Distinct().ToList();
+        sections = direct.Select(r => r.Section).Distinct().OrderBy(r => r.Length).ThenBy(o => o).ToList();
         sectionChanged(sections.FirstOrDefault());
         IsDisabledRoute = true;
 
@@ -888,7 +890,7 @@
         sectionId = sectionEvent;
         var direct = db.MmhisDamus.Select(r => r).Where(r => r.Route == routeId);
         direct = direct.Where(r => r.Section == sectionId);
-        directions = direct.Select(r => r.MmhisDirection).Distinct().ToList();
+        directions = direct.Select(r => r.MmhisDirection).Distinct().OrderBy(r => r.Length).ThenBy(o => o).ToList();
         IsDisabledDirection = false;
         if(directionId == null || routeId == null)
         {

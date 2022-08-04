@@ -36,14 +36,16 @@ namespace NewMMHIS_Web.Controllers
                         select r;
             var strList = roads.Select(r => r.Route).Distinct().ToList();
             var sortList = strList.Select(x => x).OrderBy(x => x).ToList();
+            sortList = sortList.OrderBy(x => x.Length).ThenBy(o => o).ToList();
             var bktstring = sortList.ConvertAll<string>(x => x.ToString());
+            
             return bktstring;
         }
         public List<string> GetUniqueSections()
         {
             var roads = from r in _context.MmhisDamus
                         select r;
-            var sectionList = roads.Select(r => r.Section).Distinct().OrderBy(x => x).ToList();
+            var sectionList = roads.Select(r => r.Section).Distinct().OrderBy(x => x.Length).ThenBy(o => o).ToList();
             return sectionList;
 
         }
@@ -51,7 +53,7 @@ namespace NewMMHIS_Web.Controllers
         {
             var roads = from r in _context.MmhisDamus
                         select r;
-            var directionList = roads.Select(r => r.MmhisDirection).Distinct().ToList();
+            var directionList = roads.Select(r => r.MmhisDirection).Distinct().OrderBy(x => x.Length).ThenBy(o => o).ToList();
             return directionList;
         }
         
