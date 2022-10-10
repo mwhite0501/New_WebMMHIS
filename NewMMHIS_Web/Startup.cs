@@ -78,7 +78,7 @@ namespace NewMMHIS_Web
             //    RequestPath = new PathString("/MyPath"),
             //    EnableDirectoryBrowsing = true
             //});
-            app.UseFileServer(new FileServerOptions
+            app.UseFileServer(new FileServerOptions //this is no longer used as of 
             {
                 FileProvider = new PhysicalFileProvider(@"\\san2\MMHIS Data1"),
                 RequestPath = new PathString("/MyPath1"),
