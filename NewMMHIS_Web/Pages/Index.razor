@@ -16,7 +16,7 @@
 @inject IJSRuntime JSRuntime
 @inject MmhisController controller
 @inject PageModel pageModel
-@inject HttpClient _httpClient
+
 
 <meta charset="utf-8">
 
@@ -39,11 +39,12 @@
             } 
             //zoom=15;
             int maxslide = Images.Count() - 1;
-            if(!File.Exists(unmodifiedURLs[idx])){idx++;}
+            //if(!File.Exists(unmodifiedURLs[idx])){idx++;}
+            if (!File.Exists("\\\\mmhisdata-01\\" + unmodifiedURLs[idx].Substring(7))) { idx++; } //need to find a better way to do this. Same for all images below.
             switch(imgType)
             {
             case 1:
-                var byteArrayRight = ConvertImageToByteArray(unmodifiedURLsRight[idx]); //index out of range on older routes
+                var byteArrayRight = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsRight[idx].Substring(7)); //fix index out of range on older routes
                 if(isHighRes == false)
                 {
                     var resizedArrayRight = ResizeImage(byteArrayRight);
@@ -57,7 +58,7 @@
                 }
                 break;
             case 2:
-                var byteArrayLeft = ConvertImageToByteArray(unmodifiedURLsLeft[idx]); //index out of range on older routes
+                var byteArrayLeft = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsLeft[idx].Substring(7)); //fix index out of range on older routes
                 if(isHighRes == false)
                 {
                     var resizedArrayLeft = ResizeImage(byteArrayLeft); 
@@ -71,7 +72,7 @@
                 }
                 break;
             case 3:
-                var byteArrayRRight = ConvertImageToByteArray(unmodifiedURLsRRight[idx]);
+                var byteArrayRRight = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsRRight[idx].Substring(7));
                 if(isHighRes == false)
                 {
                     var resizedArrayRRight = ResizeImage(byteArrayRRight);
@@ -85,7 +86,7 @@
                 }
                 break;
             case 4:
-                var byteArrayRLeft = ConvertImageToByteArray(unmodifiedURLsRLeft[idx]);
+                var byteArrayRLeft = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsRLeft[idx].Substring(7));
                 if(isHighRes == false)
                 {
                     var resizedArrayRLeft = ResizeImage(byteArrayRLeft); 
@@ -100,7 +101,7 @@
                 }
                 break;
             case 5:
-                var byteArrayPave = ConvertImageToByteArray(unmodifiedURLsPave[idx]);
+                var byteArrayPave = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsPave[idx].Substring(7));
                 if(isHighRes == false)
                 {
                     var resizedArrayPave = ResizeImage(byteArrayPave);
@@ -114,7 +115,7 @@
                 }
                 break;
             default:
-                var byteArray = ConvertImageToByteArray(unmodifiedURLs[idx]);
+                var byteArray = ConvertImageToByteArray("\\\\mmhisdata-01\\" +unmodifiedURLs[idx].Substring(7));
                 if(isHighRes == false)
                 {
                     var resizedArray = ResizeImage(byteArray);
@@ -135,14 +136,14 @@
 
         <RadzenSlider class="playprogress" @bind-Value="@idx" Style="width:100%;height:35px" Max="@maxslide"></RadzenSlider>
 
-        log = double.Parse(Logmeters[idx]) * 0.000621371192;
+        log = double.Parse(Logmeters[idx]) * 0.000621371192; //meter to mile conversion
         latitudeId = double.Parse(Latitudes[idx]);
         longitudeId = double.Parse(Longitudes[idx]);
 
         }
-        @if (Images.Any()) //if there are any images loaded in the list, display these buttons
+        @if (Images.Any()) //check if there are any images loaded in the list, then display these buttons
         {
-                if(isMobile == true) //if a mobile device is not detected. JSInterop was used
+                if(isMobile == true) //check if a mobile device is not detected. JSInterop was used
                 {
                     <menu class="medium">
                     <button class="rw"  @ontouchstart="() => { idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1; isPause = true; }" ></button>
@@ -190,11 +191,11 @@
         {
             //zoom = 13;
             int maxslide = Images.Count() - 1;
-            if(!File.Exists(unmodifiedURLs[idx])){idx++;}
+            if (!File.Exists("\\\\mmhisdata-01\\" + unmodifiedURLs[idx].Substring(7))) { idx++; }
             switch(imgType)
             {
             case 1:
-                var byteArrayRight = ConvertImageToByteArray(unmodifiedURLsRight[idx]);
+                var byteArrayRight = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsRight[idx].Substring(7));
                 if(isHighRes == false)
                 {
                     var resizedArrayRight = ResizeImage(byteArrayRight);
@@ -208,7 +209,7 @@
                 }
                 break;
             case 2:
-                var byteArrayLeft = ConvertImageToByteArray(unmodifiedURLsLeft[idx]);
+                var byteArrayLeft = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsLeft[idx].Substring(7));
                 if(isHighRes == false)
                 {
                     var resizedArrayLeft = ResizeImage(byteArrayLeft); 
@@ -222,7 +223,7 @@
                 }
                 break;
             case 3:
-                var byteArrayRRight = ConvertImageToByteArray(unmodifiedURLsRRight[idx]);
+                var byteArrayRRight = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsRRight[idx].Substring(7));
                 if(isHighRes == false)
                 {
                     var resizedArrayRRight = ResizeImage(byteArrayRRight);
@@ -236,7 +237,7 @@
                 }
                 break;
             case 4:
-                var byteArrayRLeft = ConvertImageToByteArray(unmodifiedURLsRLeft[idx]);
+                var byteArrayRLeft = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsRLeft[idx].Substring(7));
                 if(isHighRes == false)
                 {
                     var resizedArrayRLeft = ResizeImage(byteArrayRLeft); 
@@ -251,7 +252,7 @@
                 }
                 break;
             case 5:
-                var byteArrayPave = ConvertImageToByteArray(unmodifiedURLsPave[idx]);
+                var byteArrayPave = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsPave[idx].Substring(7));
                 if(isHighRes == false)
                 {
                     var resizedArrayPave = ResizeImage(byteArrayPave);
@@ -265,7 +266,7 @@
                 }
                 break;
             default:
-                var byteArray = ConvertImageToByteArray(unmodifiedURLs[idx]);
+                var byteArray = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLs[idx].Substring(7));
                 if(isHighRes == false)
                 {
                     var resizedArray = ResizeImage(byteArray);
@@ -280,9 +281,6 @@
                 break;
             }
 
-            @*<img src=@Images[idx] style="width: 85%; height: auto;"/>*@
-            @*<RadzenImage Path="@Images[idx]" @onload="@(() => LoadImageAsync(Images[idx]))" loading="lazy" Style="width: 85%; height: auto; position: relative;" id="img"></RadzenImage>*@
-            @*<img src="@ImagesLeft[idx]" style="width: 33%; height: auto; position: relative;" />*@
             <RadzenSlider class="playprogress" @bind-Value="@idx" Style="width:100%;height:35px" Max="@maxslide"></RadzenSlider>
             
             log = double.Parse(Logmeters[idx]) * 0.000621371192;
@@ -305,7 +303,7 @@
         </div>
         @if (Images.Any()) //if there are any images loaded in the list, display these images
         {
-            if(isMobile == true) //if a mobile device is not detected. JSInterop was used
+            if(isMobile == true) //if a mobile device is not detected. JSInterop was used.
             {
                 <menu class="medium">
                 <button class="rw"  @ontouchstart="() => { idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1; isPause = true; }" ></button>
@@ -343,17 +341,7 @@
                         }
                     </InputSelect>
                 </li>
-@*                <li class="nav-item px-2">
-                    <RadzenCard>
-                        <RadzenDropDown AllowClear="true" TValue="string" Class="w-100" 
-                                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
-                                        Data=@routes
-                                        Value="@routeId"
-                                        Placeholder="Route"
-                                        ValueChanged="@( ( s) => routeChanged(s))"
-                                        ValueExpression="@( () => routeId)"/>
-                        </RadzenCard>
-                </li>*@
+
                 <li class="nav-item px-2">
                     <InputSelect id="routeControl" Value="routeId" ValueChanged="@( (string s) => routeChanged(s))" ValueExpression="@( () => routeId)" class="form-control">
                         <option value="none">Route</option>
@@ -511,7 +499,7 @@
     private List<string> sections;
     private List<string> directions;
     private List<string> years;
-    //private List<string> cameraSelections = new List<string>() { "f", "fl", "fr", "p" };
+
     private int currentCount = 0;
     private Timer time;
     public bool loaded = false;
@@ -535,7 +523,7 @@
     public double latitudeId = 34.799999;
     public int missingLogmeters;
     public string countyId;
-    //public string cameraSelection;
+
     protected bool IsDisabledRoute = false;
     protected bool IsDisabledDirection = true;
     protected bool IsDisabledSection = true;
@@ -544,24 +532,18 @@
     protected bool IsLandscapeMode = false;
 
     //Cameras 
-    public List<string> Images = new List<string>();             //front
-    public List<string> ImagesLeft = new List<string>();         //front left
-    public List<string> ImagesRight = new List<string>();        //front right
+    public List<string> Images = new List<string>();             
+    public List<string> ImagesLeft = new List<string>();         
+    public List<string> ImagesRight = new List<string>();        
     public List<string> ImagesRearLeft = new List<string>();
     public List<string> ImagesRearRight = new List<string>();
     public List<string> ImagesPavement = new List<string>();
     public List<string> notes = new List<string>();
 
-    async void LoadFileAsync(string path)
-    {
-        string imageUrl = path;
-        using var response = await _httpClient.GetAsync(imageUrl).ConfigureAwait(false);
-        var imageBytes = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
-    }
-
     //=================================================================================================================================================================================
     //==================================================Map Selection Method===========================================================================================================
     //=================================================================================================================================================================================
+
     void OnMapClick(GoogleMapClickEventArgs args)
     {
         spinning = true;
@@ -639,7 +621,6 @@
         var setDiffLst = setDiff.ToList();
 
         var allPointsBeforeLst = allPointsBefore.ToList();
-        //allPointsBeforeLst = controller.removePoints(allPointsBeforeLst, setDiffLst);
 
         var IdxB = allPointsBeforeLst.Count(); 
 
@@ -713,9 +694,6 @@
         var logmetersStr = logmetersLst.Select(x => x.ToString());
         var latitudesStr = latitudesLst.Select(x => x.ToString());
         var longitudesStr = longitudesLst.Select(x => x.ToString());
-
-        //if logmeters.size is not equal to frontImagesStr.size
-        //remove 
 
         begLogmile = logmetersLst.First() * 0.000621371;
         endLogmile = logmetersLst.Last() * 0.000621371;
@@ -990,17 +968,17 @@
                           where r.FieldName == "fr"                          
                           select r.FieldValue;
         var leftImages = from r in dataModel.PointData
-                          where r.FieldName == "fl"                          
-                          select r.FieldValue;
+                         where r.FieldName == "fl"                          
+                         select r.FieldValue;
         var leftRearImages = from r in dataModel.PointData
-                          where r.FieldName == "rl"                          
-                          select r.FieldValue;
+                             where r.FieldName == "rl"                          
+                             select r.FieldValue;
         var rightRearImages = from r in dataModel.PointData
-                          where r.FieldName == "rr"                          
-                          select r.FieldValue;
+                              where r.FieldName == "rr"                          
+                              select r.FieldValue;
         var pavementImages = from r in dataModel.PointData
-                          where r.FieldName == "p"                          
-                          select r.FieldValue;
+                             where r.FieldName == "p"                          
+                             select r.FieldValue;
 
 
         var latitudes = from r in dataModel.PointData //grabs all the front facing images for the route
@@ -1020,278 +998,285 @@
             notes.Insert(0, "INVALID INPUT - Default Route Selected. Please 'Clear' and make a new selection.");
         }
 
-            var frontImagesStr = frontImages.ToList();
-            var frontRightImagesStr = rightImages.ToList();
-            var frontLeftImagesStr = leftImages.ToList();
-            var rearLeftImagesStr = leftRearImages.ToList();
-            var rearRightImagesStr = rightRearImages.ToList();
-            var pavementImagesStr = pavementImages.ToList();
+        var frontImagesStr = frontImages.ToList();
+        var frontRightImagesStr = rightImages.ToList();
+        var frontLeftImagesStr = leftImages.ToList();
+        var rearLeftImagesStr = leftRearImages.ToList();
+        var rearRightImagesStr = rightRearImages.ToList();
+        var pavementImagesStr = pavementImages.ToList();
 
-            var logmetersLst = log.ToList();
-            var latitudesLst = latitudes.ToList();
-            var longitudesLst = longitudes.ToList();
-            var logmetersStr = logmetersLst.Select(x => x.ToString());
-            var latitudesStr = latitudesLst.Select(x => x.ToString());
-            var longitudesStr = longitudesLst.Select(x => x.ToString());
+        var logmetersLst = log.ToList();
+        var latitudesLst = latitudes.ToList();
+        var longitudesLst = longitudes.ToList();
+        var logmetersStr = logmetersLst.Select(x => x.ToString());
+        var latitudesStr = latitudesLst.Select(x => x.ToString());
+        var longitudesStr = longitudesLst.Select(x => x.ToString());
 
-            begLogmile = logmetersLst.First() * 0.000621371;
-            endLogmile = logmetersLst.Last() * 0.000621371;
+        begLogmile = logmetersLst.First() * 0.000621371;
+        endLogmile = logmetersLst.Last() * 0.000621371;
+
+        //for (var i = 0; i < frontImagesStr.Count(); i++)
+        //{
+        //    frontImagesStr[i] = controller.ModifyURLs(frontImagesStr[i]);
+        //}
+        unmodifiedURLs = frontImagesStr;
+        unmodifiedURLsRight = frontRightImagesStr;
+        unmodifiedURLsLeft = frontLeftImagesStr;
+        unmodifiedURLsRRight = rearRightImagesStr;
+        unmodifiedURLsRLeft = rearLeftImagesStr;
+        unmodifiedURLsPave = pavementImagesStr;
+
+        Images = frontImagesStr;
+        ImagesRight = unmodifiedURLsRight;
+        ImagesLeft = unmodifiedURLsLeft;
+        ImagesRearRight = unmodifiedURLsRRight;
+        ImagesRearLeft = unmodifiedURLsRLeft;
+        ImagesPavement = unmodifiedURLsPave;
+
+        Logmeters = logmetersStr.ToList();
+        Latitudes = latitudesStr.ToList();
+        Longitudes = longitudesStr.ToList();
+
+        if (pageModel.Logmeter > 0) //if someone searches for a logmeter
+        {
+            var allPoints = from r in dataModel.Points 
+                            select r.Ld;
+
+            var allPointsBefore = from r in dataModel.Points
+                                  where r.Logmeter0 <= pageModel.Logmeter
+                                  orderby r.Logmeter0 ascending
+                                  select r.Ld;
+
+            //need to make sure these Lds exsist as pointData.Lus
+            //count number of missing values
+            var frontImagesLu = from r in dataModel.PointData //grabs all the front facing images for the route
+                                join p in dataModel.Points on r.Lu equals p.Ld
+                                where r.FieldName == "f" //f = front facing camera
+                                orderby r.Lu ascending
+                                select r.Lu;
+            var logmeters = from r in dataModel.PointData //grabs all the front facing images for the route
+                            join p in dataModel.Points on r.Lu equals p.Ld
+                            where r.FieldName == "f"
+                            orderby r.Lu ascending
+                            select p.Logmeter0;
+
+            var PointData = frontImagesLu.ToList();
+            var Points = allPoints.ToList();
+
+            var setDiff = Points.Except(PointData);
+            var setDiffLst = setDiff.ToList();
+
+            var allPointsBeforeLst = allPointsBefore.ToList();
+            //allPointsBeforeLst = controller.removePoints(allPointsBeforeLst, setDiffLst);
+
+            var IdxB = allPointsBeforeLst.Count(); 
 
             //for (var i = 0; i < frontImagesStr.Count(); i++)
             //{
             //    frontImagesStr[i] = controller.ModifyURLs(frontImagesStr[i]);
             //}
-            unmodifiedURLs = frontImagesStr;
-            unmodifiedURLsRight = frontRightImagesStr;
-            unmodifiedURLsLeft = frontLeftImagesStr;
-            unmodifiedURLsRRight = rearRightImagesStr;
-            unmodifiedURLsRLeft = rearLeftImagesStr;
-            unmodifiedURLsPave = pavementImagesStr;
 
-            Images = frontImagesStr;
-            ImagesRight = unmodifiedURLsRight;
-            ImagesLeft = unmodifiedURLsLeft;
-            ImagesRearRight = unmodifiedURLsRRight;
-            ImagesRearLeft = unmodifiedURLsRLeft;
-            ImagesPavement = unmodifiedURLsPave;
+            //need to check to make sure all ImagesStr contain data
 
-            Logmeters = logmetersStr.ToList();
-            Latitudes = latitudesStr.ToList();
-            Longitudes = longitudesStr.ToList();
 
-            if (pageModel.Logmeter > 0) //if someone searches for a logmeter
+            if(frontImagesStr.Any())
             {
-                var allPoints = from r in dataModel.Points 
-                                select r.Ld;
-
-                var allPointsBefore = from r in dataModel.Points
-                                      where r.Logmeter0 <= pageModel.Logmeter
-                                      orderby r.Logmeter0 ascending
-                                      select r.Ld;
-
-                //need to make sure these Lds exsist as pointData.Lus
-                //count number of missing values
-                var frontImagesLu = from r in dataModel.PointData //grabs all the front facing images for the route
-                                    join p in dataModel.Points on r.Lu equals p.Ld
-                                    where r.FieldName == "f" //f = front facing camera
-                                    orderby r.Lu ascending
-                                    select r.Lu;
-                var logmeters = from r in dataModel.PointData //grabs all the front facing images for the route
-                                join p in dataModel.Points on r.Lu equals p.Ld
-                                where r.FieldName == "f"
-                                orderby r.Lu ascending
-                                select p.Logmeter0;
-
-                var PointData = frontImagesLu.ToList();
-                var Points = allPoints.ToList();
-
-                var setDiff = Points.Except(PointData);
-                var setDiffLst = setDiff.ToList();
-
-                var allPointsBeforeLst = allPointsBefore.ToList();
-                //allPointsBeforeLst = controller.removePoints(allPointsBeforeLst, setDiffLst);
-
-                var IdxB = allPointsBeforeLst.Count(); 
-
-                //for (var i = 0; i < frontImagesStr.Count(); i++)
-                //{
-                //    frontImagesStr[i] = controller.ModifyURLs(frontImagesStr[i]);
-                //}
-
-                //need to check to make sure all ImagesStr contain data
-                
-
-                if(frontImagesStr.Any())
-                {
-                    List<string> swappedPoints = controller.PutFrontAtIndex(frontImagesStr, IdxB);
-                    Images = swappedPoints;
-                    unmodifiedURLs = swappedPoints;
-                }
-                
-                if(frontRightImagesStr.Any())
-                {
-                    List<string> swappedPointsRight = controller.PutFrontAtIndex(frontRightImagesStr, IdxB);
-                    unmodifiedURLsRight = swappedPointsRight;
-                }
-                if(frontLeftImagesStr.Any())
-                {
-                    List<string> swappedPointsLeft = controller.PutFrontAtIndex(frontLeftImagesStr, IdxB);
-                    unmodifiedURLsLeft = swappedPointsLeft;
-                }
-                if(rearRightImagesStr.Any())
-                {
-                    List<string> swappedPointsRRight = controller.PutFrontAtIndex(rearRightImagesStr, IdxB);
-                    unmodifiedURLsRRight = swappedPointsRRight;
-                }
-                if(rearLeftImagesStr.Any())
-                {
-                    List<string> swappedPointsRLeft = controller.PutFrontAtIndex(rearLeftImagesStr, IdxB);
-                    unmodifiedURLsRLeft = swappedPointsRLeft;
-                }
-                if(pavementImagesStr.Any())
-                {
-                    List<string> swappedPointsPavement = controller.PutFrontAtIndex(pavementImagesStr, IdxB);
-                    unmodifiedURLsPave = swappedPointsPavement;
-                }
-
-                List<string> swappedLogmeters = controller.PutFrontAtIndex(logmetersStr.ToList(), IdxB);
-                List<string> swappedLatitudes = controller.PutFrontAtIndex(latitudesStr.ToList(), IdxB);
-                List<string> swappedLongitudes = controller.PutFrontAtIndex(longitudesStr.ToList(), IdxB);
-
-                Logmeters = swappedLogmeters;
-                Latitudes = swappedLatitudes;
-                Longitudes = swappedLongitudes;
+                List<string> swappedPoints = controller.PutFrontAtIndex(frontImagesStr, IdxB);
+                Images = swappedPoints;
+                unmodifiedURLs = swappedPoints;
             }
 
-        }
-        //=============================================================================================================================================================================
-        //=============================================================================================================================================================================
-        //=============================================================================================================================================================================
-
-        async Task AsyncLongOperation() 
-        {
-            spinning = true;
-            Images.Clear();
-            await Task.Run(() => findInitialPoint());  //<--here!
-            showArkansasMarker = true;
-            currentCount++;
-            spinning = false;
-            //await JSRuntime.InvokeVoidAsync("closeNav");
-        }
-
-        async Task AsyncClearAll()    // this is an async task
-        {
-            spinning = true;
-            await Task.Run(() => ClearSelection());  //<--here!
-            currentCount++;
-            spinning = false;
-
-            //await JSRuntime.InvokeVoidAsync("Clear");
-        }
-
-        void OnChange(dynamic value, string name)
-        {
-            var str = value is IEnumerable ? string.Join(", ", value) : value;
-            str = Convert.ToString(str);
-            if(str == "1")
+            if(frontRightImagesStr.Any())
             {
-                pageModel.ImageSelection = "f";
+                List<string> swappedPointsRight = controller.PutFrontAtIndex(frontRightImagesStr, IdxB);
+                unmodifiedURLsRight = swappedPointsRight;
             }
-            else if(str == "2")
+            if(frontLeftImagesStr.Any())
             {
-                pageModel.ImageSelection = "fl";
+                List<string> swappedPointsLeft = controller.PutFrontAtIndex(frontLeftImagesStr, IdxB);
+                unmodifiedURLsLeft = swappedPointsLeft;
             }
-            else if(str == "3")
+            if(rearRightImagesStr.Any())
             {
-                pageModel.ImageSelection = "fr";
+                List<string> swappedPointsRRight = controller.PutFrontAtIndex(rearRightImagesStr, IdxB);
+                unmodifiedURLsRRight = swappedPointsRRight;
             }
-            //pageModel.ImageSelection = str;
+            if(rearLeftImagesStr.Any())
+            {
+                List<string> swappedPointsRLeft = controller.PutFrontAtIndex(rearLeftImagesStr, IdxB);
+                unmodifiedURLsRLeft = swappedPointsRLeft;
+            }
+            if(pavementImagesStr.Any())
+            {
+                List<string> swappedPointsPavement = controller.PutFrontAtIndex(pavementImagesStr, IdxB);
+                unmodifiedURLsPave = swappedPointsPavement;
+            }
+
+            List<string> swappedLogmeters = controller.PutFrontAtIndex(logmetersStr.ToList(), IdxB);
+            List<string> swappedLatitudes = controller.PutFrontAtIndex(latitudesStr.ToList(), IdxB);
+            List<string> swappedLongitudes = controller.PutFrontAtIndex(longitudesStr.ToList(), IdxB);
+
+            Logmeters = swappedLogmeters;
+            Latitudes = swappedLatitudes;
+            Longitudes = swappedLongitudes;
         }
 
-        void OnChangeLogmeter(dynamic value, string name)
-        {
-            var str = value is IEnumerable ? string.Join(", ", value) : value;
-            str = Convert.ToString(str);
-            logmile = Convert.ToDouble(str) * 1609.34;
-        }
+    }
+    //=============================================================================================================================================================================
+    //=============================================================================================================================================================================
+    //=============================================================================================================================================================================
 
-        void ToggleHighRes()
-        {
-            isHighRes = !isHighRes;
-        }
+    async Task AsyncLongOperation() 
+    {
+        spinning = true;
+        Images.Clear();
+        await Task.Run(() => findInitialPoint());  //<--here!
+        showArkansasMarker = true;
+        currentCount++;
+        spinning = false;
+        //await JSRuntime.InvokeVoidAsync("closeNav");
+    }
 
-        void OnSubmitPlay()
+    async Task AsyncClearAll()    
+    {
+        spinning = true;
+        await Task.Run(() => ClearSelection());  //<--here!
+        currentCount++;
+        spinning = false;
+
+        //await JSRuntime.InvokeVoidAsync("Clear");
+    }
+
+    void OnChange(dynamic value, string name)
+    {
+        var str = value is IEnumerable ? string.Join(", ", value) : value;
+        str = Convert.ToString(str);
+        if(str == "1")
         {
-            if (Images.Any())
+            pageModel.ImageSelection = "f";
+        }
+        else if(str == "2")
+        {
+            pageModel.ImageSelection = "fl";
+        }
+        else if(str == "3")
+        {
+            pageModel.ImageSelection = "fr";
+        }
+        //pageModel.ImageSelection = str;
+    }
+
+    void OnChangeLogmeter(dynamic value, string name)
+    {
+        var str = value is IEnumerable ? string.Join(", ", value) : value;
+        str = Convert.ToString(str);
+        logmile = Convert.ToDouble(str) * 1609.34;
+    }
+
+    void ToggleHighRes()
+    {
+        isHighRes = !isHighRes;
+    }
+
+    void OnSubmitPlay()
+    {
+        if (Images.Any())
+        {
+            if(isPause == false)
             {
-                if(isPause == false)
-                {
-                    isReverse = false;
-                    isPlay = true;
-                    time.Enabled = true;
-                    idx = idx + 1 >= Images.Count() ? 0 : idx + 1;
-                }
-                else
-                {
-                    OnSubmitStop();
-                }
+                isReverse = false;
+                isPlay = true;
+                time.Enabled = true;
+                idx = idx + 1 >= Images.Count() ? 0 : idx + 1;
             }
-        }
-
-        void OnSubmitReverse()
-        {
-            if (Images.Any())
-            {
-                if(isPause == false)
-                {
-                    isPlay = false;
-                    isReverse = true;
-                    //isPause = !isPause;
-                    time.Enabled = true;
-                    idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1;
-                }
-                else
-                {
-                    OnSubmitStop();
-                }
-
-            }
-        }
-
-        void OnSubmitStop()
-        {
-            isPlay = false;
-            isReverse = false;
-            
-            time.Enabled = false;
-        }
-
-        protected override void OnAfterRender(bool firstRender)
-        {
-            int timeInterval = imgSpeed;
-
-            if (firstRender)
-            {
-                time = new Timer();
-                //Set the time interval.
-                time.Interval = timeInterval; //around 600 for tablets on cellular
-                time.Elapsed += OnTimeInterval;
-                time.AutoReset = true;
-                // Start the timer.
-                //time.Enabled = false;
-            }
-            base.OnAfterRender(firstRender);
-        }
-
-
-        private async void OnTimeInterval(object sender, ElapsedEventArgs e)
-        {
-            if (isPlay == true)
-            {
-                //showArkansasMarker = true;
-                OnSubmitPlay();
-            }
-            if (isReverse == true)
-            {
-                OnSubmitReverse();
-            }
-            if(isPause == true)
+            else
             {
                 OnSubmitStop();
             }
-            time.Interval = imgSpeed;
-            await InvokeAsync(() => StateHasChanged());
         }
+    }
 
-        public void Dispose()
+    void OnSubmitReverse()
+    {
+        if (Images.Any())
         {
-            // while navigating to other components, Dispose method will be called and clean up the Timer function.
-            time?.Dispose();
+            if(isPause == false)
+            {
+                isPlay = false;
+                isReverse = true;
+                //isPause = !isPause;
+                time.Enabled = true;
+                idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1;
+            }
+            else
+            {
+                OnSubmitStop();
+            }
+
         }
+    }
 
-        public static byte[] ConvertImageToByteArray(string filePath) //takes the path to the images and returnss byte array
+    void OnSubmitStop()
+    {
+        isPlay = false;
+        isReverse = false;
+
+        time.Enabled = false;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        int timeInterval = imgSpeed;
+
+        if (firstRender)
         {
-            using (var image = Image.FromFile(filePath))
+            time = new Timer();
+            //Set the time interval.
+            time.Interval = timeInterval; //around 600 for tablets on cellular
+            time.Elapsed += OnTimeInterval;
+            time.AutoReset = true;
+            // Start the timer.
+            //time.Enabled = false;
+        }
+        base.OnAfterRender(firstRender);
+    }
+
+
+    private async void OnTimeInterval(object sender, ElapsedEventArgs e)
+    {
+        if (isPlay == true)
+        {
+            //showArkansasMarker = true;
+            OnSubmitPlay();
+        }
+        if (isReverse == true)
+        {
+            OnSubmitReverse();
+        }
+        if(isPause == true)
+        {
+            OnSubmitStop();
+        }
+        time.Interval = imgSpeed;
+        await InvokeAsync(() => StateHasChanged());
+    }
+
+    public void Dispose()
+    {
+        // while navigating to other components, Dispose method will be called and clean up the Timer function.
+        time?.Dispose();
+    }
+
+    public static byte[] ConvertImageToByteArray(string filePath) //takes the path to the images and returnss byte array
+    {
+        var t = filePath.Substring(0, 34);
+        if (filePath.Substring(0, 34) == "\\\\mmhisdata-01\\av-01\\MMHIS Pave24\\"){ //this is messy. Need to find a better way to do this.
+            filePath = "\\\\sirapav-01\\MMHIS Pave24\\" + filePath.Substring(34);    //same with the file paths in the view
+        }
+        else if(filePath.Substring(0,21)== "\\\\mmhisdata-01\\av-01\\"){
+            filePath = "\\\\mmhisdata-01\\" + filePath.Substring(21);
+        }
+        using (var image = Image.FromFile(filePath))
             {
                 using (var m = new MemoryStream())
                 {
