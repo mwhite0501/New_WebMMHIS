@@ -25,7 +25,7 @@ namespace NewMMHIS_Web.Controllers
             var roads = from r in _context.MmhisDamus
                         select r;
             var strList = roads.Select(r => r.County).Distinct().ToList();
-            var sortList = strList.Select(int.Parse).OrderBy(x => x).ToList();
+            var sortList = strList.Where(s => !string.IsNullOrWhiteSpace(s)).Select(int.Parse).OrderBy(x => x).ToList();
             var bktstring = sortList.ConvertAll<string>(x => x.ToString());
             var diststring = bktstring.Distinct().ToList();
             return diststring;
@@ -77,15 +77,31 @@ namespace NewMMHIS_Web.Controllers
         public List<string> PutFrontAtIndex(List<string> list, int index) //splits a string at a given index and places in front of the first half of the string
         {
             List<string> first = new List<string>();
-            List<string> second = new List<string>();
-            for (int i = 0; i < index; i++)             //need to fix this function so that I dont get an exception when the lists are different sizes
+            List<string> second = new List<string>();  
+            if (index < list.Count)           //////////////////////////<<<<<<<<<<<<<<<<<<<<<<<<< Trace this back and fix the logemeters not matching up with the imagery  
             {
-                first.Add(list[i]);
+                for (int i = 0; i < index; i++)             //need to fix this function so that I dont get an exception when the lists are different sizes
+                {
+                    first.Add(list[i]);
+                }
+                for (int i = index - 1; i < list.Count; i++)
+                {
+                    second.Add(list[i]);
+                }
             }
-            for (int i = index-1; i < list.Count; i++)
+            else //the index is out of range   //////////////////////////<<<<<<<<<<<<<<<<<<<<<<<<< Trace this back and fix the logemeters not matching up with the imagery
             {
-                second.Add(list[i]);
+                index = list.Count;
+                for (int i = 0; i < index; i++)             //need to fix this function so that I dont get an exception when the lists are different sizes
+                {
+                    first.Add(list[i]);
+                }
+                for (int i = index - 1; i < list.Count; i++)
+                {
+                    second.Add(list[i]);
+                }
             }
+            
             return second.Concat(first).ToList();
         }
 
@@ -217,12 +233,14 @@ namespace NewMMHIS_Web.Controllers
                      where r.Lu == roadIdLt.Ld
                      select r; //r.Ld
 
-            var pointData = from r in _context.MmhisFens                                //store all data points for a given increment
+            var pointData = from r in _context.MmhisFens                                //store all data points at a given 5 meter increment
                             join z in points
                             on r.Lu equals z.Ld
                             where r.Lt == roadIdLt.Ld
                             orderby r.Lu ascending
                             select r;
+
+            
 
             dataModel.Roadway = roadId;
             dataModel.Points = points;

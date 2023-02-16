@@ -33,14 +33,15 @@
         }
         @if (Images.Any())
         {
-            if (notes.FirstOrDefault().Any())
+            if (notes != null && notes.FirstOrDefault() != null)
             {
                     <p style="color:red"><b>NOTE: @notes.FirstOrDefault().ToUpper()</b></p>
-            } 
+            }
+
             //zoom=15;
             int maxslide = Images.Count() - 1;
             //if(!File.Exists(unmodifiedURLs[idx])){idx++;}
-            if (!File.Exists("\\\\mmhisdata-01\\" + unmodifiedURLs[idx].Substring(7))) { idx++; } //need to find a better way to do this. Same for all images below.
+            //if (!File.Exists("\\\\mmhisdata-01\\" + unmodifiedURLs[idx].Substring(7))) { idx++; } //need to throw a missing frame img
             switch(imgType)
             {
             case 1:
@@ -129,10 +130,10 @@
                 }
                 break;
         }
-        @if(!Images.Any())
+        @*@if(!Images.Any())
         {
             idx++;
-        }
+        }*@
 
         <RadzenSlider class="playprogress" @bind-Value="@idx" Style="width:100%;height:35px" Max="@maxslide"></RadzenSlider>
 
@@ -191,7 +192,7 @@
         {
             //zoom = 13;
             int maxslide = Images.Count() - 1;
-            if (!File.Exists("\\\\mmhisdata-01\\" + unmodifiedURLs[idx].Substring(7))) { idx++; }
+            //if (!File.Exists("\\\\mmhisdata-01\\" + unmodifiedURLs[idx].Substring(7))) { idx++; }
             switch(imgType)
             {
             case 1:
@@ -412,7 +413,7 @@
                     Longitude:  <RadzenTextBox Placeholder="Longitude" Name="Long" ReadOnly="true" Value="@longitudeId.ToString()"/>
                 </li>
                 <li class="nav-item px-2" style="padding-bottom: 20px; padding-top:20px; color:white">
-                    High Resolution Mode:<RadzenSwitch @bind-Value=@isHighRes  Style="float: right; margin-left: 5px;"/>
+                    Full Resolution Mode:<RadzenSwitch @bind-Value=@isHighRes  Style="float: right; margin-left: 5px;"/>
                 </li>
                 <li class="nav-item px-2" style="padding-bottom: 20px; color:white">
                     Landscape Mode:<RadzenSwitch @bind-Value=@IsLandscapeMode  Style="float: right; margin-left: 5px;"/>
@@ -460,7 +461,7 @@
 
     protected string apiKey = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("Keys")["GoogleMapsJavascript"];
     bool isMobile;
-    bool isHighRes = false;
+    bool isHighRes = true;
     float imgQuality=600; 
     int imgSpeed=220;
     int imgType=6;
@@ -596,23 +597,168 @@
 
         var dataModel = controller.getData(pageModel); //dataModel.Roadway, dataModel.Points, dataModel.PointData, dataModel.Notes
 
-        var allPoints = from r in dataModel.Points 
+        var pointDataList = dataModel.PointData.ToList();
+
+        var dianQuery = from dian in dataModel.Points
+                        select dian.Ld;
+
+        var fenQueryF = from fen in dataModel.PointData
+                        join dain in dataModel.Points on fen.Lu equals dain.Ld
+                        where fen.FieldName == "f"
+                        select fen.Lu;
+
+        var fenQueryFR = from fen in dataModel.PointData
+                         join dain in dataModel.Points on fen.Lu equals dain.Ld
+                         where fen.FieldName == "fr"
+                         select fen.Lu;
+
+        var fenQueryFL = from fen in dataModel.PointData
+                         join dain in dataModel.Points on fen.Lu equals dain.Ld
+                         where fen.FieldName == "fl"
+                         select fen.Lu;
+
+        var fenQueryRR = from fen in dataModel.PointData
+                         join dain in dataModel.Points on fen.Lu equals dain.Ld
+                         where fen.FieldName == "rr"
+                         select fen.Lu;
+
+        var fenQueryRL = from fen in dataModel.PointData
+                         join dain in dataModel.Points on fen.Lu equals dain.Ld
+                         where fen.FieldName == "rl"
+                         select fen.Lu;
+
+        var fenQueryP = from fen in dataModel.PointData
+                        join dain in dataModel.Points on fen.Lu equals dain.Ld
+                        where fen.FieldName == "p"
+                        select fen.Lu;
+
+        var resultF = dianQuery.Except(fenQueryF);
+        var resultFR = dianQuery.Except(fenQueryFR);
+        var resultFL = dianQuery.Except(fenQueryFL);
+        var resultRR = dianQuery.Except(fenQueryRR);
+        var resultRL = dianQuery.Except(fenQueryRL);
+        var resultP = dianQuery.Except(fenQueryP);
+
+        foreach (var item in resultF)
+        {
+            var newFen = new MmhisFen
+                {
+                    Lu = item,
+                    Lt = 0,
+                    FieldCategory = "f",
+                    FieldName = "f",
+                    FieldValue = "\\\\san2\\MMHIS Data3\\mw42705\\No_Image_Available.jpg"
+
+                };
+            pointDataList.Add(newFen);
+        }
+
+        foreach (var item in resultF)
+        {
+            var newFen = new MmhisFen
+                {
+                    Lu = item,
+                    Lt = 0,
+                    FieldCategory = "f",
+                    FieldName = "f",
+                    FieldValue = "\\\\san2\\MMHIS Data3\\mw42705\\No_Image_Available.jpg"
+
+                };
+            pointDataList.Add(newFen);
+        }
+
+        foreach (var item in resultFR)
+        {
+            var newFen = new MmhisFen
+                {
+                    Lu = item,
+                    Lt = 0,
+                    FieldCategory = "f",
+                    FieldName = "fr",
+                    FieldValue = "\\\\san2\\MMHIS Data3\\mw42705\\No_Image_Available.jpg"
+
+                };
+            pointDataList.Add(newFen);
+        }
+
+        foreach (var item in resultFL)
+        {
+            var newFen = new MmhisFen
+                {
+                    Lu = item,
+                    Lt = 0,
+                    FieldCategory = "f",
+                    FieldName = "fl",
+                    FieldValue = "\\\\san2\\MMHIS Data3\\mw42705\\No_Image_Available.jpg"
+
+                };
+            pointDataList.Add(newFen);
+        }
+
+        foreach (var item in resultRR)
+        {
+            var newFen = new MmhisFen
+                {
+                    Lu = item,
+                    Lt = 0,
+                    FieldCategory = "f",
+                    FieldName = "rr",
+                    FieldValue = "\\\\san2\\MMHIS Data3\\mw42705\\No_Image_Available.jpg"
+
+                };
+            pointDataList.Add(newFen);
+        }
+
+        foreach (var item in resultRL)
+        {
+            var newFen = new MmhisFen
+                {
+                    Lu = item,
+                    Lt = 0,
+                    FieldCategory = "f",
+                    FieldName = "rl",
+                    FieldValue = "\\\\san2\\MMHIS Data3\\mw42705\\No_Image_Available.jpg"
+
+                };
+            pointDataList.Add(newFen);
+        }
+
+        foreach (var item in resultP)
+        {
+            var newFen = new MmhisFen
+                {
+                    Lu = item,
+                    Lt = 0,
+                    FieldCategory = "f",
+                    FieldName = "p",
+                    FieldValue = "\\\\san2\\MMHIS Data3\\mw42705\\No_Image_Available.jpg"
+
+                };
+            pointDataList.Add(newFen);
+        }
+
+        dataModel.PointData = pointDataList.OrderBy(x => x.Lu).AsQueryable();
+
+        //////////////////////////<<<<<<<<<<<<<<<<<<<<<<<<< I NEED TO FIND MISSING FRAMES AFTER getData() is called!
+
+        pointDataList = dataModel.PointData.ToList();
+        var pointList = dataModel.Points.ToList();
+        var allPoints = from r in pointList
                         select r.Ld;
 
-        var allPointsBefore = from r in dataModel.Points
+        var allPointsBefore = from r in pointList
                               where r.Logmeter0 <= pageModel.Logmeter
                               orderby r.Logmeter0 ascending
                               select r.Ld;
 
         //need to make sure these Lds exsist as pointData.Lus
         //count number of missing values
-        var frontImagesLu = from r in dataModel.PointData //grabs all the front facing images for the route
-                            join p in dataModel.Points on r.Lu equals p.Ld
-                            where r.FieldName == "f"
+
+        var frontImagesLu = from r in pointDataList//grabs all the front facing images for the route
+                            join p in pointList on r.Lu equals p.Ld
+                            where r.FieldName == "f" //f = front facing camera
                             orderby r.Lu ascending
                             select r.Lu;
-
-        notes = dataModel.Notes.ToList();
 
         var PointData = frontImagesLu.ToList();
         var Points = allPoints.ToList();
@@ -624,58 +770,58 @@
 
         var IdxB = allPointsBeforeLst.Count(); 
 
-        var frontImages = from r in dataModel.PointData //grabs all the front facing images for the route
-                          join p in dataModel.Points on r.Lu equals p.Ld
+        var frontImages = from r in pointDataList //grabs all the front facing images for the route
+                          join p in pointList on r.Lu equals p.Ld
                           where r.FieldName == "f"
                           orderby r.Lu ascending
                           select r.FieldValue;
 
-        var leftImages = from r in dataModel.PointData 
-                         join p in dataModel.Points on r.Lu equals p.Ld
+        var leftImages = from r in pointDataList 
+                         join p in pointList on r.Lu equals p.Ld
                          where r.FieldName == "fl"
                          orderby r.Lu ascending
                          select r.FieldValue;
 
-        var rightImages = from r in dataModel.PointData 
-                          join p in dataModel.Points on r.Lu equals p.Ld
+        var rightImages = from r in pointDataList
+                          join p in pointList on r.Lu equals p.Ld
                           where r.FieldName == "fr"
                           orderby r.Lu ascending
                           select r.FieldValue;
 
-        var leftRearImages = from r in dataModel.PointData
-                             join p in dataModel.Points on r.Lu equals p.Ld
+        var leftRearImages = from r in pointDataList
+                             join p in pointList on r.Lu equals p.Ld
                              where r.FieldName == "rl"
                              orderby r.Lu ascending
                              select r.FieldValue;
 
-        var rightRearImages = from r in dataModel.PointData
-                              join p in dataModel.Points on r.Lu equals p.Ld
+        var rightRearImages = from r in pointDataList
+                              join p in pointList on r.Lu equals p.Ld
                               where r.FieldName == "rr"
                               orderby r.Lu ascending
                               select r.FieldValue;
 
-        var pavementImages = from r in dataModel.PointData
-                             join p in dataModel.Points on r.Lu equals p.Ld
+        var pavementImages = from r in pointDataList
+                             join p in pointList on r.Lu equals p.Ld
                              where r.FieldName == "p"
                              orderby r.Lu ascending
                              select r.FieldValue;
 
-        var logmeters = from r in dataModel.PointData                   //r = mmhisfens(picture location)
-                        join p in dataModel.Points on r.Lu equals p.Ld  //p = mmhisdian(log, lat, long) 
+        var logmeters = from r in pointDataList                   //r = mmhisfens(picture location)
+                        join p in pointList on r.Lu equals p.Ld  //p = mmhisdian(log, lat, long)
                         where r.FieldName == "f"
                         orderby r.Lu ascending
                         select p.Logmeter0;
 
         missingLogmeters = frontImages.Count() - logmeters.Count();
 
-        var latitudes = from r in dataModel.PointData 
-                        join p in dataModel.Points on r.Lu equals p.Ld
+        var latitudes = from r in pointDataList
+                        join p in pointList on r.Lu equals p.Ld
                         where r.FieldName == "f"
                         orderby r.Lu ascending
                         select p.Latitude;
 
-        var longitudes = from r in dataModel.PointData 
-                         join p in dataModel.Points on r.Lu equals p.Ld
+        var longitudes = from r in pointDataList
+                         join p in pointList on r.Lu equals p.Ld
                          where r.FieldName == "f"
                          orderby r.Lu ascending
                          select p.Longitude;
@@ -827,8 +973,8 @@
             //return Task.Delay(0);
 
             await JSRuntime.InvokeVoidAsync("setTitle", "Arkansas Highways");
-            isMobile = await JSRuntime.InvokeAsync<bool>("isDevice");
-
+            //isMobile = await JSRuntime.InvokeAsync<bool>("isDevice");
+            isMobile = false;
             StateHasChanged();
 
         }
@@ -945,13 +1091,164 @@
         }
 
 
-
         var lat = from r in dataModel.Points
                   select r.Latitude;
         var lng  = from r in dataModel.Points
                   select r.Longitude;
         var log = from r in dataModel.Points
                   select r.Logmeter0;
+
+        ///////////////////////<<<<<<<<<<<<<<<<<<<<<<<<<<< SELECT LOGMETERS WHERE NO IMAGES ARE STORED
+        //var missingFrames = logmeters where there are no images
+        /*SELECT * FROM dataModel.Points
+         * WHERE dataModel.Points.Ld not in dataModel.PointData.lu
+         * select all unique Points.Ld
+         * select unique pointData.lu
+         * Find the set differences
+         * check each point for the missing frame
+        */
+        var pointDataList = dataModel.PointData.ToList();
+
+        var dianQuery = from dian in dataModel.Points
+                        select dian.Ld;
+
+        var fenQueryF = from fen in dataModel.PointData
+                        join dain in dataModel.Points on fen.Lu equals dain.Ld
+                        where fen.FieldName == "f"
+                        select fen.Lu;
+
+        var fenQueryFR = from fen in dataModel.PointData
+                         join dain in dataModel.Points on fen.Lu equals dain.Ld
+                         where fen.FieldName == "fr"
+                         select fen.Lu;
+
+        var fenQueryFL = from fen in dataModel.PointData
+                         join dain in dataModel.Points on fen.Lu equals dain.Ld
+                         where fen.FieldName == "fl"
+                         select fen.Lu;
+
+        var fenQueryRR = from fen in dataModel.PointData
+                         join dain in dataModel.Points on fen.Lu equals dain.Ld
+                         where fen.FieldName == "rr"
+                         select fen.Lu;
+
+        var fenQueryRL = from fen in dataModel.PointData
+                         join dain in dataModel.Points on fen.Lu equals dain.Ld
+                         where fen.FieldName == "rl"
+                         select fen.Lu;
+
+        var fenQueryP = from fen in dataModel.PointData
+                        join dain in dataModel.Points on fen.Lu equals dain.Ld
+                        where fen.FieldName == "p"
+                        select fen.Lu;
+
+        var resultF = dianQuery.Except(fenQueryF);
+        var resultFR = dianQuery.Except(fenQueryFR);
+        var resultFL = dianQuery.Except(fenQueryFL);
+        var resultRR = dianQuery.Except(fenQueryRR);
+        var resultRL = dianQuery.Except(fenQueryRL);
+        var resultP = dianQuery.Except(fenQueryP);
+
+        foreach (var item in resultF)
+        {
+            var newFen = new MmhisFen
+                {
+                    Lu = item,
+                    Lt = 0,
+                    FieldCategory = "f",
+                    FieldName = "f",
+                    FieldValue = "\\\\san2\\MMHIS Data3\\mw42705\\No_Image_Available.jpg"
+
+                };
+            pointDataList.Add(newFen);
+        }
+
+        foreach (var item in resultF)
+        {
+            var newFen = new MmhisFen
+                {
+                    Lu = item,
+                    Lt = 0,
+                    FieldCategory = "f",
+                    FieldName = "f",
+                    FieldValue = "\\\\san2\\MMHIS Data3\\mw42705\\No_Image_Available.jpg"
+
+                };
+            pointDataList.Add(newFen);
+        }
+
+        foreach (var item in resultFR)
+        {
+            var newFen = new MmhisFen
+                {
+                    Lu = item,
+                    Lt = 0,
+                    FieldCategory = "f",
+                    FieldName = "fr",
+                    FieldValue = "\\\\san2\\MMHIS Data3\\mw42705\\No_Image_Available.jpg"
+
+                };
+            pointDataList.Add(newFen);
+        }
+
+        foreach (var item in resultFL)
+        {
+            var newFen = new MmhisFen
+                {
+                    Lu = item,
+                    Lt = 0,
+                    FieldCategory = "f",
+                    FieldName = "fl",
+                    FieldValue = "\\\\san2\\MMHIS Data3\\mw42705\\No_Image_Available.jpg"
+
+                };
+            pointDataList.Add(newFen);
+        }
+
+        foreach (var item in resultRR)
+        {
+            var newFen = new MmhisFen
+                {
+                    Lu = item,
+                    Lt = 0,
+                    FieldCategory = "f",
+                    FieldName = "rr",
+                    FieldValue = "\\\\san2\\MMHIS Data3\\mw42705\\No_Image_Available.jpg"
+
+                };
+            pointDataList.Add(newFen);
+        }
+
+        foreach (var item in resultRL)
+        {
+            var newFen = new MmhisFen
+                {
+                    Lu = item,
+                    Lt = 0,
+                    FieldCategory = "f",
+                    FieldName = "rl",
+                    FieldValue = "\\\\san2\\MMHIS Data3\\mw42705\\No_Image_Available.jpg"
+
+                };
+            pointDataList.Add(newFen);
+        }
+
+        foreach (var item in resultP)
+        {
+            var newFen = new MmhisFen
+                {
+                    Lu = item,
+                    Lt = 0,
+                    FieldCategory = "f",
+                    FieldName = "p",
+                    FieldValue = "\\\\san2\\MMHIS Data3\\mw42705\\No_Image_Available.jpg"
+
+                };
+            pointDataList.Add(newFen);
+        }
+
+        dataModel.PointData = pointDataList.OrderBy(x => x.Lu).AsQueryable();
+
 
         logmile = log.FirstOrDefault() * 0.000621371;
 
@@ -981,19 +1278,26 @@
                              select r.FieldValue;
 
 
-        var latitudes = from r in dataModel.PointData //grabs all the front facing images for the route
-                        join p in dataModel.Points on r.Lu equals p.Ld
+        var luValues = (from r in dataModel.PointData
                         where r.FieldName == "f"
-                        orderby r.Lu ascending
-                        select p.Latitude;
+                        select r.Lu).Distinct().ToList();
 
-        var longitudes = from r in dataModel.PointData //grabs all the front facing images for the route
-                         join p in dataModel.Points on r.Lu equals p.Ld
-                         where r.FieldName == "f"
-                         orderby r.Lu ascending
-                         select p.Longitude;
+        var latitudes = (from p in dataModel.Points
+                         where luValues.Contains(p.Ld)
+                         orderby p.Lu ascending
+                         select p.Latitude).ToList();
 
-        notes = dataModel.Notes.ToList();
+        var longitudes = (from p in dataModel.Points
+                          where luValues.Contains(p.Ld)
+                          orderby p.Lu ascending
+                          select p.Longitude).ToList();
+        if(dataModel.Notes.ToList() != null)
+        {
+            notes = dataModel.Notes.ToList();
+        }
+        else{
+            notes.Insert(1, "");
+        }
         if(isValid == false){
             notes.Insert(0, "INVALID INPUT - Default Route Selected. Please 'Clear' and make a new selection.");
         }
@@ -1039,23 +1343,26 @@
 
         if (pageModel.Logmeter > 0) //if someone searches for a logmeter
         {
-            var allPoints = from r in dataModel.Points 
+            pointDataList = dataModel.PointData.ToList();
+            var pointList = dataModel.Points.ToList();
+            var allPoints = from r in pointList
                             select r.Ld;
 
-            var allPointsBefore = from r in dataModel.Points
+            var allPointsBefore = from r in pointList 
                                   where r.Logmeter0 <= pageModel.Logmeter
                                   orderby r.Logmeter0 ascending
                                   select r.Ld;
 
             //need to make sure these Lds exsist as pointData.Lus
             //count number of missing values
-            var frontImagesLu = from r in dataModel.PointData //grabs all the front facing images for the route
-                                join p in dataModel.Points on r.Lu equals p.Ld
+
+            var frontImagesLu = from r in pointDataList//grabs all the front facing images for the route
+                                join p in pointList on r.Lu equals p.Ld
                                 where r.FieldName == "f" //f = front facing camera
                                 orderby r.Lu ascending
                                 select r.Lu;
-            var logmeters = from r in dataModel.PointData //grabs all the front facing images for the route
-                            join p in dataModel.Points on r.Lu equals p.Ld
+            var logmeters = from r in pointDataList //grabs all the front facing images for the route
+                            join p in pointList on r.Lu equals p.Ld
                             where r.FieldName == "f"
                             orderby r.Lu ascending
                             select p.Logmeter0;
@@ -1067,17 +1374,8 @@
             var setDiffLst = setDiff.ToList();
 
             var allPointsBeforeLst = allPointsBefore.ToList();
-            //allPointsBeforeLst = controller.removePoints(allPointsBeforeLst, setDiffLst);
 
-            var IdxB = allPointsBeforeLst.Count(); 
-
-            //for (var i = 0; i < frontImagesStr.Count(); i++)
-            //{
-            //    frontImagesStr[i] = controller.ModifyURLs(frontImagesStr[i]);
-            //}
-
-            //need to check to make sure all ImagesStr contain data
-
+            var IdxB = allPointsBeforeLst.Count();  
 
             if(frontImagesStr.Any())
             {
@@ -1085,6 +1383,12 @@
                 Images = swappedPoints;
                 unmodifiedURLs = swappedPoints;
             }
+            //else if(!frontImagesStr.Any())
+            //{
+            //    List<string> swappedPoints = controller.PutFrontAtIndex(frontImagesStr, IdxB-1);
+            //    Images = swappedPoints;
+            //    unmodifiedURLs = swappedPoints;
+            //}
 
             if(frontRightImagesStr.Any())
             {
