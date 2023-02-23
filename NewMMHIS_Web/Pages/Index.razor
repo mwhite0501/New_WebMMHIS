@@ -13,6 +13,8 @@
 @using System.Drawing.Imaging
 @using Microsoft.Extensions.Configuration;
 
+
+
 @inject IJSRuntime JSRuntime
 @inject MmhisController controller
 @inject PageModel pageModel
@@ -33,15 +35,15 @@
         }
         @if (Images.Any())
         {
-            if (notes != null && notes.FirstOrDefault() != null)
+            if (notes != null && !string.IsNullOrWhiteSpace(notes.FirstOrDefault()))
             {
                     <p style="color:red"><b>NOTE: @notes.FirstOrDefault().ToUpper()</b></p>
             }
 
             //zoom=15;
-            int maxslide = Images.Count() - 1;
+            int maxslide = Logmeters.Count();
             //if(!File.Exists(unmodifiedURLs[idx])){idx++;}
-            //if (!File.Exists("\\\\mmhisdata-01\\" + unmodifiedURLs[idx].Substring(7))) { idx++; } //need to throw a missing frame img
+            //if(!File.Exists("\\\\mmhisdata-01\\" + unmodifiedURLs[idx].Substring(7))) { idx++; } //need to throw a missing frame img
             switch(imgType)
             {
             case 1:
@@ -137,7 +139,7 @@
 
         <RadzenSlider class="playprogress" @bind-Value="@idx" Style="width:100%;height:35px" Max="@maxslide"></RadzenSlider>
 
-        log = double.Parse(Logmeters[idx]) * 0.000621371192; //meter to mile conversion
+        log = double.Parse(Logmeters[idx]) * .000621371; //meter to mile conversion
         latitudeId = double.Parse(Latitudes[idx]);
         longitudeId = double.Parse(Longitudes[idx]);
 
@@ -147,21 +149,21 @@
                 if(isMobile == true) //check if a mobile device is not detected. JSInterop was used
                 {
                     <menu class="medium">
-                    <button class="rw"  @ontouchstart="() => { idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1; isPause = true; }" ></button>
+                    <button class="rw"  @ontouchstart="() => { idx = idx - 1 < 0 ? Logmeters.Count() - 1 : idx - 1; isPause = true; }" ></button>
                     <button class="play" style="transform: rotate(180deg); transform: rotateY(180deg);" @ontouchstart="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></button>
                     <button class="pause" @ontouchstart="() => {for(int i = 0; i<4;i++){isPause=true;}}"></button>
                     <button class="play" @ontouchstart="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></button>
-                    <button class="ff"  @ontouchstart="() => { idx = idx + 1 >= Images.Count() ? 0 : idx + 1; isPause = true; }"></button>
+                    <button class="ff"  @ontouchstart="() => { idx = idx + 1 >= Logmeters.Count() ? 0 : idx + 1; isPause = true; }"></button>
                     </menu>
                 }
                 else if(isMobile == false)
                 {
                     <menu class="small">
-                    <button class="rw"  @onmousedown="() => { idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1; isPause = true; }"></button>
+                    <button class="rw"  @onmousedown="() => { idx = idx - 1 < 0 ? Logmeters.Count() - 1: idx - 1; isPause = true; }"></button>
                     <button class="play" style="transform: rotate(180deg); transform: rotateY(180deg);" @onmousedown="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></button>
                     <button class="pause" @onmousedown="() => {for(int i = 0; i<4;i++){isPause=true;}}"></button>
                     <button class="play" @onmousedown="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></button>
-                    <button class="ff"  @onmousedown="() => { idx = idx + 1 >= Images.Count() ? 0 : idx + 1; isPause = true; }"></button>
+                    <button class="ff"  @onmousedown="() => { idx = idx + 1 >= Logmeters.Count() ? 0 : idx + 1; isPause = true; }"></button>
                     </menu>
                 }
 
@@ -191,7 +193,7 @@
         @if (Images.Any())
         {
             //zoom = 13;
-            int maxslide = Images.Count() - 1;
+            int maxslide = Logmeters.Count() - 1;
             //if (!File.Exists("\\\\mmhisdata-01\\" + unmodifiedURLs[idx].Substring(7))) { idx++; }
             switch(imgType)
             {
@@ -307,21 +309,21 @@
             if(isMobile == true) //if a mobile device is not detected. JSInterop was used.
             {
                 <menu class="medium">
-                <button class="rw"  @ontouchstart="() => { idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1; isPause = true; }" ></button>
+                <button class="rw"  @ontouchstart="() => { idx = idx - 1 < 0 ? Logmeters.Count() - 1 : idx - 1; isPause = true; }" ></button>
                 <button class="play" style="transform: rotate(180deg); transform: rotateY(180deg);" @ontouchstart="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></button>
                 <button class="pause" @ontouchstart="() => {isPause = true;}"></button>
                 <button class="play" @ontouchstart="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></button>
-                <button class="ff"  @ontouchstart="() => { idx = idx + 1 >= Images.Count() ? 0 : idx + 1; isPause = true; }"></button>
+                <button class="ff"  @ontouchstart="() => { idx = idx + 1 >= Logmeters.Count() ? 0 : idx + 1; isPause = true; }"></button>
                 </menu>
             }
             else if(isMobile == false)
             {
                 <menu class="small">
-                <button class="rw"  @onmousedown="() => { idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1; isPause = true; }"></button>
+                <button class="rw"  @onmousedown="() => { idx = idx - 1 < 0 ? Logmeters.Count() - 1 : idx - 1; isPause = true; }"></button>
                 <button class="play" style="transform: rotate(180deg); transform: rotateY(180deg);" @onmousedown="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></button>
                 <button class="pause" @onmousedown="() => {isPause = true;}"></button>
                 <button class="play" @onmousedown="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></button>
-                <button class="ff"  @onmousedown="() => { idx = idx + 1 >= Images.Count() ? 0 : idx + 1; isPause = true; }"></button>
+                <button class="ff"  @onmousedown="() => { idx = idx + 1 >= Logmeters.Count() ? 0 : idx + 1; isPause = true; }"></button>
                 </menu>
             }
         }
@@ -334,7 +336,7 @@
         <ul class="nav flex-column">
             <EditForm Model="@controller" OnValidSubmit="AsyncLongOperation">
                 <li class="nav-item px-2">
-                    <InputSelect id="countyControl" Value="countyId" ValueChanged="@( (string s) => countyChanged(s))" ValueExpression="@( () => countyId)" class="form-control">
+                    <InputSelect id="countyControl" Value="countyId" ValueChanged="@( (string s) => countyChanged(s))" ValueExpression="@( () => countyId)" class="form-control" @onkeydown="HandleKeyDown">
                         <option value="none">County</option>
                         @foreach (var item in counties)
                         {
@@ -344,7 +346,7 @@
                 </li>
 
                 <li class="nav-item px-2">
-                    <InputSelect id="routeControl" Value="routeId" ValueChanged="@( (string s) => routeChanged(s))" ValueExpression="@( () => routeId)" class="form-control">
+                    <InputSelect id="routeControl" Value="routeId" ValueChanged="@( (string s) => routeChanged(s))" ValueExpression="@( () => routeId)" class="form-control" @onkeydown="HandleKeyDown">
                         <option value="none">Route</option>
                         @foreach (var item in routes)
                         {
@@ -353,7 +355,7 @@
                     </InputSelect>
                 </li>
                 <li class="nav-item px-2">
-                    <InputSelect Value="sectionId" ValueChanged="@( (string s) => sectionChanged(s))" ValueExpression="@( () => sectionId)" class="form-control">
+                    <InputSelect Value="sectionId" ValueChanged="@( (string s) => sectionChanged(s))" ValueExpression="@( () => sectionId)" class="form-control" @onkeydown="HandleKeyDown">
                         <option value="none">Section</option>
                         @foreach (var item in sections)
                         {
@@ -362,7 +364,7 @@
                     </InputSelect>
                 </li>
                 <li class="nav-item px-2">
-                    <InputSelect Value="directionId" ValueChanged="@( (string s) => directionChanged(s))" ValueExpression="@( () => directionId)" class="form-control">
+                    <InputSelect Value="directionId" ValueChanged="@( (string s) => directionChanged(s))" ValueExpression="@( () => directionId)" class="form-control" @onkeydown="HandleKeyDown">
                         <option value="none">Direction</option>
                         @foreach (var item in directions)
                         {
@@ -446,7 +448,23 @@
 
 
 @code{
+    private int selectedIndex = 0;
+    private void HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "ArrowUp" && selectedIndex > 0)
+        {
+            selectedIndex--;
+        }
+        else if (e.Key == "ArrowDown" && selectedIndex < counties.Count - 1)
+        {
+            selectedIndex++;
+        }
+        else
+        {
+            return;
+        }
 
+    }
     string[] CountiesLookup = {"","Arkansas","Ashley","Baxter","Benton","Boone","Bradley","Calhoun","Carroll",
                                "Chicot","Clark","Clay","Cleburne","Cleveland","Columbia",
                                "Conway","Craighead","Crawford","Crittenden","Cross","Dallas",
@@ -599,30 +617,30 @@
 
         var pointDataList = dataModel.PointData.ToList();
 
-        var dianQuery = from dian in dataModel.Points
+        var dianQuery = from dian in dataModel.Points //get all points in route at 5 meter increments
                         select dian.Ld;
 
-        var fenQueryF = from fen in dataModel.PointData
+        var fenQueryF = from fen in dataModel.PointData //get all points where there is a front camera
                         join dain in dataModel.Points on fen.Lu equals dain.Ld
                         where fen.FieldName == "f"
                         select fen.Lu;
 
-        var fenQueryFR = from fen in dataModel.PointData
+        var fenQueryFR = from fen in dataModel.PointData //front right
                          join dain in dataModel.Points on fen.Lu equals dain.Ld
                          where fen.FieldName == "fr"
                          select fen.Lu;
 
-        var fenQueryFL = from fen in dataModel.PointData
+        var fenQueryFL = from fen in dataModel.PointData //front left
                          join dain in dataModel.Points on fen.Lu equals dain.Ld
                          where fen.FieldName == "fl"
                          select fen.Lu;
 
-        var fenQueryRR = from fen in dataModel.PointData
+        var fenQueryRR = from fen in dataModel.PointData //rear right
                          join dain in dataModel.Points on fen.Lu equals dain.Ld
                          where fen.FieldName == "rr"
                          select fen.Lu;
 
-        var fenQueryRL = from fen in dataModel.PointData
+        var fenQueryRL = from fen in dataModel.PointData //rear left
                          join dain in dataModel.Points on fen.Lu equals dain.Ld
                          where fen.FieldName == "rl"
                          select fen.Lu;
@@ -638,20 +656,6 @@
         var resultRR = dianQuery.Except(fenQueryRR);
         var resultRL = dianQuery.Except(fenQueryRL);
         var resultP = dianQuery.Except(fenQueryP);
-
-        foreach (var item in resultF)
-        {
-            var newFen = new MmhisFen
-                {
-                    Lu = item,
-                    Lt = 0,
-                    FieldCategory = "f",
-                    FieldName = "f",
-                    FieldValue = "\\\\san2\\MMHIS Data3\\mw42705\\No_Image_Available.jpg"
-
-                };
-            pointDataList.Add(newFen);
-        }
 
         foreach (var item in resultF)
         {
@@ -739,8 +743,6 @@
 
         dataModel.PointData = pointDataList.OrderBy(x => x.Lu).AsQueryable();
 
-        //////////////////////////<<<<<<<<<<<<<<<<<<<<<<<<< I NEED TO FIND MISSING FRAMES AFTER getData() is called!
-
         pointDataList = dataModel.PointData.ToList();
         var pointList = dataModel.Points.ToList();
         var allPoints = from r in pointList
@@ -806,13 +808,17 @@
                              orderby r.Lu ascending
                              select r.FieldValue;
 
-        var logmeters = from r in pointDataList                   //r = mmhisfens(picture location)
-                        join p in pointList on r.Lu equals p.Ld  //p = mmhisdian(log, lat, long)
-                        where r.FieldName == "f"
-                        orderby r.Lu ascending
-                        select p.Logmeter0;
+        //var logmeters = from r in pointDataList                   //r = mmhisfens(picture location)
+        //                join p in pointList on r.Lu equals p.Ld  //p = mmhisdian(log, lat, long)
+        //                where r.FieldName == "f"
+        //                orderby r.Lu ascending
+        //                select p.Logmeter0;
 
-        missingLogmeters = frontImages.Count() - logmeters.Count();
+        var logmeters = from r in pointList
+                        orderby r.Logmeter0
+                        select r.Logmeter0;
+
+        //missingLogmeters = frontImages.Count() - logmeters.Count();
 
         var latitudes = from r in pointDataList
                         join p in pointList on r.Lu equals p.Ld
@@ -1096,6 +1102,7 @@
         var lng  = from r in dataModel.Points
                   select r.Longitude;
         var log = from r in dataModel.Points
+                  orderby r.Logmeter0
                   select r.Logmeter0;
 
         ///////////////////////<<<<<<<<<<<<<<<<<<<<<<<<<<< SELECT LOGMETERS WHERE NO IMAGES ARE STORED
@@ -1149,19 +1156,6 @@
         var resultRL = dianQuery.Except(fenQueryRL);
         var resultP = dianQuery.Except(fenQueryP);
 
-        foreach (var item in resultF)
-        {
-            var newFen = new MmhisFen
-                {
-                    Lu = item,
-                    Lt = 0,
-                    FieldCategory = "f",
-                    FieldName = "f",
-                    FieldValue = "\\\\san2\\MMHIS Data3\\mw42705\\No_Image_Available.jpg"
-
-                };
-            pointDataList.Add(newFen);
-        }
 
         foreach (var item in resultF)
         {
@@ -1277,7 +1271,6 @@
                              where r.FieldName == "p"                          
                              select r.FieldValue;
 
-
         var luValues = (from r in dataModel.PointData
                         where r.FieldName == "f"
                         select r.Lu).Distinct().ToList();
@@ -1291,13 +1284,12 @@
                           where luValues.Contains(p.Ld)
                           orderby p.Lu ascending
                           select p.Longitude).ToList();
+
         if(dataModel.Notes.ToList() != null)
         {
             notes = dataModel.Notes.ToList();
         }
-        else{
-            notes.Insert(1, "");
-        }
+
         if(isValid == false){
             notes.Insert(0, "INVALID INPUT - Default Route Selected. Please 'Clear' and make a new selection.");
         }
@@ -1343,7 +1335,7 @@
 
         if (pageModel.Logmeter > 0) //if someone searches for a logmeter
         {
-            pointDataList = dataModel.PointData.ToList();
+            //pointDataList = dataModel.PointData.ToList();
             var pointList = dataModel.Points.ToList();
             var allPoints = from r in pointList
                             select r.Ld;
@@ -1361,11 +1353,9 @@
                                 where r.FieldName == "f" //f = front facing camera
                                 orderby r.Lu ascending
                                 select r.Lu;
-            var logmeters = from r in pointDataList //grabs all the front facing images for the route
-                            join p in pointList on r.Lu equals p.Ld
-                            where r.FieldName == "f"
-                            orderby r.Lu ascending
-                            select p.Logmeter0;
+            var logmeters = from r in pointList //grabs all the front facing images for the route
+                            orderby r.Logmeter0
+                            select r.Logmeter0;
 
             var PointData = frontImagesLu.ToList();
             var Points = allPoints.ToList();
@@ -1474,7 +1464,7 @@
     {
         var str = value is IEnumerable ? string.Join(", ", value) : value;
         str = Convert.ToString(str);
-        logmile = Convert.ToDouble(str) * 1609.34;
+        logmile = Convert.ToDouble(str) * 1609.344;
     }
 
     void ToggleHighRes()
@@ -1491,7 +1481,7 @@
                 isReverse = false;
                 isPlay = true;
                 time.Enabled = true;
-                idx = idx + 1 >= Images.Count() ? 0 : idx + 1;
+                idx = idx + 1 >= Logmeters.Count() ? 0 : idx + 1;
             }
             else
             {
@@ -1510,7 +1500,7 @@
                 isReverse = true;
                 //isPause = !isPause;
                 time.Enabled = true;
-                idx = idx - 1 < 0 ? Images.Count() - 1 : idx - 1;
+                idx = idx - 1 < 0 ? Logmeters.Count() - 1 : idx - 1;
             }
             else
             {
