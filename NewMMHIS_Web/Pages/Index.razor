@@ -28,11 +28,12 @@
     @if(IsLandscapeMode == false) //==========================================LANDSCAPE MODE OFF: DEFAULT====================================================
     {
     <div class="outer-div">
-
         @if (spinning == true)
         {
             <div class="spinner"></div>
         }
+
+
         @if (Images.Any())
         {
             if (notes != null && !string.IsNullOrWhiteSpace(notes.FirstOrDefault()))
@@ -52,12 +53,12 @@
                 {
                     var resizedArrayRight = ResizeImage(byteArrayRight);
                     string imgStringRight = Convert.ToBase64String(resizedArrayRight);
-                    <img src="data:image/jpg;base64, @imgStringRight" style="width: 100%; height: auto;"/>
+                    <img src="data:image/jpg;base64, @imgStringRight" style="width: 100%; height: auto;"  onwheel="@HandleWheelEvent" @ref="imgElement"/>
                 }
                 else
                 {
                     string imgStringRight = Convert.ToBase64String(byteArrayRight);
-                    <img src="data:image/jpg;base64, @imgStringRight" style="width: 100%; height: auto;"/>
+                    <img src="data:image/jpg;base64, @imgStringRight" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
                 }
                 break;
             case 2:
@@ -66,12 +67,12 @@
                 {
                     var resizedArrayLeft = ResizeImage(byteArrayLeft); 
                     string imgStringLeft = Convert.ToBase64String(resizedArrayLeft);
-                    <img src="data:image/jpg;base64, @imgStringLeft" style="width: 100%; height: auto;"/>
+                    <img src="data:image/jpg;base64, @imgStringLeft" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
                 }
                 else
                 {
                     string imgStringLeft = Convert.ToBase64String(byteArrayLeft);
-                    <img src="data:image/jpg;base64, @imgStringLeft" style="width: 100%; height: auto;"/>
+                    <img src="data:image/jpg;base64, @imgStringLeft" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
                 }
                 break;
             case 3:
@@ -80,12 +81,12 @@
                 {
                     var resizedArrayRRight = ResizeImage(byteArrayRRight);
                     string imgStringRRight = Convert.ToBase64String(resizedArrayRRight);
-                    <img src="data:image/jpg;base64, @imgStringRRight" style="width: 100%; height: auto;"/>
+                    <img src="data:image/jpg;base64, @imgStringRRight" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
                 }
                 else
                 {
                     string imgStringRRight = Convert.ToBase64String(byteArrayRRight);
-                    <img src="data:image/jpg;base64, @imgStringRRight" style="width: 100%; height: auto;"/>
+                    <img src="data:image/jpg;base64, @imgStringRRight" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
                 }
                 break;
             case 4:
@@ -94,12 +95,12 @@
                 {
                     var resizedArrayRLeft = ResizeImage(byteArrayRLeft); 
                     string imgStringRLeft = Convert.ToBase64String(resizedArrayRLeft);
-                    <img src="data:image/jpg;base64, @imgStringRLeft" style="width: 100%; height: auto;"/>
+                    <img src="data:image/jpg;base64, @imgStringRLeft" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
                 }
                 else
                 {
                     string imgStringRLeft = Convert.ToBase64String(byteArrayRLeft);
-                    <img src="data:image/jpg;base64, @imgStringRLeft" style="width: 100%; height: auto;"/>
+                    <img src="data:image/jpg;base64, @imgStringRLeft" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
 
                 }
                 break;
@@ -109,12 +110,12 @@
                 {
                     var resizedArrayPave = ResizeImage(byteArrayPave);
                     string imgStringPave = Convert.ToBase64String(resizedArrayPave);
-                    <img src="data:image/jpg;base64, @imgStringPave" style="width: 100%; height: auto;"/>
+                    <img src="data:image/jpg;base64, @imgStringPave" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
                 }
                 else
                 {
                     string imgStringPave = Convert.ToBase64String(byteArrayPave);
-                    <img src="data:image/jpg;base64, @imgStringPave" style="width: 100%; height: auto;"/>
+                    <img src="data:image/jpg;base64, @imgStringPave" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
                 }
                 break;
             default:
@@ -123,19 +124,15 @@
                 {
                     var resizedArray = ResizeImage(byteArray);
                     string imgString = Convert.ToBase64String(resizedArray);
-                    <img src="data:image/jpg;base64, @imgString" style="width: 100%;"/>
+                            <img src="data:image/jpg;base64, @imgString" style="width: 100%;" onwheel="@HandleWheelEvent" @ref="imgElement" />
                 }
                 else
                 {
                     string imgString = Convert.ToBase64String(byteArray);
-                    <img src="data:image/jpg;base64, @imgString" style="width: 100%;"/>
+                    <img src="data:image/jpg;base64, @imgString" style="width: 100%;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
                 }
                 break;
         }
-        @*@if(!Images.Any())
-        {
-            idx++;
-        }*@
 
         <RadzenSlider class="playprogress" @bind-Value="@idx" Style="width:100%;height:35px" Max="@maxslide"></RadzenSlider>
 
@@ -203,12 +200,12 @@
                 {
                     var resizedArrayRight = ResizeImage(byteArrayRight);
                     string imgStringRight = Convert.ToBase64String(resizedArrayRight);
-                    <img src="data:image/jpg;base64, @imgStringRight" style="width: 100%; height: auto;"/>
+                    <img src="data:image/jpg;base64, @imgStringRight" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
                 }
                 else
                 {
                     string imgStringRight = Convert.ToBase64String(byteArrayRight);
-                    <img src="data:image/jpg;base64, @imgStringRight" style="width: 100%; height: auto;"/>
+                    <img src="data:image/jpg;base64, @imgStringRight" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
                 }
                 break;
             case 2:
@@ -217,12 +214,12 @@
                 {
                     var resizedArrayLeft = ResizeImage(byteArrayLeft); 
                     string imgStringLeft = Convert.ToBase64String(resizedArrayLeft);
-                    <img src="data:image/jpg;base64, @imgStringLeft" style="width: 100%; height: auto;"/>
+                    <img src="data:image/jpg;base64, @imgStringLeft" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
                 }
                 else
                 {
                     string imgStringLeft = Convert.ToBase64String(byteArrayLeft);
-                    <img src="data:image/jpg;base64, @imgStringLeft" style="width: 100%; height: auto;"/>
+                    <img src="data:image/jpg;base64, @imgStringLeft" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
                 }
                 break;
             case 3:
@@ -231,12 +228,12 @@
                 {
                     var resizedArrayRRight = ResizeImage(byteArrayRRight);
                     string imgStringRRight = Convert.ToBase64String(resizedArrayRRight);
-                    <img src="data:image/jpg;base64, @imgStringRRight" style="width: 100%; height: auto;"/>
+                    <img src="data:image/jpg;base64, @imgStringRRight" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent"@ref="imgElement"/>
                 }
                 else
                 {
                     string imgStringRRight = Convert.ToBase64String(byteArrayRRight);
-                    <img src="data:image/jpg;base64, @imgStringRRight" style="width: 100%; height: auto;"/>
+                    <img src="data:image/jpg;base64, @imgStringRRight" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
                 }
                 break;
             case 4:
@@ -245,12 +242,12 @@
                 {
                     var resizedArrayRLeft = ResizeImage(byteArrayRLeft); 
                     string imgStringRLeft = Convert.ToBase64String(resizedArrayRLeft);
-                    <img src="data:image/jpg;base64, @imgStringRLeft" style="width: 100%; height: auto;"/>
+                    <img src="data:image/jpg;base64, @imgStringRLeft" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
                 }
                 else
                 {
                     string imgStringRLeft = Convert.ToBase64String(byteArrayRLeft);
-                    <img src="data:image/jpg;base64, @imgStringRLeft" style="width: 100%; height: auto;"/>
+                    <img src="data:image/jpg;base64, @imgStringRLeft" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
 
                 }
                 break;
@@ -260,12 +257,12 @@
                 {
                     var resizedArrayPave = ResizeImage(byteArrayPave);
                     string imgStringPave = Convert.ToBase64String(resizedArrayPave);
-                    <img src="data:image/jpg;base64, @imgStringPave" style="width: 100%; height: auto;"/>
+                    <img src="data:image/jpg;base64, @imgStringPave" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
                 }
                 else
                 {
                     string imgStringPave = Convert.ToBase64String(byteArrayPave);
-                    <img src="data:image/jpg;base64, @imgStringPave" style="width: 100%; height: auto;"/>
+                    <img src="data:image/jpg;base64, @imgStringPave" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
                 }
                 break;
             default:
@@ -274,12 +271,12 @@
                 {
                     var resizedArray = ResizeImage(byteArray);
                     string imgString = Convert.ToBase64String(resizedArray);
-                    <img src="data:image/jpg;base64, @imgString" style="width: 100%;"/>
+                    <img src="data:image/jpg;base64, @imgString" style="width: 100%;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
                 }
                 else
                 {
                     string imgString = Convert.ToBase64String(byteArray);
-                    <img src="data:image/jpg;base64, @imgString" style="width: 100%;"/>
+                    <img src="data:image/jpg;base64, @imgString" style="width: 100%;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
                 }
                 break;
             }
@@ -335,7 +332,7 @@
         <img src="/Images/ArDOT_Logo_1.png" style="width: 200px; padding-left: 50px; padding-bottom: 25px; " />
         <ul class="nav flex-column">
             <EditForm Model="@controller" OnValidSubmit="AsyncLongOperation">
-                <li class="nav-item px-2">
+@*                <li class="nav-item px-2">
                     <InputSelect id="countyControl" Value="countyId" ValueChanged="@( (string s) => countyChanged(s))" ValueExpression="@( () => countyId)" class="form-control" @onkeydown="HandleKeyDown">
                         <option value="none">County</option>
                         @foreach (var item in counties)
@@ -343,7 +340,7 @@
                             <option value="@item">@item - @CountiesLookup[Int32.Parse(@item)]</option>
                         }
                     </InputSelect>
-                </li>
+                </li>*@
 
                 <li class="nav-item px-2">
                     <InputSelect id="routeControl" Value="routeId" ValueChanged="@( (string s) => routeChanged(s))" ValueExpression="@( () => routeId)" class="form-control" @onkeydown="HandleKeyDown">
@@ -383,7 +380,7 @@
                     </InputSelect>
                 </li>
                 <li class="nav-item px-2">
-                    <RadzenTextBox Placeholder="Search Logmile" Name="Logmile" Change=@(args => OnChangeLogmeter(args, "TextBox with placeholder")) />
+                    <RadzenTextBox Placeholder="Search Logmile" Name="Logmile" @bind-Value="@searchText" Change=@(args => OnChangeLogmeter(args, "TextBox with placeholder")) />
                 </li>
                 <li class="nav-item px-2" style="padding-bottom: 20px">
                     <input type="submit" class="btn btn-primary" value="Submit" disabled="@IsDisabledSubmit" />
@@ -440,14 +437,30 @@
                      Map Zoom:
                      <RadzenSlider @bind-Value=@zoom TValue="int" Step="1" Min="8" Max="20" Change=@(args => OnChange(args, "Slider from 0 to 100")) Class="w-100" />
                 </li>
+                <li class="nav-item px-2" style="padding-bottom: 10px; color:white">
+                    Contrast:
+                    <RadzenSlider @bind-Value=@contrast TValue="float" Step=".1" Min="1" Max="3" Change=@(args => OnChange(args, "Slider from 0 to 100")) Class="w-100" />
+                </li>
             </EditForm>
         </ul>
-    </div>   
+    </div>
+@*    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <h2>Contact:</h2>
+    <p>501-569-2605</p>*@
 </div>
 
 
 
 @code{
+    private ElementReference imgElement;
+    private string searchText = "";
     private int selectedIndex = 0;
     private void HandleKeyDown(KeyboardEventArgs e)
     {
@@ -479,7 +492,8 @@
 
     protected string apiKey = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("Keys")["GoogleMapsJavascript"];
     bool isMobile;
-    bool isHighRes = true;
+    bool isHighRes = false;
+    float contrast = 1;
     float imgQuality=600; 
     int imgSpeed=220;
     int imgType=6;
@@ -1462,9 +1476,11 @@
 
     void OnChangeLogmeter(dynamic value, string name)
     {
+
         var str = value is IEnumerable ? string.Join(", ", value) : value;
         str = Convert.ToString(str);
         logmile = Convert.ToDouble(str) * 1609.344;
+        searchText = "";
     }
 
     void ToggleHighRes()
@@ -1571,34 +1587,69 @@
             filePath = "\\\\mmhisdata-01\\" + filePath.Substring(21);
         }
         using (var image = Image.FromFile(filePath))
+        {
+            using (var m = new MemoryStream())
             {
-                using (var m = new MemoryStream())
-                {
-                    image.Save(m, image.RawFormat);
-                    return m.ToArray();
-                }
+                image.Save(m, image.RawFormat);
+                return m.ToArray();
+            }
+        }
+    }
+
+    public byte[] ResizeImage(byte[] byteImageIn)
+    {
+        byte[] currentByteImageArray = byteImageIn;
+        double scale = 1f;
+        //float contrast = 1.5f; // Increase this number for higher contrast
+
+        MemoryStream inputMemoryStream = new MemoryStream(byteImageIn);
+        Image fullsizeImage = Image.FromStream(inputMemoryStream);
+        int fullsizeImageWidth = fullsizeImage.Width;
+        int fullsizeImageHeight = fullsizeImage.Height;
+
+        scale = imgQuality / fullsizeImageWidth; //decrease this number for lower quality image
+        fullsizeImageWidth = (int)(fullsizeImageWidth * scale);
+        fullsizeImageHeight = (int)(fullsizeImageHeight * scale);
+
+        Bitmap resizedImage = new Bitmap(fullsizeImage.GetThumbnailImage(fullsizeImageWidth, fullsizeImageHeight, null, IntPtr.Zero));
+
+        if(contrast > 1)
+        {
+            // Apply contrast adjustment
+            using (Graphics g = Graphics.FromImage(resizedImage))
+            {
+                float[][] colorMatrixElements = {
+            new float[] {contrast, 0, 0, 0, 0},
+            new float[] {0, contrast, 0, 0, 0},
+            new float[] {0, 0, contrast, 0, 0},
+            new float[] {0, 0, 0, 1, 0},
+            new float[] {0, 0, 0, 0, 1}
+    };
+                ColorMatrix colorMatrix = new ColorMatrix(colorMatrixElements);
+                ImageAttributes attributes = new ImageAttributes();
+                attributes.SetColorMatrix(colorMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+                g.DrawImage(resizedImage, new Rectangle(0, 0, resizedImage.Width, resizedImage.Height), 0, 0, resizedImage.Width, resizedImage.Height, GraphicsUnit.Pixel, attributes);
             }
         }
 
-        public byte[] ResizeImage(byte[] byteImageIn)
-        {
-            byte[] currentByteImageArray = byteImageIn;
-            double scale = 1f;
 
-            MemoryStream inputMemoryStream = new MemoryStream(byteImageIn);
-            Image fullsizeImage = Image.FromStream(inputMemoryStream);
-            int fullsizeImageWidth = fullsizeImage.Width;
-            int fullsizeImageHeight = fullsizeImage.Height;
-
-            scale = imgQuality / fullsizeImageWidth; //decrease this number for lower quality image
-            fullsizeImageWidth = (int)(fullsizeImageWidth * scale);
-            fullsizeImageHeight = (int)(fullsizeImageHeight * scale);
-            
-            Image resizedImage = fullsizeImage.GetThumbnailImage(fullsizeImageWidth, fullsizeImageHeight, null, IntPtr.Zero);
-            MemoryStream outputMemoryStream = new MemoryStream();
-            resizedImage.Save(outputMemoryStream, ImageFormat.Jpeg);
-            byte[] resizedByteImageArray = outputMemoryStream.ToArray();
-            return resizedByteImageArray;
-        }
-
+        MemoryStream outputMemoryStream = new MemoryStream();
+        resizedImage.Save(outputMemoryStream, ImageFormat.Jpeg);
+        byte[] resizedByteImageArray = outputMemoryStream.ToArray();
+        return resizedByteImageArray;
     }
+
+    private async Task HandleWheelEvent(WheelEventArgs e)
+    {
+        await JSRuntime.InvokeVoidAsync("preventDefault", imgElement);
+        if (e.DeltaY > 0 && idx > 0) // Scroll up
+        {
+            idx--;
+        }
+        else if (e.DeltaY < 0 && idx < unmodifiedURLs.Count - 1) // Scroll down
+        {
+            idx++;
+        }
+        
+    }
+}

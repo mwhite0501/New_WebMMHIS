@@ -246,7 +246,6 @@ namespace NewMMHIS_Web.Controllers
             dataModel.Points = points;
             dataModel.PointData = pointData;
             dataModel.Notes = roadIdNote;
-            
             return dataModel;
         }        
     }

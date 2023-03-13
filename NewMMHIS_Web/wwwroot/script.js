@@ -68,7 +68,8 @@ function isDevice() {
         // iPad on iOS 13 detection
         || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
 }
-
-
-
-
+function preventDefault(element) {
+    element.addEventListener("wheel", function (event) {
+        event.preventDefault();
+    }, { passive: false });
+}

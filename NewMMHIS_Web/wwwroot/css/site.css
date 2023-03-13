@@ -313,3 +313,7 @@ iframe {
 .playprogress {
     width: 1000px;
 }
+
+.no-scroll {
+    overflow: hidden;
+}
