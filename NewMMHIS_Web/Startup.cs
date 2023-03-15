@@ -45,7 +45,6 @@ namespace NewMMHIS_Web
             services.AddHttpClient("mmhisweb", client => { 
                 client.BaseAddress = new Uri("https://localhost:44310/");
             });
-
             services.AddScoped<MmhisController>();
             services.AddMvc(setupAction: options => options.EnableEndpointRouting = false)
                 .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_3_0);

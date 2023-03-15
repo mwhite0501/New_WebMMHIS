@@ -13,8 +13,6 @@
 @using System.Drawing.Imaging
 @using Microsoft.Extensions.Configuration;
 
-
-
 @inject IJSRuntime JSRuntime
 @inject MmhisController controller
 @inject PageModel pageModel
@@ -175,7 +173,9 @@
                         }
                     </Markers>
                 </RadzenGoogleMap>
+                @*<div id="viewDiv" style="width: 1000px; height: 740px;"></div>*@
             </div>
+                
         </div>
     </div>
     }
@@ -299,6 +299,7 @@
                         }
                     </Markers>
                 </RadzenGoogleMap>
+                <div id="viewDiv" style="width: 1000px; height: 740px;"></div>
             </div>
         </div>
         @if (Images.Any()) //if there are any images loaded in the list, display these images
@@ -493,6 +494,7 @@
     protected string apiKey = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("Keys")["GoogleMapsJavascript"];
     bool isMobile;
     bool isHighRes = false;
+    bool switchMap = false;
     float contrast = 1;
     float imgQuality=600; 
     int imgSpeed=220;
@@ -990,14 +992,18 @@
     {
         if (firstRender)
         {
+            // Set the flag to false initially
+            bool isSetMapLoaded = false;
             //return Task.Delay(0);
-
             await JSRuntime.InvokeVoidAsync("setTitle", "Arkansas Highways");
+            await JSRuntime.InvokeVoidAsync("setMap");
             //isMobile = await JSRuntime.InvokeAsync<bool>("isDevice");
             isMobile = false;
             StateHasChanged();
 
         }
+        
+
     }
 
     public void countyChanged(string countyEvent)
@@ -1442,6 +1448,7 @@
         showArkansasMarker = true;
         currentCount++;
         spinning = false;
+        //await JSRuntime.InvokeVoidAsync("updateMap", latitudeId, longitudeId); //adds the point
         //await JSRuntime.InvokeVoidAsync("closeNav");
     }
 
@@ -1554,6 +1561,7 @@
 
     private async void OnTimeInterval(object sender, ElapsedEventArgs e)
     {
+        await JSRuntime.InvokeVoidAsync("updateMap", latitudeId, longitudeId); //working but not initializing to first point
         if (isPlay == true)
         {
             //showArkansasMarker = true;
@@ -1568,6 +1576,7 @@
             OnSubmitStop();
         }
         time.Interval = imgSpeed;
+        
         await InvokeAsync(() => StateHasChanged());
     }
 
@@ -1651,5 +1660,6 @@
             idx++;
         }
         
-    }
+    } 
+
 }
