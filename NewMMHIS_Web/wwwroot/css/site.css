@@ -51,16 +51,18 @@ a, .btn-link {
 /* The sidebar menu */
 .sidebar {
     height: 100%; /* 100% Full-height */
-    width: 250px; /* 0 width - change this with JavaScript */
+    width: 256px; /* 0 width - change this with JavaScript */
     position: fixed; /* Stay in place */
     z-index: 2; /* Stay on top */
     top: 0;
     left: 0;
     padding-top: 40px;
     background-color: #34568B; /* Black*/
-    overflow-x: hidden; /* Disable horizontal scroll */
+    /*overflow-x: hidden;*/ /* Disable horizontal scroll */
     padding-top: 60px; /* Place content 60px from the top */
     transition: 0.5s; /* 0.5 second transition effect to slide in the sidebar */
+    overflow-y: auto; /* Add vertical scrollbar when necessary */
+    scrollbar-width: thin; /* Set the width of the scrollbar */
     /*touch-action: pan-x pan-y;*/
 }
     /* The sidebar links */
@@ -71,6 +73,10 @@ a, .btn-link {
         color: #818181;
         display: block;
         transition: 0.3s;
+    }
+    .sidebar .nav-item {
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .sidebar div {
@@ -88,6 +94,18 @@ a, .btn-link {
         right: 25px;
         font-size: 36px;
         margin-left: 50px;
+    }
+    /* Add custom scrollbar styles for WebKit-based browsers */
+    .sidebar::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .sidebar::-webkit-scrollbar-track {
+        background-color: #f1f1f1;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb {
+        background-color: #818181;
     }
 /* The button used to open the sidebar */
 .openbtn {

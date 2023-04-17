@@ -13,7 +13,7 @@
     <ul class="nav flex-column">
         @*<li class="nav-item px-3">*@
         <EditForm Model="@controller" OnValidSubmit="findInitialPoint">
-            <li class="nav-item px-2">
+            <li class="nav-item">
                 <InputSelect Value="routeId" ValueChanged="@( (string s) => routeChanged(s))" ValueExpression="@( () => routeId)" class="form-control">
                     <option value="none">Route</option>
                     @foreach (var item in routes)
@@ -22,7 +22,7 @@
                     }
                 </InputSelect>
             </li>
-            <li class="nav-item px-2">
+            <li class="nav-item">
                 <InputSelect Disabled="@IsDisabledDirection" Value="directionId" ValueChanged="@( (string s) => directionChanged(s))" ValueExpression="@( () => directionId)" class="form-control">
                     <option value="none">Direction</option>
                     <option value="">N/A</option>
@@ -32,7 +32,7 @@
                     }
                 </InputSelect>
             </li>
-            <li class="nav-item px-2">
+            <li class="nav-item">
                 <InputSelect Disabled="@IsDisabledSection" Value="sectionId" ValueChanged="@( (string s) => sectionChanged(s))" ValueExpression="@( () => sectionId)" class="form-control">
                     <option value="none">Section</option>
                     @foreach (var item in sections)
@@ -41,7 +41,7 @@
                     }
                 </InputSelect>
             </li>
-            <li class="nav-item px-2">
+            <li class="nav-item">
                 <InputSelect Disabled="@IsDisabledYear" Value="yearId" ValueChanged="@( (string s) => yearChanged(s))" ValueExpression="@( () => yearId)" class="form-control">
                     <option value="none">Year</option>
                     @foreach (var item in years)
@@ -50,7 +50,7 @@
                     }
                 </InputSelect>
             </li>
-            <li class="nav-item px-2">
+            <li class="nav-item">
                 <input type="submit" class="btn btn-primary" value="Submit" />
             </li>
 
