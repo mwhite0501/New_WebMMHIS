@@ -17,6 +17,8 @@
 @inject MmhisController controller
 @inject PageModel pageModel
 
+@implements IDisposable
+
 
 <meta charset="utf-8">
 
@@ -25,7 +27,7 @@
 <div id="main" style="margin-left: 250px">
     @if(IsLandscapeMode == false) //==========================================LANDSCAPE MODE OFF: DEFAULT====================================================
     {
-    <div class="outer-div">
+        <div class="outer-div">
         @if (spinning == true)
         {
             <div class="spinner"></div>
@@ -38,7 +40,7 @@
             {
                     <p style="color:red"><b>NOTE: @notes.FirstOrDefault().ToUpper()</b></p>
             }
-
+            
             //zoom=15;
             int maxslide = Logmeters.Count();
             //if(!File.Exists(unmodifiedURLs[idx])){idx++;}
@@ -46,6 +48,7 @@
             switch(imgType)
             {
             case 1:
+                //StateHasChanged();
                 var byteArrayRight = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsRight[idx].Substring(7)); //fix index out of range on older routes
                 if(isHighRes == false)
                 {
@@ -144,44 +147,90 @@
                 if(isMobile == true) //check if a mobile device is not detected. JSInterop was used
                 {
                     <menu class="medium">
-                    <button class="rw"  @ontouchstart="() => { idx = idx - 1 < 0 ? Logmeters.Count() - 1 : idx - 1; isPause = true; }" ></button>
+                    <button class="rw"  @ontouchstart="() => { idx = idx - 1 < 0 ? Logmeters.Count() - 1 : idx - 1; isPause = true; }" @onclick="UpdateMapWithCoordinates"></button>
                     <button class="play" style="transform: rotate(180deg); transform: rotateY(180deg);" @ontouchstart="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></button>
                     <button class="pause" @ontouchstart="() => {for(int i = 0; i<4;i++){isPause=true;}}"></button>
                     <button class="play" @ontouchstart="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></button>
-                    <button class="ff"  @ontouchstart="() => { idx = idx + 1 >= Logmeters.Count() ? 0 : idx + 1; isPause = true; }"></button>
+                    <button class="ff"  @ontouchstart="() => { idx = idx + 1 >= Logmeters.Count() ? 0 : idx + 1; isPause = true; }" @onclick="UpdateMapWithCoordinates"></button>
                     </menu>
                 }
                 else if(isMobile == false)
                 {
                     <menu class="small">
-                    <button class="rw"  @onmousedown="() => { idx = idx - 1 < 0 ? Logmeters.Count() - 1: idx - 1; isPause = true; }"></button>
+                    <button class="rw"  @onmousedown="() => { idx = idx - 1 < 0 ? Logmeters.Count() - 1: idx - 1; isPause = true; }" @onclick="UpdateMapWithCoordinates"></button>
                     <button class="play" style="transform: rotate(180deg); transform: rotateY(180deg);" @onmousedown="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></button>
                     <button class="pause" @onmousedown="() => {for(int i = 0; i<4;i++){isPause=true;}}"></button>
                     <button class="play" @onmousedown="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></button>
-                    <button class="ff"  @onmousedown="() => { idx = idx + 1 >= Logmeters.Count() ? 0 : idx + 1; isPause = true; }"></button>
+                    <button class="ff"  @onmousedown="() => { idx = idx + 1 >= Logmeters.Count() ? 0 : idx + 1; isPause = true; }" @onclick="UpdateMapWithCoordinates"></button>
                     </menu>
                 }
 
         }
         <div class="inner-div">
             <div class="col-xl-6">
-                <RadzenGoogleMap ApiKey="@apiKey" Style="width: 1000px; height: 740px; z-index: 1;" id="Map" Zoom="@zoom" Center="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId })" MapClick="@AsyncMapOperation">
+                @*<RadzenGoogleMap ApiKey="@apiKey" Style="width: 1000px; height: 740px; z-index: 1;" id="Map" Zoom="@zoom" Center="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId })" MapClick="@AsyncMapOperation">
                     <Markers>
                         @if (showArkansasMarker && Images.Any())
                         {
                             <RadzenGoogleMapMarker Title="Arkansas" Position="@(new GoogleMapPosition() { Lat = Convert.ToDouble(Latitudes[idx]), Lng = Convert.ToDouble(Longitudes[idx]) })" />
                         }
                     </Markers>
-                </RadzenGoogleMap>
-                @*<div id="viewDiv" style="width: 1000px; height: 740px;"></div>*@
-            </div>
+                </RadzenGoogleMap>*@
+                <div id="viewDiv"></div>
+                <div id="infoDiv">
+                  <input
+                    class="esri-component esri-widget--button esri-widget esri-interactive"
+                    type="button"
+                    id="switch-btn"
+                    value="3D"
+                  />
+                </div>
+                <div id="toolbarDiv" class="esri-component esri-widget">
+                  <button id="distance" class="esri-widget--button esri-interactive esri-icon-measure-line" title="Distance Measurement Tool">
+                  </button>
+                  <button id="area" class="esri-widget--button esri-interactive esri-icon-measure-area" title="Area Measurement Tool">
+                  </button>
+                  <button id="clear" class="esri-widget--button esri-interactive esri-icon-trash" title="Clear Measurements">
+                  </button>
                 
+            </div>
+            </div>
+                <div>
+                    Select Feature Layer: <select id="feature-layer-select">
+                    <option value="https://gis.ardot.gov/hosting/rest/services/SIR_TIS/Road_Inventory_OnSystem/FeatureServer/0">Roadway Inventory</option>
+                    <option value="https://gis.ardot.gov/hosting/rest/services/TPP_GISMapping/ARNOLD/FeatureServer/0">ARNOLD Linear</option>
+                    <option value="https://gis.ardot.gov/hosting/rest/services/Hosted/ARNOLD_Points/FeatureServer/0">ARNOLD Points</option>
+                    <option value="https://gis.ardot.gov/hosting/rest/services/TPP_GISMapping/CORE_BASE_LAYERS/FeatureServer">Core Base Layers</option>
+                    <option value="https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Boundaries/FeatureServer/48">Counties</option>
+                    <option value="https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Boundaries/FeatureServer/41">Municipal Boundries</option>
+                    <option value="https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Planning_Cadastre/FeatureServer/6">Parcel (Ownership) Boundries</option>
+                    <option value="https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Structure/FeatureServer/54">Building Footprints</option>
+                    <option value="https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Location/FeatureServer/14">Address Points</option>
+                    <option value="https://fragis.fra.dot.gov/arcgis/rest/services/FRA/MainLine/MapServer/0">Railroads</option>
+                    <option value="https://gis.ardot.gov/hosting/rest/services/HeavyBridge/BridePublicView_OnRecords/MapServer/0">Bridges</option>
+                </select>
+                </div>
+                <div>
+                Select Basemap: <select id="basemap-select">
+                    <option value="streets">Streets</option>
+                    <option value="satellite">Satellite</option>
+                    <option value="hybrid">Hybrid</option>
+                    <option value="terrain">Terrain</option>
+                    <option value="topo">Topographic</option>
+                    <option value="gray">Gray</option>
+                    <option value="dark-gray">Dark Gray</option>
+                    <option value="oceans">Oceans</option>
+                    <option value="national-geographic">National Geographic</option>
+                </select>
+                </div>
+
         </div>
     </div>
     }
      @if(IsLandscapeMode == true) //==============================================LANDSCAPE MODE ON=====================================================
     {
-    <div class="row">
+        
+        <div class="row">
         <div class="column">
         @if (spinning == true)
         {
@@ -291,15 +340,57 @@
         </div>
         <div class="column">
             <div class="col-xl-6">
-                <RadzenGoogleMap ApiKey="@apiKey" Style="width: 700px; height:450px" id="Map" Zoom="@zoom" Center="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId})" MapClick="@AsyncMapOperation">
+                @*<RadzenGoogleMap ApiKey="@apiKey" Style="width: 700px; height:450px" id="Map" Zoom="@zoom" Center="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId})" MapClick="@AsyncMapOperation">
                     <Markers>
                         @if (showArkansasMarker && Images.Any())
                         {
                             <RadzenGoogleMapMarker Title="Arkansas" Position="@(new GoogleMapPosition() { Lat = Convert.ToDouble(Latitudes[idx]), Lng = Convert.ToDouble(Longitudes[idx]) })" />
                         }
                     </Markers>
-                </RadzenGoogleMap>
-                <div id="viewDiv" style="width: 1000px; height: 740px;"></div>
+                </RadzenGoogleMap>*@
+                    <div id="viewDiv"></div>
+                    <div id="infoDiv">
+                        <input class="esri-component esri-widget--button esri-widget esri-interactive"
+                           type="button"
+                           id="switch-btn"
+                           value="3D" />
+                    </div>
+                    <div id="toolbarDiv" class="esri-component esri-widget">
+                        <button id="distance" class="esri-widget--button esri-interactive esri-icon-measure-line" title="Distance Measurement Tool">
+                        </button>
+                        <button id="area" class="esri-widget--button esri-interactive esri-icon-measure-area" title="Area Measurement Tool">
+                        </button>
+                        <button id="clear" class="esri-widget--button esri-interactive esri-icon-trash" title="Clear Measurements">
+                        </button>
+                    </div>
+                    <div>
+                    Select Feature Layer: <select id="feature-layer-select">
+                    <option value="https://gis.ardot.gov/hosting/rest/services/SIR_TIS/Road_Inventory_OnSystem/FeatureServer/0">Roadway Inventory</option>
+                    <option value="https://gis.ardot.gov/hosting/rest/services/TPP_GISMapping/ARNOLD/FeatureServer/0">ARNOLD Linear</option>
+                    <option value="https://gis.ardot.gov/hosting/rest/services/Hosted/ARNOLD_Points/FeatureServer/0">ARNOLD Points</option>
+                    <option value="https://gis.ardot.gov/hosting/rest/services/TPP_GISMapping/CORE_BASE_LAYERS/FeatureServer">Core Base Layers</option>
+                    <option value="https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Boundaries/FeatureServer/48">Counties</option>
+                    <option value="https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Boundaries/FeatureServer/41">Municipal Boundries</option>
+                    <option value="https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Planning_Cadastre/FeatureServer/6">Parcel (Ownership) Boundries</option>
+                    <option value="https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Structure/FeatureServer/54">Building Footprints</option>
+                    <option value="https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Location/FeatureServer/14">Address Points</option>
+                    <option value="https://fragis.fra.dot.gov/arcgis/rest/services/FRA/MainLine/MapServer/0">Railroads</option>
+                    <option value="https://gis.ardot.gov/hosting/rest/services/HeavyBridge/BridePublicView_OnRecords/MapServer/0">Bridges</option>
+                </select>
+                </div>
+                <div>
+                Select Basemap: <select id="basemap-select">
+                    <option value="streets">Streets</option>
+                    <option value="satellite">Satellite</option>
+                    <option value="hybrid">Hybrid</option>
+                    <option value="terrain">Terrain</option>
+                    <option value="topo">Topographic</option>
+                    <option value="gray">Gray</option>
+                    <option value="dark-gray">Dark Gray</option>
+                    <option value="oceans">Oceans</option>
+                    <option value="national-geographic">National Geographic</option>
+                </select>
+                </div>
             </div>
         </div>
         @if (Images.Any()) //if there are any images loaded in the list, display these images
@@ -307,21 +398,21 @@
             if(isMobile == true) //if a mobile device is not detected. JSInterop was used.
             {
                 <menu class="medium">
-                <button class="rw"  @ontouchstart="() => { idx = idx - 1 < 0 ? Logmeters.Count() - 1 : idx - 1; isPause = true; }" ></button>
+                <button class="rw"  @ontouchstart="() => { idx = idx - 1 < 0 ? Logmeters.Count() - 1 : idx - 1; isPause = true; }" @onclick="UpdateMapWithCoordinates"></button>
                 <button class="play" style="transform: rotate(180deg); transform: rotateY(180deg);" @ontouchstart="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></button>
                 <button class="pause" @ontouchstart="() => {isPause = true;}"></button>
                 <button class="play" @ontouchstart="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></button>
-                <button class="ff"  @ontouchstart="() => { idx = idx + 1 >= Logmeters.Count() ? 0 : idx + 1; isPause = true; }"></button>
+                <button class="ff"  @ontouchstart="() => { idx = idx + 1 >= Logmeters.Count() ? 0 : idx + 1; isPause = true; }" @onclick="UpdateMapWithCoordinates"></button>
                 </menu>
             }
             else if(isMobile == false)
             {
                 <menu class="small">
-                <button class="rw"  @onmousedown="() => { idx = idx - 1 < 0 ? Logmeters.Count() - 1 : idx - 1; isPause = true; }"></button>
+                <button class="rw"  @onmousedown="() => { idx = idx - 1 < 0 ? Logmeters.Count() - 1 : idx - 1; isPause = true; }" @onclick="UpdateMapWithCoordinates"></button>
                 <button class="play" style="transform: rotate(180deg); transform: rotateY(180deg);" @onmousedown="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></button>
                 <button class="pause" @onmousedown="() => {isPause = true;}"></button>
                 <button class="play" @onmousedown="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></button>
-                <button class="ff"  @onmousedown="() => { idx = idx + 1 >= Logmeters.Count() ? 0 : idx + 1; isPause = true; }"></button>
+                <button class="ff"  @onmousedown="() => { idx = idx + 1 >= Logmeters.Count() ? 0 : idx + 1; isPause = true; }" @onclick="UpdateMapWithCoordinates"></button>
                 </menu>
             }
         }
@@ -415,9 +506,9 @@
                 <li class="nav-item px-2" style="padding-bottom: 20px; padding-top:20px; color:white">
                     Full Resolution Mode:<RadzenSwitch @bind-Value=@isHighRes  Style="float: right; margin-left: 5px;"/>
                 </li>
-                <li class="nav-item px-2" style="padding-bottom: 20px; color:white">
-                    Landscape Mode:<RadzenSwitch @bind-Value=@IsLandscapeMode  Style="float: right; margin-left: 5px;"/>
-                </li>
+                @*<li class="nav-item px-2" style="padding-bottom: 20px; color:white">
+                    Landscape Mode:<RadzenSwitch ValueChanged="@updateAfterLandscape" Style="float: right; margin-left: 5px;"/>
+                </li>*@
                 @if (isMobile == true) { imgQuality = 377; }
                 <li class="nav-item px-2" style="padding-bottom: 10px; color:white">
                      Image Quality: <InputSelect @bind-Value="imgQuality" style="float: right; margin-left: 5px;">
@@ -445,21 +536,38 @@
             </EditForm>
         </ul>
     </div>
-@*    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <h2>Contact:</h2>
-    <p>501-569-2605</p>*@
+
 </div>
 
 
 
 @code{
+
+
+
+    string feature = "";
+
+
+
+    private async Task UpdateMapWithCoordinates()
+    {
+
+        // Call the 'updateMap' JavaScript function with the latitude and longitude
+
+        await JSRuntime.InvokeVoidAsync("updateMap", latitudeId, longitudeId);
+
+    }
+
+    async Task updateAfterLandscape()
+    {
+        IsLandscapeMode = !IsLandscapeMode;
+        //await JSRuntime.InvokeVoidAsync("setMap");
+        //await JSRuntime.InvokeVoidAsync("updateMap", latitudeId, longitudeId); //should pass feature into this instead of setMap
+
+    }
+
+
+
     private ElementReference imgElement;
     private string searchText = "";
     private int selectedIndex = 0;
@@ -493,7 +601,7 @@
 
     protected string apiKey = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("Keys")["GoogleMapsJavascript"];
     bool isMobile;
-    bool isHighRes = false;
+    bool isHighRes = true;
     bool switchMap = false;
     float contrast = 1;
     float imgQuality=600; 
@@ -565,6 +673,7 @@
     protected bool IsDisabledYear = true;
     protected bool IsDisabledLog = true;
     protected bool IsLandscapeMode = false;
+    private bool _previousIsLandscapeMode;
 
     //Cameras 
     public List<string> Images = new List<string>();             
@@ -578,6 +687,10 @@
     //=================================================================================================================================================================================
     //==================================================Map Selection Method===========================================================================================================
     //=================================================================================================================================================================================
+
+
+
+
 
     void OnMapClick(GoogleMapClickEventArgs args)
     {
@@ -931,6 +1044,7 @@
         IsDisabledYear = false;
         //zoom = 15;
         await Task.Run(() => OnMapClick(args));  //<--here!
+                                                 //await JSRuntime.InvokeVoidAsync("updateMap", latitudeId, longitudeId); //working but not initializing to first point
         currentCount++;
         spinning = false;
     }
@@ -958,8 +1072,10 @@
         //return JSRuntime.InvokeVoidAsync("loadImage", pathway).ToString();
     }
 
+
     protected override void OnInitialized()
     {
+        Interop.OnLatLngReceived += HandleLatLngReceived; //reference Interop.cs
         routes = controller.GetUniqueRoutes();
         sections = controller.GetUniqueSections();
         years = controller.GetUniqueYears();
@@ -969,6 +1085,360 @@
         IsDisabledYear = true;
         IsDisabledDirection = true;
     }
+    //======================================================ArcGIS Map Click Selection================================================================================
+    //======================================================ArcGIS Map Click Selection================================================================================
+    //======================================================ArcGIS Map Click Selection================================================================================
+
+
+
+    async void HandleLatLngReceived(double latitude, double longitude) //reference Interop.cs
+    {
+        // Your C# code to handle the received latitude and longitude values
+        Images.Clear();
+        spinning = true;
+        //StateHasChanged();
+        IsDisabledRoute = true;
+        IsDisabledSection = true;
+        IsDisabledDirection = true;
+        IsDisabledYear = true;
+        IsDisabledLog = true;
+        isPause = true;
+        log = 0;
+        RouteInfo.Clear();
+        idx = 0;
+        zoom = 15;
+
+        Images.Clear();
+        ImagesRight.Clear();
+        ImagesLeft.Clear();
+        ImagesRearLeft.Clear();
+        ImagesRearRight.Clear();
+        ImagesPavement.Clear();
+        pageModel.Clear();
+
+        latitudeId = latitude;
+        longitudeId = longitude;
+
+
+        if (latitudeId > 36.5 || latitudeId < 33 || longitudeId < -94.66 || longitudeId > -89.629890) //make sure it's in state of arkansas or default to a position
+        {
+            latitudeId = 34.751354;
+            longitudeId = -92.274592;
+        }
+
+        RouteInfo = controller.GetRouteInformation(latitudeId, longitudeId);
+        routeId = RouteInfo[0]; //should probably pass in a model here
+        sectionId = RouteInfo[1];
+        directionId = RouteInfo[2];
+        yearId = RouteInfo[3];
+        logmile = Convert.ToDouble(RouteInfo[4]);
+        latitudeId = Convert.ToDouble(RouteInfo[5]);
+        longitudeId = Convert.ToDouble(RouteInfo[6]);
+        log = logmile * 0.000621371192;
+        countyId = (RouteInfo[10]);
+
+        pageModel.Route = routeId;
+        pageModel.Direction = directionId;
+        pageModel.Section = sectionId;
+        pageModel.Year = yearId;
+        pageModel.Logmeter = logmile;
+        pageModel.Latitude = latitudeId;
+        pageModel.Longitude = longitudeId;
+        pageModel.Ld = (long)Convert.ToDouble(RouteInfo[7]); //dains Ld
+        pageModel.Lu = (long)Convert.ToDouble(RouteInfo[8]);// dains Lu
+        pageModel.County = countyId;
+
+        var dataModel = controller.getData(pageModel); //dataModel.Roadway, dataModel.Points, dataModel.PointData, dataModel.Notes
+
+        var pointDataList = dataModel.PointData.ToList();
+
+        var dianQuery = from dian in dataModel.Points //get all points in route at 5 meter increments
+                        select dian.Ld;
+
+        var fenQueryF = from fen in dataModel.PointData //get all points where there is a front camera
+                        join dain in dataModel.Points on fen.Lu equals dain.Ld
+                        where fen.FieldName == "f"
+                        select fen.Lu;
+
+        var fenQueryFR = from fen in dataModel.PointData //front right
+                         join dain in dataModel.Points on fen.Lu equals dain.Ld
+                         where fen.FieldName == "fr"
+                         select fen.Lu;
+
+        var fenQueryFL = from fen in dataModel.PointData //front left
+                         join dain in dataModel.Points on fen.Lu equals dain.Ld
+                         where fen.FieldName == "fl"
+                         select fen.Lu;
+
+        var fenQueryRR = from fen in dataModel.PointData //rear right
+                         join dain in dataModel.Points on fen.Lu equals dain.Ld
+                         where fen.FieldName == "rr"
+                         select fen.Lu;
+
+        var fenQueryRL = from fen in dataModel.PointData //rear left
+                         join dain in dataModel.Points on fen.Lu equals dain.Ld
+                         where fen.FieldName == "rl"
+                         select fen.Lu;
+
+        var fenQueryP = from fen in dataModel.PointData
+                        join dain in dataModel.Points on fen.Lu equals dain.Ld
+                        where fen.FieldName == "p"
+                        select fen.Lu;
+
+        var resultF = dianQuery.Except(fenQueryF);
+        var resultFR = dianQuery.Except(fenQueryFR);
+        var resultFL = dianQuery.Except(fenQueryFL);
+        var resultRR = dianQuery.Except(fenQueryRR);
+        var resultRL = dianQuery.Except(fenQueryRL);
+        var resultP = dianQuery.Except(fenQueryP);
+
+        foreach (var item in resultF)
+        {
+            var newFen = new MmhisFen
+                {
+                    Lu = item,
+                    Lt = 0,
+                    FieldCategory = "f",
+                    FieldName = "f",
+                    FieldValue = "\\\\san2\\MMHIS Data3\\mw42705\\No_Image_Available.jpg"
+
+                };
+            pointDataList.Add(newFen);
+        }
+
+        foreach (var item in resultFR)
+        {
+            var newFen = new MmhisFen
+                {
+                    Lu = item,
+                    Lt = 0,
+                    FieldCategory = "f",
+                    FieldName = "fr",
+                    FieldValue = "\\\\san2\\MMHIS Data3\\mw42705\\No_Image_Available.jpg"
+
+                };
+            pointDataList.Add(newFen);
+        }
+
+        foreach (var item in resultFL)
+        {
+            var newFen = new MmhisFen
+                {
+                    Lu = item,
+                    Lt = 0,
+                    FieldCategory = "f",
+                    FieldName = "fl",
+                    FieldValue = "\\\\san2\\MMHIS Data3\\mw42705\\No_Image_Available.jpg"
+
+                };
+            pointDataList.Add(newFen);
+        }
+
+        foreach (var item in resultRR)
+        {
+            var newFen = new MmhisFen
+                {
+                    Lu = item,
+                    Lt = 0,
+                    FieldCategory = "f",
+                    FieldName = "rr",
+                    FieldValue = "\\\\san2\\MMHIS Data3\\mw42705\\No_Image_Available.jpg"
+
+                };
+            pointDataList.Add(newFen);
+        }
+
+        foreach (var item in resultRL)
+        {
+            var newFen = new MmhisFen
+                {
+                    Lu = item,
+                    Lt = 0,
+                    FieldCategory = "f",
+                    FieldName = "rl",
+                    FieldValue = "\\\\san2\\MMHIS Data3\\mw42705\\No_Image_Available.jpg"
+
+                };
+            pointDataList.Add(newFen);
+        }
+
+        foreach (var item in resultP)
+        {
+            var newFen = new MmhisFen
+                {
+                    Lu = item,
+                    Lt = 0,
+                    FieldCategory = "f",
+                    FieldName = "p",
+                    FieldValue = "\\\\san2\\MMHIS Data3\\mw42705\\No_Image_Available.jpg"
+
+                };
+            pointDataList.Add(newFen);
+        }
+
+        dataModel.PointData = pointDataList.OrderBy(x => x.Lu).AsQueryable();
+
+        pointDataList = dataModel.PointData.ToList();
+        var pointList = dataModel.Points.ToList();
+        var allPoints = from r in pointList
+                        select r.Ld;
+
+        var allPointsBefore = from r in pointList
+                              where r.Logmeter0 <= pageModel.Logmeter
+                              orderby r.Logmeter0 ascending
+                              select r.Ld;
+
+        //need to make sure these Lds exsist as pointData.Lus
+        //count number of missing values
+
+        var frontImagesLu = from r in pointDataList//grabs all the front facing images for the route
+                            join p in pointList on r.Lu equals p.Ld
+                            where r.FieldName == "f" //f = front facing camera
+                            orderby r.Lu ascending
+                            select r.Lu;
+
+        var PointData = frontImagesLu.ToList();
+        var Points = allPoints.ToList();
+
+        var setDiff = Points.Except(PointData);
+        var setDiffLst = setDiff.ToList();
+
+        var allPointsBeforeLst = allPointsBefore.ToList();
+
+        var IdxB = allPointsBeforeLst.Count();
+
+        var frontImages = from r in pointDataList //grabs all the front facing images for the route
+                          join p in pointList on r.Lu equals p.Ld
+                          where r.FieldName == "f"
+                          orderby r.Lu ascending
+                          select r.FieldValue;
+
+        var leftImages = from r in pointDataList
+                         join p in pointList on r.Lu equals p.Ld
+                         where r.FieldName == "fl"
+                         orderby r.Lu ascending
+                         select r.FieldValue;
+
+        var rightImages = from r in pointDataList
+                          join p in pointList on r.Lu equals p.Ld
+                          where r.FieldName == "fr"
+                          orderby r.Lu ascending
+                          select r.FieldValue;
+
+        var leftRearImages = from r in pointDataList
+                             join p in pointList on r.Lu equals p.Ld
+                             where r.FieldName == "rl"
+                             orderby r.Lu ascending
+                             select r.FieldValue;
+
+        var rightRearImages = from r in pointDataList
+                              join p in pointList on r.Lu equals p.Ld
+                              where r.FieldName == "rr"
+                              orderby r.Lu ascending
+                              select r.FieldValue;
+
+        var pavementImages = from r in pointDataList
+                             join p in pointList on r.Lu equals p.Ld
+                             where r.FieldName == "p"
+                             orderby r.Lu ascending
+                             select r.FieldValue;
+
+        //var logmeters = from r in pointDataList                   //r = mmhisfens(picture location)
+        //                join p in pointList on r.Lu equals p.Ld  //p = mmhisdian(log, lat, long)
+        //                where r.FieldName == "f"
+        //                orderby r.Lu ascending
+        //                select p.Logmeter0;
+
+        var logmeters = from r in pointList
+                        orderby r.Logmeter0
+                        select r.Logmeter0;
+
+        //missingLogmeters = frontImages.Count() - logmeters.Count();
+
+        var latitudes = from r in pointDataList
+                        join p in pointList on r.Lu equals p.Ld
+                        where r.FieldName == "f"
+                        orderby r.Lu ascending
+                        select p.Latitude;
+
+        var longitudes = from r in pointDataList
+                         join p in pointList on r.Lu equals p.Ld
+                         where r.FieldName == "f"
+                         orderby r.Lu ascending
+                         select p.Longitude;
+
+
+        var frontImagesStr = frontImages.ToList();
+        var rightImagesStr = rightImages.ToList();
+        var leftImagesStr = leftImages.ToList();
+        var rearLeftImagesStr = leftRearImages.ToList();
+        var rearRightImagesStr = rightRearImages.ToList();
+        var pavementImagesStr = pavementImages.ToList();
+
+        var logmetersLst = logmeters.ToList();
+        var latitudesLst = latitudes.ToList();
+        var longitudesLst = longitudes.ToList();
+        var logmetersStr = logmetersLst.Select(x => x.ToString());
+        var latitudesStr = latitudesLst.Select(x => x.ToString());
+        var longitudesStr = longitudesLst.Select(x => x.ToString());
+
+        begLogmile = logmetersLst.First() * 0.000621371;
+        endLogmile = logmetersLst.Last() * 0.000621371;
+
+        List<string> preloadImgcpy = frontImagesStr; //unmodified URLs
+        List<string> swappedpreloadImgcpy = controller.PutFrontAtIndex(preloadImgcpy, IdxB);
+
+        List<string> swappedPoints = controller.PutFrontAtIndex(frontImagesStr, IdxB);
+        List<string> swappedPointsRight = controller.PutFrontAtIndex(rightImagesStr, IdxB);
+        List<string> swappedPointsLeft = controller.PutFrontAtIndex(leftImagesStr, IdxB);
+        if (rearRightImagesStr.Any())
+        {
+            List<string> swappedPointsRearRight = controller.PutFrontAtIndex(rearRightImagesStr, IdxB);
+            unmodifiedURLsRRight = swappedPointsRearRight;
+            ImagesRearRight = swappedPointsRearRight;
+        }
+        if (rearLeftImagesStr.Any())
+        {
+            List<string> swappedPointsRearLeft = controller.PutFrontAtIndex(rearLeftImagesStr, IdxB);
+            unmodifiedURLsRLeft = swappedPointsRearLeft;
+            ImagesRearLeft = swappedPointsRearLeft;
+        }
+        if (pavementImagesStr.Any())
+        {
+            List<string> swappedPointsPavement = controller.PutFrontAtIndex(pavementImagesStr, IdxB);
+            unmodifiedURLsPave = swappedPointsPavement;
+            ImagesPavement = swappedPointsPavement;
+        }
+
+        List<string> swappedLogmeters = controller.PutFrontAtIndex(logmetersStr.ToList(), IdxB);
+        List<string> swappedLatitudes = controller.PutFrontAtIndex(latitudesStr.ToList(), IdxB);
+        List<string> swappedLongitudes = controller.PutFrontAtIndex(longitudesStr.ToList(), IdxB);
+
+        unmodifiedURLs = swappedPoints;
+        unmodifiedURLsRight = swappedPointsRight;
+        unmodifiedURLsLeft = swappedPointsLeft;
+
+        Images = swappedPoints;
+        ImagesRight = swappedPointsRight;
+        ImagesLeft = swappedPointsLeft;
+
+
+        Logmeters = swappedLogmeters;
+        Latitudes = swappedLatitudes;
+        Longitudes = swappedLongitudes;
+
+        directionChanged(pageModel.Direction); //used to correctly populate the year drop down
+
+        spinning = false;
+        IsDisabledLog = false;
+        IsDisabledSubmit = false;
+        //StateHasChanged();
+        await JSRuntime.InvokeVoidAsync("updateMap", latitudeId, longitudeId);
+    }
+    //======================================================ArcGIS Map Click Selection================================================================================
+    //======================================================ArcGIS Map Click Selection================================================================================
+    //======================================================ArcGIS Map Click Selection================================================================================
+    
 
     void ClearSelection()
     {
@@ -987,23 +1457,24 @@
         Images.Clear();
         pageModel = new PageModel();
     }
-
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             // Set the flag to false initially
-            bool isSetMapLoaded = false;
             //return Task.Delay(0);
             await JSRuntime.InvokeVoidAsync("setTitle", "Arkansas Highways");
-            await JSRuntime.InvokeVoidAsync("setMap");
+            //await JSRuntime.InvokeVoidAsync("setMap");
+            await JSRuntime.InvokeVoidAsync("initializeMap");
+            //await JSRuntime.InvokeVoidAsync("updateMap");
             //isMobile = await JSRuntime.InvokeAsync<bool>("isDevice");
             isMobile = false;
-            StateHasChanged();
+            
+            //StateHasChanged();
 
         }
         
-
     }
 
     public void countyChanged(string countyEvent)
@@ -1448,7 +1919,8 @@
         showArkansasMarker = true;
         currentCount++;
         spinning = false;
-        //await JSRuntime.InvokeVoidAsync("updateMap", latitudeId, longitudeId); //adds the point
+        await JSRuntime.InvokeVoidAsync("updateMap", latitudeId, longitudeId); //adds the point
+        //await JSRuntime.InvokeVoidAsync("updateFeatureLayer", feature);
         //await JSRuntime.InvokeVoidAsync("closeNav");
     }
 
@@ -1562,6 +2034,7 @@
     private async void OnTimeInterval(object sender, ElapsedEventArgs e)
     {
         await JSRuntime.InvokeVoidAsync("updateMap", latitudeId, longitudeId); //working but not initializing to first point
+        //await JSRuntime.InvokeVoidAsync("updateFeatureLayer", feature);
         if (isPlay == true)
         {
             //showArkansasMarker = true;
@@ -1580,10 +2053,11 @@
         await InvokeAsync(() => StateHasChanged());
     }
 
-    public void Dispose()
+    public void Dispose() //reference Interop.cs
     {
         // while navigating to other components, Dispose method will be called and clean up the Timer function.
         time?.Dispose();
+        Interop.OnLatLngReceived -= HandleLatLngReceived; //reference Interop.cs
     }
 
     public static byte[] ConvertImageToByteArray(string filePath) //takes the path to the images and returnss byte array
@@ -1650,6 +2124,7 @@
 
     private async Task HandleWheelEvent(WheelEventArgs e)
     {
+        await JSRuntime.InvokeVoidAsync("updateMap", latitudeId, longitudeId);
         await JSRuntime.InvokeVoidAsync("preventDefault", imgElement);
         if (e.DeltaY > 0 && idx > 0) // Scroll up
         {

@@ -2,24 +2,34 @@
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    /*touch-action: pan-x pan-y;*/
     touch-action: manipulation;
+    height: 100%; /* Add this line to ensure that the body takes up the full height of the viewport */
+    margin: 0; /* Add this line to remove any default margins */
 }
 
 /* Three image containers (use 25% for four, and 50% for two, etc) */
 .column {
     float: left;
     width: 50%;
+    height: 100%;
     padding: 5px;
 }
 
 /* Clear floats after image containers */
+.row{
+    height: 100%;
+    width: 100%;
+}
 .row::after {
     content: "";
     clear: both;
     display: table;
-} 
-
+    height: 100%;
+}
+col-xl-6{
+    height: 100%;
+    width: 100%;
+}
 a, .btn-link {
     color: #0366d6;
 }
@@ -51,7 +61,7 @@ a, .btn-link {
 /* The sidebar menu */
 .sidebar {
     height: 100%; /* 100% Full-height */
-    width: 250px; /* 0 width - change this with JavaScript */
+    width: 230px; /* 0 width - change this with JavaScript */
     position: fixed; /* Stay in place */
     z-index: 2; /* Stay on top */
     top: 0;
@@ -317,12 +327,6 @@ iframe {
 .no-scroll {
     overflow: hidden;
 }
-#viewDiv {
-    padding: 0;
-    margin: 0;
-    height: 100%;
-    width: 100%;
-}
 
 #topbar {
     background: #fff;
@@ -350,3 +354,47 @@ iframe {
     background: #0079c1;
     color: #e4e4e4;
 }
+
+#viewDiv {
+    position: relative;
+    height: 740px;
+    width: 1000px;
+}
+
+#infoDiv {
+    position: absolute;
+    top: 15px;
+    left: 60px;
+}
+#toolbarDiv {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    cursor: default;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+#infoDiv {
+    position: absolute;
+    top: 15px;
+    left: 60px;
+}
+
+    #infoDiv input {
+        border: none;
+        box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 2px;
+    }
+
+.esri-widget--button.active,
+.esri-widget--button.active:hover,
+.esri-widget--button.active:focus {
+    cursor: default;
+    background-color: #999696;
+}
+
+    .esri-widget--button.active path,
+    .esri-widget--button.active:hover path,
+    .esri-widget--button.active:focus path {
+        fill: #E4E4E4;
+    }

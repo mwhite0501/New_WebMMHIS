@@ -41,7 +41,7 @@ namespace NewMMHIS_Web
             services.AddScoped<TooltipService>(); //Radzen stuff
             services.AddScoped<ContextMenuService>(); //Radzen stuff
             services.AddServerSideBlazor().AddCircuitOptions(options => { options.DetailedErrors = true; });
-            services.AddSingleton<CounterService>();
+            services.AddScoped<CounterService>();
             services.AddHttpClient("mmhisweb", client => { 
                 client.BaseAddress = new Uri("https://localhost:44310/");
             });
