@@ -232,111 +232,113 @@
         
         <div class="row">
         <div class="column">
-        @if (spinning == true)
-        {
-            <div class="spinner"></div>
-        }
-        @if (Images.Any())
-        {
-            //zoom = 13;
-            int maxslide = Logmeters.Count() - 1;
-            //if (!File.Exists("\\\\mmhisdata-01\\" + unmodifiedURLs[idx].Substring(7))) { idx++; }
-            switch(imgType)
-            {
-            case 1:
-                var byteArrayRight = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsRight[idx].Substring(7));
-                if(isHighRes == false)
+                <div class="image-and-buttons">
+                @if (spinning == true)
                 {
-                    var resizedArrayRight = ResizeImage(byteArrayRight);
-                    string imgStringRight = Convert.ToBase64String(resizedArrayRight);
-                    <img src="data:image/jpg;base64, @imgStringRight" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
+                    <div class="spinner"></div>
                 }
-                else
+                @if (Images.Any())
                 {
-                    string imgStringRight = Convert.ToBase64String(byteArrayRight);
-                    <img src="data:image/jpg;base64, @imgStringRight" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
-                }
-                break;
-            case 2:
-                var byteArrayLeft = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsLeft[idx].Substring(7));
-                if(isHighRes == false)
-                {
-                    var resizedArrayLeft = ResizeImage(byteArrayLeft); 
-                    string imgStringLeft = Convert.ToBase64String(resizedArrayLeft);
-                    <img src="data:image/jpg;base64, @imgStringLeft" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
-                }
-                else
-                {
-                    string imgStringLeft = Convert.ToBase64String(byteArrayLeft);
-                    <img src="data:image/jpg;base64, @imgStringLeft" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
-                }
-                break;
-            case 3:
-                var byteArrayRRight = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsRRight[idx].Substring(7));
-                if(isHighRes == false)
-                {
-                    var resizedArrayRRight = ResizeImage(byteArrayRRight);
-                    string imgStringRRight = Convert.ToBase64String(resizedArrayRRight);
-                    <img src="data:image/jpg;base64, @imgStringRRight" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent"@ref="imgElement"/>
-                }
-                else
-                {
-                    string imgStringRRight = Convert.ToBase64String(byteArrayRRight);
-                    <img src="data:image/jpg;base64, @imgStringRRight" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
-                }
-                break;
-            case 4:
-                var byteArrayRLeft = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsRLeft[idx].Substring(7));
-                if(isHighRes == false)
-                {
-                    var resizedArrayRLeft = ResizeImage(byteArrayRLeft); 
-                    string imgStringRLeft = Convert.ToBase64String(resizedArrayRLeft);
-                    <img src="data:image/jpg;base64, @imgStringRLeft" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
-                }
-                else
-                {
-                    string imgStringRLeft = Convert.ToBase64String(byteArrayRLeft);
-                    <img src="data:image/jpg;base64, @imgStringRLeft" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
+                    //zoom = 13;
+                    int maxslide = Logmeters.Count() - 1;
+                    //if (!File.Exists("\\\\mmhisdata-01\\" + unmodifiedURLs[idx].Substring(7))) { idx++; }
+                    switch(imgType)
+                    {
+                    case 1:
+                        var byteArrayRight = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsRight[idx].Substring(7));
+                        if(isHighRes == false)
+                        {
+                            var resizedArrayRight = ResizeImage(byteArrayRight);
+                            string imgStringRight = Convert.ToBase64String(resizedArrayRight);
+                            <img src="data:image/jpg;base64, @imgStringRight" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
+                        }
+                        else
+                        {
+                            string imgStringRight = Convert.ToBase64String(byteArrayRight);
+                            <img src="data:image/jpg;base64, @imgStringRight" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
+                        }
+                        break;
+                    case 2:
+                        var byteArrayLeft = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsLeft[idx].Substring(7));
+                        if(isHighRes == false)
+                        {
+                            var resizedArrayLeft = ResizeImage(byteArrayLeft); 
+                            string imgStringLeft = Convert.ToBase64String(resizedArrayLeft);
+                            <img src="data:image/jpg;base64, @imgStringLeft" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
+                        }
+                        else
+                        {
+                            string imgStringLeft = Convert.ToBase64String(byteArrayLeft);
+                            <img src="data:image/jpg;base64, @imgStringLeft" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
+                        }
+                        break;
+                    case 3:
+                        var byteArrayRRight = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsRRight[idx].Substring(7));
+                        if(isHighRes == false)
+                        {
+                            var resizedArrayRRight = ResizeImage(byteArrayRRight);
+                            string imgStringRRight = Convert.ToBase64String(resizedArrayRRight);
+                            <img src="data:image/jpg;base64, @imgStringRRight" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent"@ref="imgElement"/>
+                        }
+                        else
+                        {
+                            string imgStringRRight = Convert.ToBase64String(byteArrayRRight);
+                            <img src="data:image/jpg;base64, @imgStringRRight" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
+                        }
+                        break;
+                    case 4:
+                        var byteArrayRLeft = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsRLeft[idx].Substring(7));
+                        if(isHighRes == false)
+                        {
+                            var resizedArrayRLeft = ResizeImage(byteArrayRLeft); 
+                            string imgStringRLeft = Convert.ToBase64String(resizedArrayRLeft);
+                            <img src="data:image/jpg;base64, @imgStringRLeft" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
+                        }
+                        else
+                        {
+                            string imgStringRLeft = Convert.ToBase64String(byteArrayRLeft);
+                            <img src="data:image/jpg;base64, @imgStringRLeft" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
 
-                }
-                break;
-            case 5:
-                var byteArrayPave = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsPave[idx].Substring(7));
-                if(isHighRes == false)
-                {
-                    var resizedArrayPave = ResizeImage(byteArrayPave);
-                    string imgStringPave = Convert.ToBase64String(resizedArrayPave);
-                    <img src="data:image/jpg;base64, @imgStringPave" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
-                }
-                else
-                {
-                    string imgStringPave = Convert.ToBase64String(byteArrayPave);
-                    <img src="data:image/jpg;base64, @imgStringPave" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
-                }
-                break;
-            default:
-                var byteArray = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLs[idx].Substring(7));
-                if(isHighRes == false)
-                {
-                    var resizedArray = ResizeImage(byteArray);
-                    string imgString = Convert.ToBase64String(resizedArray);
-                    <img src="data:image/jpg;base64, @imgString" style="width: 100%;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
-                }
-                else
-                {
-                    string imgString = Convert.ToBase64String(byteArray);
-                    <img src="data:image/jpg;base64, @imgString" style="width: 100%;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
-                }
-                break;
-            }
+                        }
+                        break;
+                    case 5:
+                        var byteArrayPave = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsPave[idx].Substring(7));
+                        if(isHighRes == false)
+                        {
+                            var resizedArrayPave = ResizeImage(byteArrayPave);
+                            string imgStringPave = Convert.ToBase64String(resizedArrayPave);
+                            <img src="data:image/jpg;base64, @imgStringPave" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
+                        }
+                        else
+                        {
+                            string imgStringPave = Convert.ToBase64String(byteArrayPave);
+                            <img src="data:image/jpg;base64, @imgStringPave" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
+                        }
+                        break;
+                    default:
+                        var byteArray = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLs[idx].Substring(7));
+                        if(isHighRes == false)
+                        {
+                            var resizedArray = ResizeImage(byteArray);
+                            string imgString = Convert.ToBase64String(resizedArray);
+                            <img src="data:image/jpg;base64, @imgString" style="width: 100%;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
+                        }
+                        else
+                        {
+                            string imgString = Convert.ToBase64String(byteArray);
+                            <img src="data:image/jpg;base64, @imgString" style="width: 100%;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
+                        }
+                        break;
+                    }
 
-            <RadzenSlider class="playprogress" @bind-Value="@idx" Style="width:100%;height:35px" Max="@maxslide"></RadzenSlider>
+                    <RadzenSlider class="playprogress" @bind-Value="@idx" Style="width:100%;height:35px" Max="@maxslide"></RadzenSlider>
             
-            log = double.Parse(Logmeters[idx]) * 0.000621371192;
-            latitudeId = double.Parse(Latitudes[idx]);
-            longitudeId = double.Parse(Longitudes[idx]);
+                    log = double.Parse(Logmeters[idx]) * 0.000621371192;
+                    latitudeId = double.Parse(Latitudes[idx]);
+                    longitudeId = double.Parse(Longitudes[idx]);
 
-        }
+                }
+                </div>
         </div>
         <div class="column">
             <div class="col-xl-6">
