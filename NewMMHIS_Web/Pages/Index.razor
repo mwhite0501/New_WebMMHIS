@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@page "/{routeId?}/{sectionId?}/{directionId?}/{searchText?}"
 @using Radzen
 @using Radzen.Blazor;
 @using System.Collections;
@@ -16,10 +16,11 @@
 @inject IJSRuntime JSRuntime
 @inject MmhisController controller
 @inject PageModel pageModel
+@inject NavigationManager NavigationManager
 
 
 <meta charset="utf-8">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <button class="openbtn" onclick="openNav()">&#9776; Search</button>
 
 <div id="main" style="margin-left: 250px">
@@ -40,7 +41,7 @@
             }
 
             //zoom=15;
-            int maxslide = Logmeters.Count();
+            int maxslide = Logmeters.Count() - 1;
             //if(!File.Exists(unmodifiedURLs[idx])){idx++;}
             //if(!File.Exists("\\\\mmhisdata-01\\" + unmodifiedURLs[idx].Substring(7))) { idx++; } //need to throw a missing frame img
             switch(imgType)
@@ -187,8 +188,10 @@
         {
             <div class="spinner"></div>
         }
+        
         @if (Images.Any())
         {
+
             //zoom = 13;
             int maxslide = Logmeters.Count() - 1;
             //if (!File.Exists("\\\\mmhisdata-01\\" + unmodifiedURLs[idx].Substring(7))) { idx++; }
@@ -299,31 +302,35 @@
                         }
                     </Markers>
                 </RadzenGoogleMap>
-                <div id="viewDiv" style="width: 1000px; height: 740px;"></div>
+                <div id="viewDiv" style="width: 1000px; height: auto;"></div>
             </div>
         </div>
-        @if (Images.Any()) //if there are any images loaded in the list, display these images
+        @if (Images.Any())
         {
-            if(isMobile == true) //if a mobile device is not detected. JSInterop was used.
-            {
-                <menu class="medium">
-                <button class="rw"  @ontouchstart="() => { idx = idx - 1 < 0 ? Logmeters.Count() - 1 : idx - 1; isPause = true; }" ></button>
-                <button class="play" style="transform: rotate(180deg); transform: rotateY(180deg);" @ontouchstart="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></button>
-                <button class="pause" @ontouchstart="() => {isPause = true;}"></button>
-                <button class="play" @ontouchstart="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></button>
-                <button class="ff"  @ontouchstart="() => { idx = idx + 1 >= Logmeters.Count() ? 0 : idx + 1; isPause = true; }"></button>
-                </menu>
-            }
-            else if(isMobile == false)
-            {
-                <menu class="small">
-                <button class="rw"  @onmousedown="() => { idx = idx - 1 < 0 ? Logmeters.Count() - 1 : idx - 1; isPause = true; }"></button>
-                <button class="play" style="transform: rotate(180deg); transform: rotateY(180deg);" @onmousedown="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></button>
-                <button class="pause" @onmousedown="() => {isPause = true;}"></button>
-                <button class="play" @onmousedown="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></button>
-                <button class="ff"  @onmousedown="() => { idx = idx + 1 >= Logmeters.Count() ? 0 : idx + 1; isPause = true; }"></button>
-                </menu>
-            }
+            <div class="button-container">
+                @if (isMobile == true)
+                {
+                    <menu class="medium">
+                        <!-- Buttons for mobile devices -->
+                        <button class="rw"  @ontouchstart="() => { idx = idx - 1 < 0 ? Logmeters.Count() - 1 : idx - 1; isPause = true; }" ></button>
+                        <button class="play" style="transform: rotate(180deg); transform: rotateY(180deg);" @ontouchstart="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></button>
+                        <button class="pause" @ontouchstart="() => {isPause = true;}"></button>
+                        <button class="play" @ontouchstart="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></button>
+                        <button class="ff"  @ontouchstart="() => { idx = idx + 1 >= Logmeters.Count() ? 0 : idx + 1; isPause = true; }"></button>
+                    </menu>
+                }
+                else if (isMobile == false)
+                {
+                    <menu class="small">
+                        <!-- Buttons for non-mobile devices -->
+                        <button class="rw"  @onmousedown="() => { idx = idx - 1 < 0 ? Logmeters.Count() - 1 : idx - 1; isPause = true; }"></button>
+                        <button class="play" style="transform: rotate(180deg); transform: rotateY(180deg);" @onmousedown="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></button>
+                        <button class="pause" @onmousedown="() => {isPause = true;}"></button>
+                        <button class="play" @onmousedown="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></button>
+                        <button class="ff"  @onmousedown="() => { idx = idx + 1 >= Logmeters.Count() ? 0 : idx + 1; isPause = true; }"></button>
+                    </menu>
+                }
+            </div>
         }
     </div>
     }@*=================================================================END LANDSCAPE MODE=====================================================================*@
@@ -332,7 +339,7 @@
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
         <img src="/Images/ArDOT_Logo_1.png" style="width: 200px; padding-left: 50px; padding-bottom: 25px; " />
         <ul class="nav flex-column">
-            <EditForm Model="@controller" OnValidSubmit="AsyncLongOperation">
+            <EditForm id="mySubmitForm" Model="@controller" OnValidSubmit="AsyncLongOperation">
 @*                <li class="nav-item px-2">
                     <InputSelect id="countyControl" Value="countyId" ValueChanged="@( (string s) => countyChanged(s))" ValueExpression="@( () => countyId)" class="form-control" @onkeydown="HandleKeyDown">
                         <option value="none">County</option>
@@ -384,7 +391,7 @@
                     <RadzenTextBox Placeholder="Search Logmile" Name="Logmile" @bind-Value="@searchText" Change=@(args => OnChangeLogmeter(args, "TextBox with placeholder")) />
                 </li>
                 <li class="nav-item px-2" style="padding-bottom: 20px">
-                    <input type="submit" class="btn btn-primary" value="Submit" disabled="@IsDisabledSubmit" />
+                    <input id="submitButton" type="submit" class="btn btn-primary" value="Submit" disabled="@IsDisabledSubmit" />
                     <input type="reset" onclick="window.location.reload()" class="btn btn-primary" style="position: relative; " value="Clear" />
                 </li>
                 <li class="nav-item px-2" style="color:white">
@@ -461,7 +468,9 @@
 
 @code{
     private ElementReference imgElement;
-    private string searchText = "";
+
+    [Parameter]
+    public string searchText { get; set; }
     private int selectedIndex = 0;
     private void HandleKeyDown(KeyboardEventArgs e)
     {
@@ -549,10 +558,15 @@
 
     mmhisContext db = new mmhisContext();
 
-    public string routeId;
-    public string directionId;
-    public string sectionId;
-    public string yearId;
+    [Parameter]
+    public string routeId { get; set; }
+    [Parameter]
+    public string directionId { get; set; }
+    [Parameter]
+    public string sectionId { get; set; }
+    [Parameter]
+    public string yearId { get; set; }
+
     public string imgId;
     public double longitudeId = -92.199997;
     public double latitudeId = 34.799999;
@@ -574,6 +588,9 @@
     public List<string> ImagesRearRight = new List<string>();
     public List<string> ImagesPavement = new List<string>();
     public List<string> notes = new List<string>();
+
+    private EditForm myForm;
+
 
     //=================================================================================================================================================================================
     //==================================================Map Selection Method===========================================================================================================
@@ -986,19 +1003,54 @@
         zoom = 8;
         Images.Clear();
         pageModel = new PageModel();
+        
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+
             // Set the flag to false initially
             bool isSetMapLoaded = false;
             //return Task.Delay(0);
             await JSRuntime.InvokeVoidAsync("setTitle", "Arkansas Highways");
-            await JSRuntime.InvokeVoidAsync("setMap");
+            //await JSRuntime.InvokeVoidAsync("setMap");
             //isMobile = await JSRuntime.InvokeAsync<bool>("isDevice");
             isMobile = false;
+
+            if (!string.IsNullOrEmpty(routeId))
+            {
+                //await Task.Delay(100); // Delay execution by 100 milliseconds
+                // Update the IsDisabledSubmit property based on the routeId value
+                IsDisabledSubmit = false;
+                if(sectionId == "" || sectionId == null)
+                {
+                    routeChanged(routeId);
+                }
+                if(directionId == "" || directionId == null)
+                {
+                    routeChanged(routeId);
+                }
+                pageModel.Route = routeId;
+                pageModel.Direction = directionId;
+                pageModel.Section = sectionId;
+                logmile = Convert.ToDouble(searchText) * 1609.344;
+                pageModel.Logmeter = logmile;
+
+                directionChanged(directionId);
+                yearId = years.FirstOrDefault();
+                pageModel.Year = yearId;
+                await JSRuntime.InvokeVoidAsync("submitForm");
+                    
+                searchText = "";
+                
+            }
+            else
+            {
+                IsDisabledSubmit = true;
+            }
+
             StateHasChanged();
 
         }
@@ -1458,7 +1510,7 @@
         await Task.Run(() => ClearSelection());  //<--here!
         currentCount++;
         spinning = false;
-
+        //await JSRuntime.InvokeVoidAsync("window.location.href", "/");
         //await JSRuntime.InvokeVoidAsync("Clear");
     }
 
@@ -1561,7 +1613,7 @@
 
     private async void OnTimeInterval(object sender, ElapsedEventArgs e)
     {
-        await JSRuntime.InvokeVoidAsync("updateMap", latitudeId, longitudeId); //working but not initializing to first point
+        //await JSRuntime.InvokeVoidAsync("updateMap", latitudeId, longitudeId); //working but not initializing to first point
         if (isPlay == true)
         {
             //showArkansasMarker = true;

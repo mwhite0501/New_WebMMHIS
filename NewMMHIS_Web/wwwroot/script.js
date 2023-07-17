@@ -6,6 +6,13 @@ window.getWindowDimensions = function () {
     };
 };
 
+function submitForm() {
+    var form = document.getElementById('mySubmitForm');
+    if (form) {
+        form.dispatchEvent(new Event('submit', { cancelable: true }));
+    }
+}
+
 /* Set the width of the sidebar to 250px and the left margin of the page content to 250px */
 function openNav() {
     document.getElementById("mySidebar").style.width = "250px";
@@ -75,102 +82,102 @@ function preventDefault(element) {
     }, { passive: false });
 }
 // Initialize variables globally
-var map, view, graphicsLayer, Point;
+//var map, view, graphicsLayer, Point;
 
-var initialized = false;
+//var initialized = false;
 
-function setMap() {
-    require([
-        "esri/config",
-        "esri/Map",
-        "esri/views/MapView",
-        "esri/widgets/Measurement",
-        "esri/layers/GraphicsLayer",
-        "esri/geometry/Point",
-        "esri/symbols/SimpleMarkerSymbol",
-        "esri/Graphic"
-    ], function (esriConfig, Map, MapView, Measurement, GraphicsLayer, Point, SimpleMarkerSymbol, Graphic) {
-        esriConfig.apiKey = "";
+//function setMap() {
+//    require([
+//        "esri/config",
+//        "esri/Map",
+//        "esri/views/MapView",
+//        "esri/widgets/Measurement",
+//        "esri/layers/GraphicsLayer",
+//        "esri/geometry/Point",
+//        "esri/symbols/SimpleMarkerSymbol",
+//        "esri/Graphic"
+//    ], function (esriConfig, Map, MapView, Measurement, GraphicsLayer, Point, SimpleMarkerSymbol, Graphic) {
+//        esriConfig.apiKey = "";
 
-        const graphicsLayer = new GraphicsLayer();
+//        const graphicsLayer = new GraphicsLayer();
 
-        const map = new Map({
-            basemap: "streets-navigation-vector",
-            layers: [graphicsLayer]
-        });
+//        const map = new Map({
+//            basemap: "streets-navigation-vector",
+//            layers: [graphicsLayer]
+//        });
 
-        const view = new MapView({
-            container: "viewDiv",
-            map: map,
-            zoom: 15
-        });
+//        const view = new MapView({
+//            container: "viewDiv",
+//            map: map,
+//            zoom: 15
+//        });
 
-        const measurement = new Measurement({
-            view: view,
-            activeTool: "distance"
-        });
+//        const measurement = new Measurement({
+//            view: view,
+//            activeTool: "distance"
+//        });
 
-        view.ui.add(measurement, "top-right");
+//        view.ui.add(measurement, "top-right");
 
-        const point = new Point({
-            latitude: 34.751354,
-            longitude: -92.274592
-        });
+//        const point = new Point({
+//            latitude: 34.751354,
+//            longitude: -92.274592
+//        });
 
-        const markerSymbol = new SimpleMarkerSymbol({
-            color: [226, 119, 40],
-            outline: {
-                color: [255, 255, 255],
-                width: 1
-            }
-        });
+//        const markerSymbol = new SimpleMarkerSymbol({
+//            color: [226, 119, 40],
+//            outline: {
+//                color: [255, 255, 255],
+//                width: 1
+//            }
+//        });
 
-        const graphic = new Graphic({
-            geometry: point,
-            symbol: markerSymbol
-        });
+//        const graphic = new Graphic({
+//            geometry: point,
+//            symbol: markerSymbol
+//        });
 
-        graphicsLayer.add(graphic);
+//        graphicsLayer.add(graphic);
 
-        view.center = point;
+//        view.center = point;
 
-        //just added
-        // Define the updateMap function as a closure with access to the GraphicsLayer and MapView objects
-        window.updateMap = (latitude, longitude) => {
-            // Create a new Point object
-            var point = {
-                type: "point",
-                longitude: longitude,
-                latitude: latitude,
-            };
+//        //just added
+//        // Define the updateMap function as a closure with access to the GraphicsLayer and MapView objects
+//        window.updateMap = (latitude, longitude) => {
+//            // Create a new Point object
+//            var point = {
+//                type: "point",
+//                longitude: longitude,
+//                latitude: latitude,
+//            };
 
-            // Create a new Graphic object with a simple marker symbol
-            var graphic = {
-                geometry: point,
-                symbol: {
-                    type: "simple-marker",
-                    color: [226, 119, 40],
-                    outline: {
-                        color: [255, 255, 255],
-                        width: 1,
-                    },
-                },
-            };
+//            // Create a new Graphic object with a simple marker symbol
+//            var graphic = {
+//                geometry: point,
+//                symbol: {
+//                    type: "simple-marker",
+//                    color: [226, 119, 40],
+//                    outline: {
+//                        color: [255, 255, 255],
+//                        width: 1,
+//                    },
+//                },
+//            };
 
-            // Add the new graphic to the GraphicsLayer
-            graphicsLayer.removeAll();
-            graphicsLayer.add(graphic);
-            view.center = point;
-        }
+//            // Add the new graphic to the GraphicsLayer
+//            graphicsLayer.removeAll();
+//            graphicsLayer.add(graphic);
+//            view.center = point;
+//        }
         
 
-        // Switch between area and distance measurement
-        function switchTool() {
-            const tool = measurement.activeTool === "distance" ? "area" : "distance";
-            measurement.activeTool = tool;
-        }
-    });
-}
+//        // Switch between area and distance measurement
+//        function switchTool() {
+//            const tool = measurement.activeTool === "distance" ? "area" : "distance";
+//            measurement.activeTool = tool;
+//        }
+//    });
+//}
 
 
 //function updateMap(latitudeId, longitudeId, map) {
