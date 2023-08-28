@@ -1,4 +1,4 @@
-﻿@page "/{routeId?}/{sectionId?}/{directionId?}/{searchText?}"
+﻿@page "/{routeId?}/{sectionId?}/{directionId?}/{searchText?}/{yearId?}"
 @using Radzen
 @using Radzen.Blazor;
 @using System.Collections;
@@ -1003,6 +1003,8 @@
         zoom = 8;
         Images.Clear();
         pageModel = new PageModel();
+        NavigationManager.NavigateTo("/cleared");
+        NavigationManager.NavigateTo("/");
         
     }
 
@@ -1510,6 +1512,7 @@
         await Task.Run(() => ClearSelection());  //<--here!
         currentCount++;
         spinning = false;
+        NavigationManager.NavigateTo("/");
         //await JSRuntime.InvokeVoidAsync("window.location.href", "/");
         //await JSRuntime.InvokeVoidAsync("Clear");
     }

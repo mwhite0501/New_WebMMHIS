@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Componects.UI\Componects.UI.csproj" />
+    <!--<ProjectReference Include="..\Componects.UI\Componects.UI.csproj" />-->
   </ItemGroup>
 
   <ItemGroup>
