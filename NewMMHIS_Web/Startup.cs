@@ -46,8 +46,8 @@ namespace NewMMHIS_Web
                 client.BaseAddress = new Uri("https://localhost:44310/");
             });
             services.AddScoped<MmhisController>();
-            services.AddMvc(setupAction: options => options.EnableEndpointRouting = false)
-                .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_3_0);
+            services.AddMvc(setupAction: options => options.EnableEndpointRouting = false);
+                //.SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_3_0);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

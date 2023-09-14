@@ -1,10 +1,73 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
-
+*, *::before, *::after {
+    box-sizing: border-box;
+}
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     /*touch-action: pan-x pan-y;*/
     touch-action: manipulation;
+    margin:0;
 }
+
+
+/* Youtube Tutorial Changes========================================================================*/
+/* Youtube Tutorial Changes*/
+.google-map-container {
+    position: relative;
+    width: 90%;
+    max-width: 1000px;
+    display: flex;
+    justify-content: center;
+    margin-inline: auto;
+}
+
+
+.video-container {
+    position: relative;
+    width: 90%;
+    max-width: 1000px;
+    display: flex;
+    justify-content: center;
+    margin-inline: auto;
+}
+
+
+img {
+    width: 100%;
+}
+.video-controls-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    color: white;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 150ms ease-in-out;
+}
+.video-container:hover .video-controls-container{
+    opacity: 1;
+}
+.video-container.full-screen {
+    max-width: initial;
+    width: 100%;
+}
+.video-container.full-screen {
+    max-height: 100vh;
+}
+
+.image-overlay-note {
+    position: absolute;
+    top: 10px; /* Adjust the top position as needed */
+    left: 10px; /* Adjust the left position as needed */
+    background-color: rgba(255, 0, 0, 0.7); /* Adjust the background color and opacity */
+    color: white; /* Adjust the text color */
+    padding: 5px; /* Adjust the padding as needed */
+    border-radius: 5px; /* Add rounded corners if desired */
+}
+
+/* End Youtube Tutorial Changes*/
+/* End Youtube Tutorial Changes=====================================================================*/
 
 /* Three image containers (use 25% for four, and 50% for two, etc) */
 .column {
@@ -129,8 +192,10 @@ a, .btn-link {
     }
 /* Style page content - use this if you want to push the page content to the right when you open the side navigation */
 #main {
-    transition: margin-left .5s; /* If you want a transition effect */
-    padding: 20px;
+    /*transition: margin-left .5s;*/ /* If you want a transition effect */
+    /*padding: 20px;*/
+    width: 90%;
+    max-width: 1000px;
 }
 /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
 @media screen and (max-height: 450px) {
@@ -412,6 +477,7 @@ menu {
     margin: 2em auto;
     text-align: center;
     position: relative;
+
 }
 
     menu button {
@@ -551,6 +617,33 @@ menu {
     menu .pause:hover:after {
         background-color: rgba(36, 36, 36, 0.8);
     }
+
+    menu .full-screen:before,
+    menu .full-screen:after {
+        content: ' ';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 2em;
+        height: 2em;
+        border-style: solid;
+        border-width: 0.3em;
+        border-color: rgba(100, 100, 100, 0.8); /* Use the same border color as the pause button */
+        border-radius: 0.3em;
+        transition: border-color 0.3s ease-in-out;
+    }
+
+    menu .full-screen:after {
+        transform: translate(-50%, -50%) rotate(90deg);
+    }
+
+    menu .full-screen:hover:before,
+    menu .full-screen:hover:after {
+        border-color: rgba(36, 36, 36, 0.8); /* Change border color on hover */
+    }
+
+
 
     menu.medium {
         /* Play */

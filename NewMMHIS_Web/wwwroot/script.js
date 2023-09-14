@@ -1,4 +1,57 @@
-﻿
+﻿//window.enterFullScreen = () => { //this makes the entire webpage fullscreen, which might be useful down the line
+//    const element = document.documentElement;
+
+//    if (element.requestFullscreen) {
+//        element.requestFullscreen();
+//    } else if (element.mozRequestFullScreen) {
+//        element.mozRequestFullScreen();
+//    } else if (element.webkitRequestFullscreen) {
+//        element.webkitRequestFullscreen();
+//    } else if (element.msRequestFullscreen) {
+//        element.msRequestFullscreen();
+//    }
+//};
+
+//window.exitFullScreen = () => {
+//    if (document.exitFullscreen) {
+//        document.exitFullscreen();
+//    } else if (document.mozCancelFullScreen) {
+//        document.mozCancelFullScreen();
+//    } else if (document.webkitExitFullscreen) {
+//        document.webkitExitFullscreen();
+//    } else if (document.msExitFullscreen) {
+//        document.msExitFullscreen();
+//    }
+//};
+
+window.ToggleFullScreen = function (elementId) {
+    var element = document.getElementById(elementId);
+
+    if (document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
+        // Exit full-screen mode
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    } else {
+        // Enter full-screen mode
+        if (element.requestFullscreen) {
+            element.requestFullscreen();
+        } else if (element.mozRequestFullScreen) {
+            element.mozRequestFullScreen();
+        } else if (element.webkitRequestFullscreen) {
+            element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+        } else if (element.msRequestFullscreen) {
+            element.msRequestFullscreen();
+        }
+    }
+};
+
 window.getWindowDimensions = function () {
     return {
         width: window.innerWidth,
