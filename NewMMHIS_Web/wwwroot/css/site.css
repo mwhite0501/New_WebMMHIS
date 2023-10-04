@@ -12,15 +12,28 @@ html, body {
 
 /* Youtube Tutorial Changes========================================================================*/
 /* Youtube Tutorial Changes*/
+
 .google-map-container {
     position: relative;
     width: 90%;
     max-width: 1000px;
     display: flex;
     justify-content: center;
+    flex-direction: column;
     margin-inline: auto;
+    padding-top: 20px;
 }
 
+.dropdowns-container {
+    margin-top: auto;
+    /* Reset the padding if needed */
+    padding: 0;
+}
+
+    /* Reset margins for direct children of dropdowns-container */
+    .dropdowns-container > div {
+        margin: 0;
+    }
 
 .video-container {
     position: relative;
@@ -29,6 +42,7 @@ html, body {
     display: flex;
     justify-content: center;
     margin-inline: auto;
+
 }
 
 
@@ -117,12 +131,18 @@ a, .btn-link {
     color: red;
 }
 
+.content-wrapper {
+    display: flex; /* Use Flexbox to position children side by side */
+}
+
+
+
 /* The sidebar menu */
 .sidebar {
     height: 100%; /* 100% Full-height */
     width: 256px; /* 0 width - change this with JavaScript */
     position: fixed; /* Stay in place */
-    z-index: 2; /* Stay on top */
+    z-index: 101; /* Stay on top */
     top: 0;
     left: 0;
     padding-top: 40px;
@@ -177,6 +197,7 @@ a, .btn-link {
         background-color: #818181;
     }
 /* The button used to open the sidebar */
+
 .openbtn {
     font-size: 20px;
     cursor: pointer;
@@ -253,7 +274,6 @@ a, .btn-link {
         height: 80px;
         animation: spin 700ms linear infinite;
         top: 40%;
-        left: 55%;
         position: relative;
         margin-top: 0%;
     }
@@ -412,6 +432,44 @@ iframe {
     height: 100%;
     width: 100%;
 }
+
+
+#toolbarDiv {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    cursor: default;
+    display: inline-flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    z-index: 1; /* Add this line to place the toolbar on top */
+}
+
+#infoDiv {
+    position: absolute;
+    top: 15px;
+    left: 60px;
+
+}
+
+    #infoDiv input {
+        border: none;
+        box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 2px;
+    }
+
+.esri-widget--button.active,
+.esri-widget--button.active:hover,
+.esri-widget--button.active:focus {
+    cursor: default;
+    background-color: #999696;
+}
+
+    .esri-widget--button.active path,
+    .esri-widget--button.active:hover path,
+    .esri-widget--button.active:focus path {
+        fill: #E4E4E4;
+    }
+
 
 #topbar {
     background: #fff;
@@ -945,3 +1003,4 @@ Other Styles
 body {
     background: #c1c1c1;
 }
+

@@ -12,6 +12,7 @@
 @using System.Net;
 @using System.Drawing.Imaging
 @using Microsoft.Extensions.Configuration;
+@using System.Text.Json;
 
 @inject IJSRuntime JSRuntime
 @inject MmhisController controller
@@ -24,8 +25,9 @@
 <button class="openbtn" onclick="openNav()">&#9776; Search</button>
 
 <div id="main" style="margin-left: 250px">
-    @if(IsLandscapeMode == false) //==========================================LANDSCAPE MODE OFF: DEFAULT====================================================
+    @if(IsLandscapeMode == false) 
     {
+
         <div class="video-container" id="video-container">
             @if (spinning == true)
             {
@@ -52,7 +54,10 @@
                                 <button class="pause" @ontouchstart="() => {for(int i = 0; i<4;i++){isPause=true;}}"></button>
                                 <button class="play" @ontouchstart="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></button>
                                 <button class="ff" @ontouchstart="() => { idx = idx + 1 >= Logmeters.Count() ? 0 : idx + 1; isPause = true; }"></button>
-                                <button  @onclick="ToggleFullScreen" style="background: rgb(255, 255, 255) none repeat scroll 0% 0%; border: 0px none; margin: 10px; padding: 0px; text-transform: none; appearance: none; position: absolute; cursor: pointer; user-select: none; border-radius: 2px; height: 40px; width: 40px; box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px; overflow: hidden; top: 0px; right: 0px;" draggable="false" aria-label="Toggle fullscreen view" title="Toggle fullscreen view" type="button" aria-pressed="false" class="gm-control-active gm-fullscreen-control"><img style="height: 18px; width: 18px;" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M0%200v6h2V2h4V0H0zm16%200h-4v2h4v4h2V0h-2zm0%2016h-4v2h6v-6h-2v4zM2%2012H0v6h6v-2H2v-4z%22/%3E%3C/svg%3E" alt=""><img style="height: 18px; width: 18px;" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M0%200v6h2V2h4V0H0zm16%200h-4v2h4v4h2V0h-2zm0%2016h-4v2h6v-6h-2v4zM2%2012H0v6h6v-2H2v-4z%22/%3E%3C/svg%3E" alt=""><img style="height: 18px; width: 18px;" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23111%22%20d%3D%22M0%200v6h2V2h4V0H0zm16%200h-4v2h4v4h2V0h-2zm0%2016h-4v2h6v-6h-2v4zM2%2012H0v6h6v-2H2v-4z%22/%3E%3C/svg%3E" alt=""></button>
+                                <button @onclick="ToggleFullScreen" style="background: rgb(255, 255, 255) none repeat scroll 0% 0%; border: 0px none; margin: 10px; padding: 0px; text-transform: none; appearance: none; position: absolute; cursor: pointer; user-select: none; border-radius: 2px; height: 40px; width: 40px; box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px; overflow: hidden; top: 0px; right: 0px;" draggable="false" aria-label="Toggle fullscreen view" title="Toggle fullscreen view" type="button" aria-pressed="false" class="gm-control-active gm-fullscreen-control">
+                                    <img style="height: 18px; width: 18px;" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M0%200v6h2V2h4V0H0zm16%200h-4v2h4v4h2V0h-2zm0%2016h-4v2h6v-6h-2v4zM2%2012H0v6h6v-2H2v-4z%22/%3E%3C/svg%3E" alt="">
+                                </button>
+
                             </menu>
                         }
                         else if (isMobile == false)
@@ -63,7 +68,9 @@
                                 <button class="pause" @onmousedown="() => {for(int i = 0; i<4;i++){isPause=true;}}"></button>
                                 <button class="play" @onmousedown="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></button>
                                 <button class="ff" @onmousedown="() => { idx = idx + 1 >= Logmeters.Count() ? 0 : idx + 1; isPause = true; }"></button>
-                                <button  @onclick="ToggleFullScreen" style="background: rgb(255, 255, 255) none repeat scroll 0% 0%; border: 0px none; margin: 10px; padding: 0px; text-transform: none; appearance: none; position: absolute; cursor: pointer; user-select: none; border-radius: 2px; height: 40px; width: 40px; box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px; overflow: hidden; top: 0px; right: 0px;" draggable="false" aria-label="Toggle fullscreen view" title="Toggle fullscreen view" type="button" aria-pressed="false" class="gm-control-active gm-fullscreen-control"><img style="height: 18px; width: 18px;" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M0%200v6h2V2h4V0H0zm16%200h-4v2h4v4h2V0h-2zm0%2016h-4v2h6v-6h-2v4zM2%2012H0v6h6v-2H2v-4z%22/%3E%3C/svg%3E" alt=""><img style="height: 18px; width: 18px;" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M0%200v6h2V2h4V0H0zm16%200h-4v2h4v4h2V0h-2zm0%2016h-4v2h6v-6h-2v4zM2%2012H0v6h6v-2H2v-4z%22/%3E%3C/svg%3E" alt=""><img style="height: 18px; width: 18px;" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23111%22%20d%3D%22M0%200v6h2V2h4V0H0zm16%200h-4v2h4v4h2V0h-2zm0%2016h-4v2h6v-6h-2v4zM2%2012H0v6h6v-2H2v-4z%22/%3E%3C/svg%3E" alt=""></button>
+                                <button @onclick="ToggleFullScreen" style="background: rgb(255, 255, 255) none repeat scroll 0% 0%; border: 0px none; margin: 10px; padding: 0px; text-transform: none; appearance: none; position: absolute; cursor: pointer; user-select: none; border-radius: 2px; height: 40px; width: 40px; box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px; overflow: hidden; top: 0px; right: 0px;" draggable="false" aria-label="Toggle fullscreen view" title="Toggle fullscreen view" type="button" aria-pressed="false" class="gm-control-active gm-fullscreen-control">
+                                    <img style="height: 18px; width: 18px;" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2018%2018%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M0%200v6h2V2h4V0H0zm16%200h-4v2h4v4h2V0h-2zm0%2016h-4v2h6v-6h-2v4zM2%2012H0v6h6v-2H2v-4z%22/%3E%3C/svg%3E" alt="">
+                                </button>
                             </menu>
                         }
 
@@ -94,7 +101,18 @@
                 switch(imgType)
                 {
                 case 1:
-                    var byteArrayRight = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsRight[idx].Substring(7)); //fix index out of range on older routes
+                    byte[] byteArrayRight;
+
+                    if (File.Exists(unmodifiedURLsRight[idx]))
+                    {
+                        byteArrayRight = ConvertImageToByteArray(unmodifiedURLsRight[idx]);
+                    }
+                    else
+                    {
+                        var adjustedPathRight = RemoveRootFromPath(unmodifiedURLsRight[idx]);
+                        var fullPathRight = GetImagePath(adjustedPathRight);
+                        byteArrayRight = ConvertImageToByteArray(fullPathRight);
+                    }
                     if(isHighRes == false)
                     {
                         var resizedArrayRight = ResizeImage(byteArrayRight);
@@ -108,7 +126,19 @@
                     }
                     break;
                 case 2:
-                    var byteArrayLeft = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsLeft[idx].Substring(7)); //fix index out of range on older routes
+                    byte[] byteArrayLeft;
+
+                    if (File.Exists(unmodifiedURLsLeft[idx]))
+                    {
+                        byteArrayLeft = ConvertImageToByteArray(unmodifiedURLsLeft[idx]);
+                    }
+                    else
+                    {
+                        var adjustedPathLeft = RemoveRootFromPath(unmodifiedURLsLeft[idx]);
+                        var fullPathLeft = GetImagePath(adjustedPathLeft);
+                        byteArrayLeft = ConvertImageToByteArray(fullPathLeft);
+                    }
+                  //fix index out of range on older routes
                     if(isHighRes == false)
                     {
                         var resizedArrayLeft = ResizeImage(byteArrayLeft); 
@@ -122,7 +152,18 @@
                     }
                     break;
                 case 3:
-                    var byteArrayRRight = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsRRight[idx].Substring(7));
+                    byte[] byteArrayRRight;
+
+                    if (File.Exists(unmodifiedURLsRRight[idx]))
+                    {
+                        byteArrayRRight = ConvertImageToByteArray(unmodifiedURLsRRight[idx]);
+                    }
+                    else
+                    {
+                        var adjustedPathRRight = RemoveRootFromPath(unmodifiedURLsRRight[idx]);
+                        var fullPathRRight = GetImagePath(adjustedPathRRight);
+                        byteArrayRRight = ConvertImageToByteArray(fullPathRRight);
+                    }
                     if(isHighRes == false)
                     {
                         var resizedArrayRRight = ResizeImage(byteArrayRRight);
@@ -136,7 +177,18 @@
                     }
                     break;
                 case 4:
-                    var byteArrayRLeft = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsRLeft[idx].Substring(7));
+                    byte[] byteArrayRLeft;
+
+                    if (File.Exists(unmodifiedURLsRLeft[idx]))
+                    {
+                        byteArrayRLeft = ConvertImageToByteArray(unmodifiedURLsRLeft[idx]);
+                    }
+                    else
+                    {
+                        var adjustedPathRLeft = RemoveRootFromPath(unmodifiedURLsRLeft[idx]);
+                        var fullPathRLeft = GetImagePath(adjustedPathRLeft);
+                        byteArrayRLeft = ConvertImageToByteArray(fullPathRLeft);
+                    }
                     if(isHighRes == false)
                     {
                         var resizedArrayRLeft = ResizeImage(byteArrayRLeft); 
@@ -151,7 +203,18 @@
                     }
                     break;
                 case 5:
-                    var byteArrayPave = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsPave[idx].Substring(7));
+                    byte[] byteArrayPave;
+
+                    if (File.Exists(unmodifiedURLsPave[idx]))
+                    {
+                        byteArrayPave = ConvertImageToByteArray(unmodifiedURLsPave[idx]);
+                    }
+                    else
+                    {
+                        var adjustedPathPave = RemoveRootFromPath(unmodifiedURLsPave[idx]);
+                        var fullPathPave = GetImagePath(adjustedPathPave);
+                        byteArrayPave = ConvertImageToByteArray(fullPathPave);
+                    }
                     if(isHighRes == false)
                     {
                         var resizedArrayPave = ResizeImage(byteArrayPave);
@@ -165,7 +228,19 @@
                     }
                     break;
                 default:
-                    var byteArray = ConvertImageToByteArray("\\\\mmhisdata-01\\" +unmodifiedURLs[idx].Substring(7));
+                    byte[] byteArray;
+
+                    if (File.Exists(unmodifiedURLs[idx]))
+                    {
+                        byteArray = ConvertImageToByteArray(unmodifiedURLs[idx]);
+                    }
+                    else
+                    {
+                        var adjustedPath = RemoveRootFromPath(unmodifiedURLs[idx]);
+                        var fullPath = GetImagePath(adjustedPath);
+                        byteArray = ConvertImageToByteArray(fullPath);
+                    }
+
                     if(isHighRes == false)
                     {
                         var resizedArray = ResizeImage(byteArray);
@@ -180,182 +255,90 @@
                     break;
                 }
 
-        
 
-                log = double.Parse(Logmeters[idx]) * .000621371; //meter to mile conversion
-                latitudeId = double.Parse(Latitudes[idx]);
-                longitudeId = double.Parse(Longitudes[idx]);
+
+                if (double.TryParse(Logmeters[idx], out double logValue))
+                {
+                    log = logValue * .000621371; //meter to mile conversion
+                }
+                else
+                {
+                    Console.WriteLine($"Cannot convert Logmeters[{idx}] value '{Logmeters[idx]}' to a double.");
+                }
+
+                if (double.TryParse(Latitudes[idx], out double latValue))
+                {
+                    latitudeId = latValue;
+                }
+                else
+                {
+                    Console.WriteLine($"Cannot convert Latitudes[{idx}] value '{Latitudes[idx]}' to a double.");
+                }
+
+                if (double.TryParse(Longitudes[idx], out double lonValue))
+                {
+                    longitudeId = lonValue;
+                }
+                else
+                {
+                    Console.WriteLine($"Cannot convert Longitudes[{idx}] value '{Longitudes[idx]}' to a double.");
+                }
 
             }
         
         </div>
 
         <div class="google-map-container">
-            <RadzenGoogleMap ApiKey="@apiKey" Style="width: 50vw; height: 50vh; z-index: 1; justify-content: center;" id="Map" Zoom="@zoom" Center="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId })" MapClick="@AsyncMapOperation">
-                <Markers>
-                    @if (showArkansasMarker && Images.Any())
-                    {
-                        <RadzenGoogleMapMarker Title="Arkansas" Position="@(new GoogleMapPosition() { Lat = Convert.ToDouble(Latitudes[idx]), Lng = Convert.ToDouble(Longitudes[idx]) })" />
-                    }
-                </Markers>
-            </RadzenGoogleMap>
+           @* <div id="google-map" style="width: 100%; height: 400px;"></div>*@
+            <div id="viewDiv" style="width:900px; height:500px;"></div>
+            <div id="infoDiv">
+@*                            <input class="esri-component esri-widget--button esri-widget esri-interactive"
+                               type="button"
+                               id="switch-btn"
+                               value="3D" />*@
+                        </div>
+                        <div id="toolbarDiv" class="esri-component esri-widget">
+                            <button id="distance" class="esri-widget--button esri-interactive esri-icon-measure-line" title="Distance Measurement Tool">
+                            </button>
+                            <button id="area" class="esri-widget--button esri-interactive esri-icon-measure-area" title="Area Measurement Tool">
+                            </button>
+                            <button id="clear" class="esri-widget--button esri-interactive esri-icon-trash" title="Clear Measurements">
+                            </button>
+                        </div>
+            <div class="dropdowns-container">
+            <div>
+                Select Basemap: <select id="basemap-select">
+                    <option value="streets">Streets</option>
+                    <option value="satellite">Satellite</option>
+                    <option value="hybrid">Hybrid</option>
+                    <option value="terrain">Terrain</option>
+                    <option value="topo">Topographic</option>
+                    <option value="gray">Gray</option>
+                    <option value="dark-gray">Dark Gray</option>
+                    <option value="oceans">Oceans</option>
+                    <option value="national-geographic">National Geographic</option>
+                </select>
+            </div>
+            <div>
+                Select Feature Layer: <select id="feature-layer-select">
+                    <option value="">None</option>
+                    <option value="https://gis.ardot.gov/hosting/rest/services/SIR_TIS/Road_Inventory_OnSystem/FeatureServer/0">Roadway Inventory</option>
+                    <option value="https://gis.ardot.gov/hosting/rest/services/TPP_GISMapping/ARNOLD/FeatureServer/0">ARNOLD Linear</option>
+                    <option value="https://gis.ardot.gov/hosting/rest/services/Hosted/ARNOLD_Points/FeatureServer/0">ARNOLD Points</option>
+                    <option value="https://gis.ardot.gov/hosting/rest/services/TPP_GISMapping/CORE_BASE_LAYERS/FeatureServer">Core Base Layers</option>
+                    <option value="https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Boundaries/FeatureServer/48">Counties</option>
+                    <option value="https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Boundaries/FeatureServer/41">Municipal Boundries</option>
+                    <option value="https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Planning_Cadastre/FeatureServer/6">Parcel (Ownership) Boundries</option>
+                    <option value="https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Structure/FeatureServer/54">Building Footprints</option>
+                    <option value="https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Location/FeatureServer/14">Address Points</option>
+                    <option value="https://fragis.fra.dot.gov/arcgis/rest/services/FRA/MainLine/MapServer/0">Railroads</option>
+                        <option value="https://gis.ardot.gov/hosting/rest/services/HeavyBridge/ARDOTBridgeAll/MapServer/0">Bridges</option>
+                </select>
+            </div>
         </div>
+        </div>    
         
     }
-     @if(IsLandscapeMode == true) //==============================================LANDSCAPE MODE ON=====================================================
-    {
-    <div class="row">
-        <div class="column">
-        @if (spinning == true)
-        {
-            <div class="spinner"></div>
-        }
-        
-        @if (Images.Any())
-        {
-
-            //zoom = 13;
-            int maxslide = Logmeters.Count() - 1;
-            //if (!File.Exists("\\\\mmhisdata-01\\" + unmodifiedURLs[idx].Substring(7))) { idx++; }
-            switch(imgType)
-            {
-            case 1:
-                var byteArrayRight = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsRight[idx].Substring(7));
-                if(isHighRes == false)
-                {
-                    var resizedArrayRight = ResizeImage(byteArrayRight);
-                    string imgStringRight = Convert.ToBase64String(resizedArrayRight);
-                    <img src="data:image/jpg;base64, @imgStringRight" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
-                }
-                else
-                {
-                    string imgStringRight = Convert.ToBase64String(byteArrayRight);
-                    <img src="data:image/jpg;base64, @imgStringRight" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
-                }
-                break;
-            case 2:
-                var byteArrayLeft = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsLeft[idx].Substring(7));
-                if(isHighRes == false)
-                {
-                    var resizedArrayLeft = ResizeImage(byteArrayLeft); 
-                    string imgStringLeft = Convert.ToBase64String(resizedArrayLeft);
-                    <img src="data:image/jpg;base64, @imgStringLeft" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
-                }
-                else
-                {
-                    string imgStringLeft = Convert.ToBase64String(byteArrayLeft);
-                    <img src="data:image/jpg;base64, @imgStringLeft" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
-                }
-                break;
-            case 3:
-                var byteArrayRRight = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsRRight[idx].Substring(7));
-                if(isHighRes == false)
-                {
-                    var resizedArrayRRight = ResizeImage(byteArrayRRight);
-                    string imgStringRRight = Convert.ToBase64String(resizedArrayRRight);
-                    <img src="data:image/jpg;base64, @imgStringRRight" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent"@ref="imgElement"/>
-                }
-                else
-                {
-                    string imgStringRRight = Convert.ToBase64String(byteArrayRRight);
-                    <img src="data:image/jpg;base64, @imgStringRRight" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
-                }
-                break;
-            case 4:
-                var byteArrayRLeft = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsRLeft[idx].Substring(7));
-                if(isHighRes == false)
-                {
-                    var resizedArrayRLeft = ResizeImage(byteArrayRLeft); 
-                    string imgStringRLeft = Convert.ToBase64String(resizedArrayRLeft);
-                    <img src="data:image/jpg;base64, @imgStringRLeft" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
-                }
-                else
-                {
-                    string imgStringRLeft = Convert.ToBase64String(byteArrayRLeft);
-                    <img src="data:image/jpg;base64, @imgStringRLeft" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
-
-                }
-                break;
-            case 5:
-                var byteArrayPave = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLsPave[idx].Substring(7));
-                if(isHighRes == false)
-                {
-                    var resizedArrayPave = ResizeImage(byteArrayPave);
-                    string imgStringPave = Convert.ToBase64String(resizedArrayPave);
-                    <img src="data:image/jpg;base64, @imgStringPave" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
-                }
-                else
-                {
-                    string imgStringPave = Convert.ToBase64String(byteArrayPave);
-                    <img src="data:image/jpg;base64, @imgStringPave" style="width: 100%; height: auto;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
-                }
-                break;
-            default:
-                var byteArray = ConvertImageToByteArray("\\\\mmhisdata-01\\" + unmodifiedURLs[idx].Substring(7));
-                if(isHighRes == false)
-                {
-                    var resizedArray = ResizeImage(byteArray);
-                    string imgString = Convert.ToBase64String(resizedArray);
-                    <img src="data:image/jpg;base64, @imgString" style="width: 100%;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
-                }
-                else
-                {
-                    string imgString = Convert.ToBase64String(byteArray);
-                    <img src="data:image/jpg;base64, @imgString" style="width: 100%;" onwheel="@HandleWheelEvent" @ref="imgElement"/>
-                }
-                break;
-            }
-
-            <RadzenSlider class="playprogress" @bind-Value="@idx" Style="width:100%;height:35px" Max="@maxslide"></RadzenSlider>
-            
-            log = double.Parse(Logmeters[idx]) * 0.000621371192;
-            latitudeId = double.Parse(Latitudes[idx]);
-            longitudeId = double.Parse(Longitudes[idx]);
-
-        }
-        </div>
-        <div class="column">
-            <div class="col-xl-6">
-                <RadzenGoogleMap ApiKey="@apiKey" Style="width: 700px; height:450px" id="Map" Zoom="@zoom" Center="@(new GoogleMapPosition() { Lat = latitudeId, Lng = longitudeId})" MapClick="@AsyncMapOperation">
-                    <Markers>
-                        @if (showArkansasMarker && Images.Any())
-                        {
-                            <RadzenGoogleMapMarker Title="Arkansas" Position="@(new GoogleMapPosition() { Lat = Convert.ToDouble(Latitudes[idx]), Lng = Convert.ToDouble(Longitudes[idx]) })" />
-                        }
-                    </Markers>
-                </RadzenGoogleMap>
-                <div id="viewDiv" style="width: 1000px; height: auto;"></div>
-            </div>
-        </div>
-        @if (Images.Any())
-        {
-            <div class="button-container">
-                @if (isMobile == true)
-                {
-                    <menu class="medium">
-                        <!-- Buttons for mobile devices -->
-                        <button class="rw"  @ontouchstart="() => { idx = idx - 1 < 0 ? Logmeters.Count() - 1 : idx - 1; isPause = true; }" ></button>
-                        <button class="play" style="transform: rotate(180deg); transform: rotateY(180deg);" @ontouchstart="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></button>
-                        <button class="pause" @ontouchstart="() => {isPause = true;}"></button>
-                        <button class="play" @ontouchstart="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></button>
-                        <button class="ff"  @ontouchstart="() => { idx = idx + 1 >= Logmeters.Count() ? 0 : idx + 1; isPause = true; }"></button>
-                    </menu>
-                }
-                else if (isMobile == false)
-                {
-                    <menu class="small">
-                        <!-- Buttons for non-mobile devices -->
-                        <button class="rw"  @onmousedown="() => { idx = idx - 1 < 0 ? Logmeters.Count() - 1 : idx - 1; isPause = true; }"></button>
-                        <button class="play" style="transform: rotate(180deg); transform: rotateY(180deg);" @onmousedown="() => { isPause = !isPause; OnSubmitReverse(); isTouchScreen = true; }"></button>
-                        <button class="pause" @onmousedown="() => {isPause = true;}"></button>
-                        <button class="play" @onmousedown="() => { isPause = !isPause; OnSubmitPlay(); isTouchScreen = true; }"></button>
-                        <button class="ff"  @onmousedown="() => { idx = idx + 1 >= Logmeters.Count() ? 0 : idx + 1; isPause = true; }"></button>
-                    </menu>
-                }
-            </div>
-        }
-    </div>
-    }@*=================================================================END LANDSCAPE MODE=====================================================================*@
     <br>
     <div id="mySidebar" class="sidebar">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
@@ -372,8 +355,8 @@
                     </InputSelect>
                 </li>*@
 
-                <li class="nav-item px-2">
-                    <InputSelect id="routeControl" Value="routeId" ValueChanged="@( (string s) => routeChanged(s))" ValueExpression="@( () => routeId)" class="form-control" @onkeydown="HandleKeyDown">
+                <li class="nav-item px-2" style="color:white">
+                    Route: <InputSelect Style="float: right; margin-left: 5px;" id="routeControl" Value="routeId" ValueChanged="@( (string s) => routeChanged(s))" ValueExpression="@( () => routeId)" class="form-control" @onkeydown="HandleKeyDown">
                         <option value="none">Route</option>
                         @foreach (var item in routes)
                         {
@@ -381,8 +364,8 @@
                         }
                     </InputSelect>
                 </li>
-                <li class="nav-item px-2">
-                    <InputSelect Value="sectionId" ValueChanged="@( (string s) => sectionChanged(s))" ValueExpression="@( () => sectionId)" class="form-control" @onkeydown="HandleKeyDown">
+                <li class="nav-item px-2" style="color:white">
+                    Section: <InputSelect Value="sectionId" ValueChanged="@( (string s) => sectionChanged(s))" ValueExpression="@( () => sectionId)" class="form-control" @onkeydown="HandleKeyDown">
                         <option value="none">Section</option>
                         @foreach (var item in sections)
                         {
@@ -390,8 +373,8 @@
                         }
                     </InputSelect>
                 </li>
-                <li class="nav-item px-2">
-                    <InputSelect Value="directionId" ValueChanged="@( (string s) => directionChanged(s))" ValueExpression="@( () => directionId)" class="form-control" @onkeydown="HandleKeyDown">
+                <li class="nav-item px-2" style="color:white">
+                    Direction: <InputSelect Value="directionId" ValueChanged="@( (string s) => directionChanged(s))" ValueExpression="@( () => directionId)" class="form-control" @onkeydown="HandleKeyDown">
                         <option value="none">Direction</option>
                         @foreach (var item in directions)
                         {
@@ -400,8 +383,8 @@
                     </InputSelect>
                 </li>
 
-                <li class="nav-item px-2">
-                    <InputSelect Value="yearId" ValueChanged="@( (string s) => yearChanged(s))" ValueExpression="@( () => yearId)" class="form-control">
+                <li class="nav-item px-2" style="color:white">
+                    Year: <InputSelect Value="yearId" ValueChanged="@( (string s) => yearChanged(s))" ValueExpression="@( () => yearId)" class="form-control">
                         <option value="none">Year</option>
                         @foreach (var item in years)
                         {
@@ -409,14 +392,14 @@
                         }
                     </InputSelect>
                 </li>
-                <li class="nav-item px-2">
-                    <RadzenTextBox Placeholder="Search Logmile" Name="Logmile" @bind-Value="@searchText" Change=@(args => OnChangeLogmeter(args, "TextBox with placeholder")) />
+                <li class="nav-item px-2" style="color:white">
+                    Search Logmile: <RadzenTextBox Placeholder="Search Logmile" Name="Logmile" @bind-Value="@searchText" Change=@(args => OnChangeLogmeter(args, "TextBox with placeholder")) />
                 </li>
                 <li class="nav-item px-2" style="padding-bottom: 20px">
                     <input id="submitButton" type="submit" class="btn btn-primary" value="Submit" disabled="@IsDisabledSubmit" />
                     <input type="reset" onclick="window.location.reload()" class="btn btn-primary" style="position: relative; " value="Clear" />
                 </li>
-                <li class="nav-item px-2" style="color:white">
+                <li class="nav-item px-2 py-3" style="color:white">
                     Camera Selection: <InputSelect @bind-Value="imgType">
                                           <option value=1 label="Right">Right</option>
                                           <option value=2 label="Left">Left</option>
@@ -444,9 +427,7 @@
                 <li class="nav-item px-2" style="padding-bottom: 20px; padding-top:20px; color:white">
                     Full Resolution Mode:<RadzenSwitch @bind-Value=@isHighRes  Style="float: right; margin-left: 5px;"/>
                 </li>
-                <li class="nav-item px-2" style="padding-bottom: 20px; color:white">
-                    Landscape Mode:<RadzenSwitch @bind-Value=@IsLandscapeMode  Style="float: right; margin-left: 5px;"/>
-                </li>
+
                 @if (isMobile == true) { imgQuality = 377; }
                 <li class="nav-item px-2" style="padding-bottom: 10px; color:white">
                      Image Quality: <InputSelect @bind-Value="imgQuality" style="float: right; margin-left: 5px;">
@@ -464,26 +445,13 @@
                      </InputSelect>
                 </li>
                 <li class="nav-item px-2" style="padding-bottom: 10px; color:white">
-                     Map Zoom:
-                     <RadzenSlider @bind-Value=@zoom TValue="int" Step="1" Min="8" Max="20" Change=@(args => OnChange(args, "Slider from 0 to 100")) Class="w-100" />
-                </li>
-                <li class="nav-item px-2" style="padding-bottom: 10px; color:white">
                     Contrast:
                     <RadzenSlider @bind-Value=@contrast TValue="float" Step=".1" Min="1" Max="3" Change=@(args => OnChange(args, "Slider from 0 to 100")) Class="w-100" />
                 </li>
             </EditForm>
         </ul>
+
     </div>
-@*    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <h2>Contact:</h2>
-    <p>501-569-2605</p>*@
 </div>
 
 
@@ -505,11 +473,7 @@
 
     //    isFullScreen = !isFullScreen;
     //}
-    private void ToggleFullScreen()
-    {
-        // Call the JavaScript function to toggle full-screen for the "video-container" div
-        JSRuntime.InvokeVoidAsync("ToggleFullScreen", "video-container");
-    }
+
     private ElementReference imgElement;
 
     [Parameter]
@@ -530,7 +494,7 @@
 
     protected string apiKey = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("Keys")["GoogleMapsJavascript"];
     bool isMobile;
-    bool isHighRes = false;
+    bool isHighRes = true;
     //bool switchMap = false;
     float contrast = 1;
     float imgQuality=600; 
@@ -596,8 +560,8 @@
     public string yearId { get; set; }
 
     public string imgId;
-    public double longitudeId = -92.199997;
-    public double latitudeId = 34.799999;
+    public double longitudeId = -92.274592; //dogtown bridge
+    public double latitudeId = 34.751354;
     public int missingLogmeters;
     public string countyId;
 
@@ -619,6 +583,24 @@
 
     private EditForm myForm;
 
+    //private DotNetObjectReference<Index> componentReference;
+    private DotNetObjectReference<Index> _objRef;
+
+
+    protected override void OnInitialized()
+    {
+        routes = controller.GetUniqueRoutes();
+        sections = controller.GetUniqueSections();
+        years = controller.GetUniqueYears();
+        directions = controller.GetUniqueDirections();
+        counties = controller.GetUniqueCounties();
+        IsDisabledSection = true;
+        IsDisabledYear = true;
+        IsDisabledDirection = true;
+        _objRef = DotNetObjectReference.Create(this);
+        JSRuntime.InvokeVoidAsync("setDotNetReference", _objRef);
+    }
+
     protected override void OnAfterRender(bool firstRender)
     {
         int timeInterval = imgSpeed;
@@ -636,11 +618,108 @@
         base.OnAfterRender(firstRender);
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+            // Set the flag to false initially
+
+            bool isSetMapLoaded = false;
+            await JSRuntime.InvokeVoidAsync("setTitle", "Arkansas Highways");
+            await InitializeArcMapAsync();
+            isMobile = false;
+
+            if (!string.IsNullOrEmpty(routeId))
+            {
+                //await Task.Delay(100); // Delay execution by 100 milliseconds
+                // Update the IsDisabledSubmit property based on the routeId value
+                IsDisabledSubmit = false;
+                if (sectionId == "" || sectionId == null)
+                {
+                    routeChanged(routeId);
+                }
+                if (directionId == "" || directionId == null)
+                {
+                    routeChanged(routeId);
+                }
+                pageModel.Route = routeId;
+                pageModel.Direction = directionId;
+                pageModel.Section = sectionId;
+                logmile = Convert.ToDouble(searchText) * 1609.344;
+                pageModel.Logmeter = logmile;
+
+                directionChanged(directionId);
+                yearId = years.FirstOrDefault();
+                pageModel.Year = yearId;
+                await JSRuntime.InvokeVoidAsync("submitForm");
+
+                searchText = "";
+
+            }
+            else
+            {
+                IsDisabledSubmit = true;
+            }
+
+            StateHasChanged();
+
+        }
+
+
+    }
+
+    private async Task InitializeArcMapAsync()
+    {
+        // Load the Google Maps API script
+        await JSRuntime.InvokeVoidAsync("setMap");
+
+        // Start updating the marker's position
+        _ = UpdateArcMarkerPositionContinuously(); // Fire and forget
+    }
+
+    private async Task UpdateMarkerPositionContinuously()
+    {
+        while (true)
+        {
+            await JSRuntime.InvokeVoidAsync("updateMarkerPosition", latitudeId, longitudeId);
+
+            await Task.Delay(500); // wait for .5 second before updating again
+        }
+    }
+
+    private async Task UpdateArcMarkerPositionContinuously() 
+    {
+        while(true) 
+        {
+
+            await JSRuntime.InvokeVoidAsync("updateArcMarkerPosition", latitudeId, longitudeId);
+            await Task.Delay(600);  // for example, to update every .5 seconds
+        }
+    }
+
+
     //=================================================================================================================================================================================
     //==================================================Map Selection Method===========================================================================================================
     //=================================================================================================================================================================================
 
-    void OnMapClick(GoogleMapClickEventArgs args)
+    const double MILES_TO_KM = 0.000621371192;
+
+    async Task OnMapClick()
+    {
+        await InvokeAsync(() =>
+        {
+            ResetStates();
+            EnsureInArkansasState();
+            RetrieveAndSetRouteInformation();
+            ProcessDataModel();
+            directionChanged(pageModel.Direction);
+            EndOfClickOperations();
+            StateHasChanged();  // Trigger UI update.
+        });
+    }
+
+    void ResetStates()
     {
         spinning = true;
         IsDisabledRoute = true;
@@ -654,21 +733,33 @@
         idx = 0;
         zoom = 15;
 
+        ClearImageLists();
+        pageModel.Clear();
+    }
+
+    void ClearImageLists()
+    {
         Images.Clear();
         ImagesRight.Clear();
         ImagesLeft.Clear();
         ImagesRearLeft.Clear();
         ImagesRearRight.Clear();
         ImagesPavement.Clear();
-        pageModel.Clear();
+    }
 
-        if (latitudeId > 36.5 || latitudeId < 33 || longitudeId < -94.66 || longitudeId > -89.629890) //make sure it's in state of arkansas or default to a position
+    void EnsureInArkansasState()
+    {
+        if (latitudeId > 36.5 || latitudeId < 33 || longitudeId < -94.66 || longitudeId > -89.629890)
         {
             latitudeId = 34.751354;
             longitudeId = -92.274592;
         }
+    }
 
+    void RetrieveAndSetRouteInformation()
+    {
         RouteInfo = controller.GetRouteInformation(latitudeId, longitudeId);
+        // Set other class-level fields here using RouteInfo...
         routeId = RouteInfo[0]; //should probably pass in a model here
         sectionId = RouteInfo[1];
         directionId = RouteInfo[2];
@@ -689,9 +780,14 @@
         pageModel.Ld = (long)Convert.ToDouble(RouteInfo[7]); //dains Ld
         pageModel.Lu = (long)Convert.ToDouble(RouteInfo[8]);// dains Lu
         pageModel.County = countyId;
+        log = Convert.ToDouble(RouteInfo[4]) * MILES_TO_KM;
+    }
 
-        var dataModel = controller.getData(pageModel); //dataModel.Roadway, dataModel.Points, dataModel.PointData, dataModel.Notes
-
+    void ProcessDataModel()
+    {
+        var dataModel = controller.getData(pageModel);
+        // Process the dataModel and update the class-level fields as necessary...
+        // E.g., the various LINQ queries and their manipulations
         var pointDataList = dataModel.PointData.ToList();
 
         var dianQuery = from dian in dataModel.Points //get all points in route at 5 meter increments
@@ -847,7 +943,7 @@
 
         var allPointsBeforeLst = allPointsBefore.ToList();
 
-        var IdxB = allPointsBeforeLst.Count(); 
+        var IdxB = allPointsBeforeLst.Count();
 
         var frontImages = from r in pointDataList //grabs all the front facing images for the route
                           join p in pointList on r.Lu equals p.Ld
@@ -855,7 +951,7 @@
                           orderby r.Lu ascending
                           select r.FieldValue;
 
-        var leftImages = from r in pointDataList 
+        var leftImages = from r in pointDataList
                          join p in pointList on r.Lu equals p.Ld
                          where r.FieldName == "fl"
                          orderby r.Lu ascending
@@ -931,7 +1027,7 @@
         List<string> swappedpreloadImgcpy = controller.PutFrontAtIndex(preloadImgcpy, IdxB);
 
         List<string> swappedPoints = controller.PutFrontAtIndex(frontImagesStr, IdxB);
-        List<string> swappedPointsRight = controller.PutFrontAtIndex(rightImagesStr, IdxB); 
+        List<string> swappedPointsRight = controller.PutFrontAtIndex(rightImagesStr, IdxB);
         List<string> swappedPointsLeft = controller.PutFrontAtIndex(leftImagesStr, IdxB);
         if (rearRightImagesStr.Any())
         {
@@ -958,7 +1054,7 @@
 
         unmodifiedURLs = swappedPoints;
         unmodifiedURLsRight = swappedPointsRight;
-        unmodifiedURLsLeft = swappedPointsLeft;     
+        unmodifiedURLsLeft = swappedPointsLeft;
 
         Images = swappedPoints;
         ImagesRight = swappedPointsRight;
@@ -969,32 +1065,38 @@
         Latitudes = swappedLatitudes;
         Longitudes = swappedLongitudes;
 
-        directionChanged(pageModel.Direction); //used to correctly populate the year drop down
+    }
 
+    void EndOfClickOperations()
+    {
         spinning = false;
         IsDisabledLog = false;
         IsDisabledSubmit = false;
 
     }
 
-
-    async Task AsyncMapOperation(GoogleMapClickEventArgs args) 
+    [JSInvokable]
+    public async Task AsyncMapOperation(double lat, double lng) 
     {
         spinning = true;
         Images.Clear();
+        StateHasChanged(); //Blazor needs to re-render the component so that the UI is updated
 
-        clickedPosition = $"Map clicked LAT : {args.Position.Lat}, LNG: {args.Position.Lng}";
-        latitudeId = args.Position.Lat;
-        longitudeId = args.Position.Lng;
+        clickedPosition = $"Map clicked LAT : {lat}, LNG: {lng}";
+        latitudeId = lat;
+        longitudeId = lng;
         showArkansasMarker = true;
         IsDisabledDirection = false;
         IsDisabledSection = false;
         IsDisabledYear = false;
         //zoom = 15;
-        await Task.Run(() => OnMapClick(args));  //<--here!
+        await Task.Run(() => OnMapClick());  //<--here!
         currentCount++;
         spinning = false;
+        StateHasChanged(); //re-render again to display the picture
     }
+
+
 
     void OnMarkerClick(GoogleMapClickEventArgs args)
     {
@@ -1019,18 +1121,6 @@
         //return JSRuntime.InvokeVoidAsync("loadImage", pathway).ToString();
     }
 
-    protected override void OnInitialized()
-    {
-        routes = controller.GetUniqueRoutes();
-        sections = controller.GetUniqueSections();
-        years = controller.GetUniqueYears();
-        directions = controller.GetUniqueDirections();
-        counties = controller.GetUniqueCounties();
-        IsDisabledSection = true;
-        IsDisabledYear = true;
-        IsDisabledDirection = true;
-    }
-
     void ClearSelection()
     {
         routeId = null; //could try null
@@ -1049,58 +1139,6 @@
         pageModel = new PageModel();
         NavigationManager.NavigateTo("/cleared");
         NavigationManager.NavigateTo("/");
-        
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-
-            // Set the flag to false initially
-            bool isSetMapLoaded = false;
-            //return Task.Delay(0);
-            await JSRuntime.InvokeVoidAsync("setTitle", "Arkansas Highways");
-            //await JSRuntime.InvokeVoidAsync("setMap");
-            //isMobile = await JSRuntime.InvokeAsync<bool>("isDevice");
-            isMobile = false;
-
-            if (!string.IsNullOrEmpty(routeId))
-            {
-                //await Task.Delay(100); // Delay execution by 100 milliseconds
-                // Update the IsDisabledSubmit property based on the routeId value
-                IsDisabledSubmit = false;
-                if(sectionId == "" || sectionId == null)
-                {
-                    routeChanged(routeId);
-                }
-                if(directionId == "" || directionId == null)
-                {
-                    routeChanged(routeId);
-                }
-                pageModel.Route = routeId;
-                pageModel.Direction = directionId;
-                pageModel.Section = sectionId;
-                logmile = Convert.ToDouble(searchText) * 1609.344;
-                pageModel.Logmeter = logmile;
-
-                directionChanged(directionId);
-                yearId = years.FirstOrDefault();
-                pageModel.Year = yearId;
-                await JSRuntime.InvokeVoidAsync("submitForm");
-                    
-                searchText = "";
-                
-            }
-            else
-            {
-                IsDisabledSubmit = true;
-            }
-
-            StateHasChanged();
-
-        }
-        
 
     }
 
@@ -1395,12 +1433,12 @@
 
         var latitudes = (from p in dataModel.Points
                          where luValues.Contains(p.Ld)
-                         orderby p.Lu ascending
+                         orderby p.Logmeter0 ascending //changed from p.Lu ascending 9/28/23
                          select p.Latitude).ToList();
 
         var longitudes = (from p in dataModel.Points
                           where luValues.Contains(p.Ld)
-                          orderby p.Lu ascending
+                          orderby p.Logmeter0 ascending
                           select p.Longitude).ToList();
 
         if(dataModel.Notes.ToList() != null)
@@ -1563,6 +1601,7 @@
 
     void OnChange(dynamic value, string name)
     {
+        isHighRes = false;
         var str = value is IEnumerable ? string.Join(", ", value) : value;
         str = Convert.ToString(str);
         if(str == "1")
@@ -1657,7 +1696,7 @@
             OnSubmitStop();
         }
         time.Interval = imgSpeed;
-        
+
         await InvokeAsync(() => StateHasChanged());
     }
 
@@ -1665,26 +1704,10 @@
     {
         // while navigating to other components, Dispose method will be called and clean up the Timer function.
         time?.Dispose();
+        //componentReference?.Dispose();
+        _objRef?.Dispose();
     }
 
-    public static byte[] ConvertImageToByteArray(string filePath) //takes the path to the images and returnss byte array
-    {
-        var t = filePath.Substring(0, 34);
-        if (filePath.Substring(0, 34) == "\\\\mmhisdata-01\\av-01\\MMHIS Pave24\\"){ //this is messy. Need to find a better way to do this.
-            filePath = "\\\\sirapav-01\\MMHIS Pave24\\" + filePath.Substring(34);    //same with the file paths in the view
-        }
-        else if(filePath.Substring(0,21)== "\\\\mmhisdata-01\\av-01\\"){
-            filePath = "\\\\mmhisdata-01\\" + filePath.Substring(21);
-        }
-        using (var image = Image.FromFile(filePath))
-        {
-            using (var m = new MemoryStream())
-            {
-                image.Save(m, image.RawFormat);
-                return m.ToArray();
-            }
-        }
-    }
 
     public byte[] ResizeImage(byte[] byteImageIn)
     {
@@ -1757,6 +1780,66 @@
             return;
         }
 
+    }
+
+    private void ToggleFullScreen()
+    {
+        // Call the JavaScript function to toggle full-screen for the "video-container" div
+        JSRuntime.InvokeVoidAsync("ToggleFullScreen", "video-container");
+    }
+
+    public static byte[] ConvertImageToByteArray(string filePath)
+    {
+        //filePath = GetImagePath(filePath); // Use the helper method
+
+        if (string.IsNullOrEmpty(filePath))
+        {
+            // Handle the case when the file doesn't exist in either location.
+            // This could be returning null, throwing an exception, or any other desired behavior.
+            throw new FileNotFoundException("Image not found in the provided paths.", filePath);
+        }
+
+        using (var image = Image.FromFile(filePath))
+        {
+            using (var m = new MemoryStream())
+            {
+                image.Save(m, image.RawFormat);
+                return m.ToArray();
+            }
+        }
+    }
+
+    private string GetImagePath(string relativePath)
+    {
+        string path1 = "\\\\mmhisdata-01\\" + relativePath;
+        if (File.Exists(path1))
+        {
+            return path1;
+        }
+
+        string path2 = "\\\\sirapav-01\\" + relativePath;
+        if (File.Exists(path2))
+        {
+            return path2;
+        }
+
+        string path3 = "\\\\san2\\" + relativePath;
+        if (File.Exists(path3))
+        {
+            return path3;
+        }
+
+        return string.Empty; // This should be handled in the main code.
+    }
+
+    private string RemoveRootFromPath(string path)
+    {
+        int secondSlashIndex = path.IndexOf('\\', path.IndexOf('\\') + 2);
+        if (secondSlashIndex != -1)
+        {
+            return path.Substring(secondSlashIndex + 1);
+        }
+        return path; // return original path if the format doesn't match the expected.
     }
 
 }

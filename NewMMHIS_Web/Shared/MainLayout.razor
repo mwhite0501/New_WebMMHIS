@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@inject IJSRuntime JSRuntime
 
 <div class="page">
     <!--<div class="sidebar">-->
@@ -10,7 +11,26 @@
         </div>*@
 
     <div class="content px-4">
-        @Body
+        <CascadingAuthenticationState>
+            @try
+            {
+                @Body
+
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+            }
+        </CascadingAuthenticationState>
     </div>
 </div>
 @*</div>*@
+
+@code {
+    private async void HandleException(Exception ex)
+    {
+        // You can log the exception here if needed.
+
+        await JSRuntime.InvokeVoidAsync("ReloadPage");
+    }
+}

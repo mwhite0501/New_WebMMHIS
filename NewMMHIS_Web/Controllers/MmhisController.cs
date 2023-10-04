@@ -75,34 +75,51 @@ namespace NewMMHIS_Web.Controllers
             return Points;
         }
 
-        public List<string> PutFrontAtIndex(List<string> list, int index) //splits a string at a given index and places in front of the first half of the string
+        //public List<string> PutFrontAtIndex(List<string> list, int index) //splits a string at a given index and places in front of the first half of the string
+        //{
+        //    List<string> first = new List<string>();
+        //    List<string> second = new List<string>();  
+        //    if (index < list.Count)   
+        //    {
+        //        for (int i = 0; i < index; i++)             
+        //        {
+        //            first.Add(list[i]);
+        //        }
+        //        for (int i = index; i < list.Count; i++)
+        //        {
+        //            second.Add(list[i]);
+        //        }
+        //    }
+        //    else 
+        //    {
+        //        index = list.Count;
+        //        for (int i = 0; i < index; i++)             
+        //        {
+        //            first.Add(list[i]);
+        //        }
+        //        for (int i = index; i < list.Count; i++)
+        //        {
+        //            second.Add(list[i]);
+        //        }
+        //    }
+            
+        //    return second.Concat(first).ToList();
+        //}
+
+        public List<string> PutFrontAtIndex(List<string> list, int index) //changed 9/28/2023
         {
-            List<string> first = new List<string>();
-            List<string> second = new List<string>();  
-            if (index < list.Count)   
-            {
-                for (int i = 0; i < index; i++)             //need to fix this function so that I dont get an exception when the lists are different sizes
-                {
-                    first.Add(list[i]);
-                }
-                for (int i = index; i < list.Count; i++)
-                {
-                    second.Add(list[i]);
-                }
-            }
-            else 
+            if (index > list.Count)
             {
                 index = list.Count;
-                for (int i = 0; i < index; i++)             //need to fix this function so that I dont get an exception when the lists are different sizes
-                {
-                    first.Add(list[i]);
-                }
-                for (int i = index; i < list.Count; i++)
-                {
-                    second.Add(list[i]);
-                }
             }
-            
+            else if (index < 0)
+            {
+                index = 0; // or throw an exception if a negative index should be considered invalid
+            }
+
+            List<string> first = list.GetRange(0, index);
+            List<string> second = list.GetRange(index, list.Count - index);
+
             return second.Concat(first).ToList();
         }
 
