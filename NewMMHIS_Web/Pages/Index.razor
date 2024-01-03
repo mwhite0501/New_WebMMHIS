@@ -1763,7 +1763,7 @@
         {
             idx++;
         }
-        
+
     }
     private void HandleKeyDown(KeyboardEventArgs e)
     {
@@ -1797,6 +1797,8 @@
             // Handle the case when the file doesn't exist in either location.
             // This could be returning null, throwing an exception, or any other desired behavior.
             throw new FileNotFoundException("Image not found in the provided paths.", filePath);
+
+            //filePath = "\\\\san2\\MMHIS Data3\\mw42705\\No_Image_Available.jpg";
         }
 
         using (var image = Image.FromFile(filePath))
@@ -1811,6 +1813,10 @@
 
     private string GetImagePath(string relativePath)
     {
+        if (File.Exists(relativePath)) //if the image is in the database but it's a dead reference
+        {
+            return relativePath;
+        }
         string path1 = "\\\\mmhisdata-01\\" + relativePath;
         if (File.Exists(path1))
         {
@@ -1833,9 +1839,14 @@
     }
 
     private string RemoveRootFromPath(string path)
-    {
+    { 
         int secondSlashIndex = path.IndexOf('\\', path.IndexOf('\\') + 2);
-        if (secondSlashIndex != -1)
+        if (!File.Exists(path))
+        {
+            path = "\\\\san2\\MMHIS Data3\\mw42705\\No_Image_Available.jpg";
+            return path;
+        }
+        else if (secondSlashIndex != -1)
         {
             return path.Substring(secondSlashIndex + 1);
         }
