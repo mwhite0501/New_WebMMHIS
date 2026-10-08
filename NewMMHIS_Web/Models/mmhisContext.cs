@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Extensions.Configuration;
+
 
 #nullable disable
 
@@ -9,10 +9,7 @@ namespace NewMMHIS_Web.Models
 {
     public partial class mmhisContext : DbContext
     {
-        public mmhisContext()
-        {
-        }
-
+        // Configured in Startup via AddDbContextFactory (connection string "MMHISDatabase").
         public mmhisContext(DbContextOptions<mmhisContext> options)
             : base(options)
         {
@@ -27,15 +24,6 @@ namespace NewMMHIS_Web.Models
         public virtual DbSet<MmhisMapFen> MmhisMapFens { get; set; }
         public virtual DbSet<MmhisMapObject> MmhisMapObjects { get; set; }
         public virtual DbSet<MmhisMapPoint> MmhisMapPoints { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            string connectionString = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("ConnectionStrings")["MMHISDatabase"];
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer(connectionString); //need to move this
-            }
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

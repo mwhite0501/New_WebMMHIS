@@ -1,4 +1,4 @@
-﻿@page "/"
+@page "/"
 @namespace NewMMHIS_Web.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
@@ -10,37 +10,29 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NewMMHIS_Web</title>
+    <title>ARDOT highway imagery</title>
     <base href="~/" />
-    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
-    <link href="css/site.css" rel="stylesheet" />
-    <link href="NewMMHIS_Web.styles.css" rel="stylesheet" />
-    <link href="_content/Radzen.Blazor/css/default-base.css" rel="stylesheet" />
-</head>
-<head>
-    <script src="~/script.js"></script>
-    <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css">
-    <script src="https://js.arcgis.com/4.27/"></script>
+    <link rel="preload" href="fonts/overpass-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="fonts/overpass-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="https://js.arcgis.com/4.27/esri/themes/light/main.css" />
+    <link rel="stylesheet" href="css/site.css" asp-append-version="true" />
 </head>
 <body>
     <component type="typeof(App)" render-mode="ServerPrerendered" />
 
-    <div id="blazor-error-ui">
+    <div id="blazor-error-ui" role="alert">
         <environment include="Staging,Production">
-            An error has occurred. This application may no longer respond until reloaded.
+            Something went wrong and the page stopped responding.
         </environment>
         <environment include="Development">
-            An unhandled exception has occurred. See browser dev tools for details.
+            An unhandled exception occurred. See the browser dev tools for details.
         </environment>
         <a href="" class="reload">Reload</a>
-        <a class="dismiss">🗙</a>
+        <button type="button" class="dismiss" aria-label="Dismiss">&times;</button>
     </div>
 
+    <script src="https://js.arcgis.com/4.27/"></script>
+    <script src="js/mmhis.js" asp-append-version="true"></script>
     <script src="_framework/blazor.server.js"></script>
-    @*<script src="https://maps.googleapis.com/maps/api/js?key=blahblah&libraries=places&callback=initMap"></script>*@
-
-    <link rel="stylesheet" href="_content/Radzen.Blazor/css/default.css">
-    <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
-
 </body>
 </html>

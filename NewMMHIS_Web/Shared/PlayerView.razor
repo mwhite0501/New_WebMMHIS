@@ -1,0 +1,78 @@
+@* Rendered once; wwwroot/js/mmhis.js owns everything inside after that. *@
+
+<section class="viewer is-empty" id="viewer" aria-label="Imagery viewer">
+    <div class="frame" id="frame">
+        <img id="frame-img" alt="" draggable="false" />
+
+        <div class="frame-empty" id="frame-empty">
+            <p class="frame-empty-title">No road selected</p>
+            <p>Choose a route on the left, or double-click anywhere on the map to open the nearest imagery.</p>
+        </div>
+
+        <p class="frame-note" id="frame-note" hidden></p>
+
+        <div class="milemarker" id="milemarker" hidden aria-live="off">
+            <span class="milemarker-label">Log mile</span>
+            <span class="milemarker-value" id="mm-value">0.000</span>
+        </div>
+
+        <p class="frame-missing" id="frame-missing" hidden>No image from this camera at this point</p>
+        <div class="frame-loading" id="frame-loading" hidden><span class="spinner" aria-label="Loading"></span></div>
+    </div>
+
+    <div class="transport">
+        <div class="transport-buttons">
+            <button type="button" class="tbtn" data-action="step-back" title="Previous frame (Left arrow)" aria-label="Previous frame" disabled>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h2v14H6zM20 5v14L9.5 12z" /></svg>
+            </button>
+            <button type="button" class="tbtn" data-action="reverse" title="Play backward (Shift+Space)" aria-label="Play backward" aria-pressed="false" disabled>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 5v14L6 12z" /></svg>
+            </button>
+            <button type="button" class="tbtn tbtn-main" data-action="forward" title="Play / pause (Space)" aria-label="Play" aria-pressed="false" disabled>
+                <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5v14l11-7z" /></svg>
+                <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" /></svg>
+            </button>
+            <button type="button" class="tbtn" data-action="step-forward" title="Next frame (Right arrow)" aria-label="Next frame" disabled>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 5h2v14h-2zM4 5v14l10.5-7z" /></svg>
+            </button>
+        </div>
+
+        <div class="scrub">
+            <input type="range" id="scrubber" min="0" max="0" value="0" step="1" aria-label="Position along the run" disabled />
+            <div class="scrub-meta">
+                <span id="scrub-start"></span>
+                <span id="frame-count"></span>
+                <span id="scrub-end"></span>
+            </div>
+        </div>
+
+        <label class="speed">
+            <span>Speed</span>
+            <select id="speed">
+                <option value="400">Slow</option>
+                <option value="220" selected>Normal</option>
+                <option value="100">Fast</option>
+            </select>
+        </label>
+
+        <button type="button" class="tbtn" data-action="fullscreen" title="Full screen (F)" aria-label="Full screen">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6v2H6v4H4zm10 0h6v6h-2V6h-4zM4 14h2v4h4v2H4zm14 0h2v6h-6v-2h4z" /></svg>
+        </button>
+    </div>
+
+    <div class="viewer-foot">
+        <div class="cameras" role="group" aria-label="Camera">
+            <button type="button" data-camera="f" aria-pressed="true">Front</button>
+            <button type="button" data-camera="fl" aria-pressed="false">Left</button>
+            <button type="button" data-camera="fr" aria-pressed="false">Right</button>
+            <button type="button" data-camera="rl" aria-pressed="false">Rear left</button>
+            <button type="button" data-camera="rr" aria-pressed="false">Rear right</button>
+            <button type="button" data-camera="p" aria-pressed="false">Pavement</button>
+        </div>
+        <p class="coords" id="coords"></p>
+    </div>
+</section>
+
+@code {
+    protected override bool ShouldRender() => false;
+}

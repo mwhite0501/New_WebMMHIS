@@ -1,0 +1,33 @@
+@* Rendered once; wwwroot/js/mmhis.js applies these instantly in the browser and remembers them. *@
+
+<section class="panel-section display" aria-labelledby="display-heading">
+    <h2 id="display-heading">Display</h2>
+
+    <label class="field">
+        <span class="field-label">Image size</span>
+        <select id="img-size">
+            <option value="0">Full size</option>
+            <option value="1920">1920 px wide</option>
+            <option value="1280">1280 px wide</option>
+            <option value="900">900 px wide</option>
+            <option value="600">600 px wide</option>
+        </select>
+        <span class="field-help">Smaller sizes play smoother on VPN or cellular.</span>
+    </label>
+
+    <label class="field">
+        <span class="field-label">Contrast <output id="contrast-out" for="contrast">100%</output></span>
+        <input type="range" id="contrast" min="50" max="300" step="5" value="100" />
+    </label>
+
+    <label class="field">
+        <span class="field-label">Brightness <output id="brightness-out" for="brightness">100%</output></span>
+        <input type="range" id="brightness" min="50" max="200" step="5" value="100" />
+    </label>
+
+    <button type="button" class="btn btn-quiet" id="display-reset">Reset contrast and brightness</button>
+</section>
+
+@code {
+    protected override bool ShouldRender() => false;
+}

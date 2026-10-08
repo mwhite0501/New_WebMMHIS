@@ -1,0 +1,58 @@
+@* Rendered once; wwwroot/js/mmhis.js wires the ArcGIS map and Street View. *@
+
+<section class="mappane" aria-label="Map">
+    <div class="mappane-bar">
+        <div class="tabs" role="tablist">
+            <button type="button" role="tab" id="tab-map" data-tab="map" aria-selected="true" aria-controls="map-body">Map</button>
+            <button type="button" role="tab" id="tab-street" data-tab="street" aria-selected="false" aria-controls="streetview" hidden>Street View</button>
+        </div>
+        <div class="mappane-tools">
+            <label class="visually-hidden" for="basemap-select">Basemap</label>
+            <select id="basemap-select" title="Basemap">
+                <option value="streets-navigation-vector">Streets</option>
+                <option value="satellite">Satellite</option>
+                <option value="hybrid">Hybrid</option>
+                <option value="topo-vector">Topographic</option>
+                <option value="terrain">Terrain</option>
+                <option value="gray-vector">Gray</option>
+                <option value="dark-gray-vector">Dark gray</option>
+            </select>
+            <label class="visually-hidden" for="feature-layer-select">Overlay layer</label>
+            <select id="feature-layer-select" title="Overlay layer">
+                <option value="">No overlay</option>
+                <option value="https://gis.ardot.gov/hosting/rest/services/SIR_TIS/Road_Inventory_OnSystem/FeatureServer/0">Roadway inventory</option>
+                <option value="https://gis.ardot.gov/hosting/rest/services/TPP_GISMapping/ARNOLD/FeatureServer/0">ARNOLD linear</option>
+                <option value="https://gis.ardot.gov/hosting/rest/services/Hosted/ARNOLD_Points/FeatureServer/0">ARNOLD points</option>
+                <option value="https://gis.ardot.gov/hosting/rest/services/TPP_GISMapping/CORE_BASE_LAYERS/FeatureServer">Core base layers</option>
+                <option value="https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Boundaries/FeatureServer/48">Counties</option>
+                <option value="https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Boundaries/FeatureServer/41">Municipal boundaries</option>
+                <option value="https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Planning_Cadastre/FeatureServer/6">Parcels</option>
+                <option value="https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Structure/FeatureServer/54">Building footprints</option>
+                <option value="https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Location/FeatureServer/14">Address points</option>
+                <option value="https://fragis.fra.dot.gov/arcgis/rest/services/FRA/MainLine/MapServer/0">Railroads</option>
+                <option value="https://gis.ardot.gov/hosting/rest/services/HeavyBridge/ARDOTBridgeAll/MapServer/0">Bridges</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="mappane-body">
+        <div id="map-body" class="map-body" role="tabpanel" aria-labelledby="tab-map">
+            <div id="viewDiv"></div>
+            <div id="toolbarDiv" class="esri-component esri-widget">
+                <button type="button" id="distance" class="esri-widget--button esri-interactive esri-icon-measure-line" title="Measure distance"></button>
+                <button type="button" id="area" class="esri-widget--button esri-interactive esri-icon-measure-area" title="Measure area"></button>
+                <button type="button" id="clear" class="esri-widget--button esri-interactive esri-icon-trash" title="Clear measurements"></button>
+            </div>
+            <label class="map-follow"><input type="checkbox" id="follow" checked /> Keep marker in view</label>
+            <p class="map-unavailable" id="map-unavailable" hidden>The ArcGIS map couldn't load. Check that js.arcgis.com is reachable, then reload.</p>
+        </div>
+        <div id="streetview" class="streetview" role="tabpanel" aria-labelledby="tab-street" hidden>
+            <iframe id="streetview-frame" title="Google Street View at the current frame" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            <p class="streetview-hint">Street View follows the current frame, facing the direction of travel, whenever playback is paused.</p>
+        </div>
+    </div>
+</section>
+
+@code {
+    protected override bool ShouldRender() => false;
+}
